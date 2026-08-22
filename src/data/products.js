@@ -34,20 +34,20 @@ export const PRODUCTS = [
     description: 'Rich & aromatic blend for perfect mutton stews.',
     weight: '33g',
     price: 79,
-    image: "/assets/products/1. Mutton Stew/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/1.png",
     images: [
-      "/assets/products/1. Mutton Stew/1.png",
-      "/assets/products/1. Mutton Stew/2.jpg",
-      "/assets/products/1. Mutton Stew/3.png",
-      "/assets/products/1. Mutton Stew/4.png",
-      "/assets/products/1. Mutton Stew/5.jpg",
-      "/assets/products/1. Mutton Stew/6.jpg",
-      "/assets/products/1. Mutton Stew/7.jpg"
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/1.png",
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/2.jpg",
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/3.png",
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/4.png",
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/5.jpg",
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/6.jpg",
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/7.jpg"
     ],
     infoImages: [
-      "/assets/products/1. Mutton Stew/1.png",
-      "/assets/products/1. Mutton Stew/2.jpg",
-      "/assets/products/1. Mutton Stew/3.png"
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/1.png",
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/2.jpg",
+      import.meta.env.BASE_URL + "assets/products/1. Mutton Stew/3.png"
     ],
 
 
@@ -78,21 +78,21 @@ Mutton should be cooked in desi ghee for better taste and better health.`,
     description: 'Creamy, mild & perfect for traditional korma.',
     weight: '50g',
     price: 79,
-    image: "/assets/products/2. Chicken Korma/1.jpg",
+    image: import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/1.jpg",
     images: [
-      "/assets/products/2. Chicken Korma/1.jpg",
-      "/assets/products/2. Chicken Korma/2.jpg",
-      "/assets/products/2. Chicken Korma/3.jpg",
-      "/assets/products/2. Chicken Korma/3.png",
-      "/assets/products/2. Chicken Korma/4.png",
-      "/assets/products/2. Chicken Korma/5.jpg",
-      "/assets/products/2. Chicken Korma/6.jpg",
-      "/assets/products/2. Chicken Korma/8.jpg"
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/1.jpg",
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/2.jpg",
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/3.jpg",
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/3.png",
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/4.png",
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/5.jpg",
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/6.jpg",
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/8.jpg"
     ],
     infoImages: [
-      "/assets/products/2. Chicken Korma/1.jpg",
-      "/assets/products/2. Chicken Korma/2.jpg",
-      "/assets/products/2. Chicken Korma/3.jpg"
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/1.jpg",
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/2.jpg",
+      import.meta.env.BASE_URL + "assets/products/2. Chicken Korma/3.jpg"
     ],
 
 
@@ -129,22 +129,22 @@ Chicken should be cooked in desi ghee for better taste and better health.`,
     description: 'Slow-cooked perfection in every pinch.',
     weight: '50g',
     price: 89,
-    image: "/assets/products/3. Mutton Nihari Masala/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/1.png",
     images: [
-      "/assets/products/3. Mutton Nihari Masala/1.png",
-      "/assets/products/3. Mutton Nihari Masala/2.png",
-      "/assets/products/3. Mutton Nihari Masala/3.png",
-      "/assets/products/3. Mutton Nihari Masala/4.png",
-      "/assets/products/3. Mutton Nihari Masala/5.png",
-      "/assets/products/3. Mutton Nihari Masala/6.png",
-      "/assets/products/3. Mutton Nihari Masala/7.png",
-      "/assets/products/3. Mutton Nihari Masala/8.jpg",
-      "/assets/products/3. Mutton Nihari Masala/9.png"
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/1.png",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/3.png",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/4.png",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/5.png",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/6.png",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/7.png",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/8.jpg",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/9.png"
     ],
     infoImages: [
-      "/assets/products/3. Mutton Nihari Masala/1.png",
-      "/assets/products/3. Mutton Nihari Masala/2.png",
-      "/assets/products/3. Mutton Nihari Masala/3.png"
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/1.png",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/3. Mutton Nihari Masala/3.png"
     ],
 
 
@@ -181,19 +181,19 @@ Mutton should be cooked in desi ghee for better taste and better health.`,
     description: 'Melt-in-your-mouth authentic Awadhi flavor.',
     weight: '33g',
     price: 79,
-    image: "/assets/products/4. GALAUTI KEBAB/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/1.png",
     images: [
-      "/assets/products/4. GALAUTI KEBAB/1.png",
-      "/assets/products/4. GALAUTI KEBAB/2.png",
-      "/assets/products/4. GALAUTI KEBAB/3.png",
-      "/assets/products/4. GALAUTI KEBAB/4.png",
-      "/assets/products/4. GALAUTI KEBAB/5.jpg",
-      "/assets/products/4. GALAUTI KEBAB/6.png"
+      import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/1.png",
+      import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/2.png",
+      import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/3.png",
+      import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/4.png",
+      import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/5.jpg",
+      import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/6.png"
     ],
     infoImages: [
-      "/assets/products/4. GALAUTI KEBAB/1.png",
-      "/assets/products/4. GALAUTI KEBAB/2.png",
-      "/assets/products/4. GALAUTI KEBAB/3.png"
+      import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/1.png",
+      import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/2.png",
+      import.meta.env.BASE_URL + "assets/products/4. GALAUTI KEBAB/3.png"
     ],
 
 
@@ -232,21 +232,21 @@ While frying, if your kebab starts breaking, add more roasted gramflour to the m
     description: 'Authentic blend for soft, juicy shami kebabs.',
     weight: '33g',
     price: 79,
-    image: "/assets/products/4. Shami Kebab Masala/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/1.png",
     images: [
-      "/assets/products/4. Shami Kebab Masala/1.png",
-      "/assets/products/4. Shami Kebab Masala/2.png",
-      "/assets/products/4. Shami Kebab Masala/3.png",
-      "/assets/products/4. Shami Kebab Masala/4.png",
-      "/assets/products/4. Shami Kebab Masala/5.png",
-      "/assets/products/4. Shami Kebab Masala/6.png",
-      "/assets/products/4. Shami Kebab Masala/7.jpg",
-      "/assets/products/4. Shami Kebab Masala/8.png"
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/1.png",
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/3.png",
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/4.png",
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/5.png",
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/6.png",
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/7.jpg",
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/8.png"
     ],
     infoImages: [
-      "/assets/products/4. Shami Kebab Masala/1.png",
-      "/assets/products/4. Shami Kebab Masala/2.png",
-      "/assets/products/4. Shami Kebab Masala/3.png"
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/1.png",
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/4. Shami Kebab Masala/3.png"
     ],
 
 
@@ -283,19 +283,19 @@ Chicken/mutton kebabs can be stored in freezer for 15 days.`,
     price: 79,
     image: selectedCover0,
     images: [
-      "/assets/products/6. Awadhi Tikka Boti Kebab/awadhi_tikka_boti_masala_cover.png",
-      "/assets/products/6. Awadhi Tikka Boti Kebab/2.jpg",
-      "/assets/products/6. Awadhi Tikka Boti Kebab/3.jpg",
-      "/assets/products/6. Awadhi Tikka Boti Kebab/4.png",
-      "/assets/products/6. Awadhi Tikka Boti Kebab/5.png",
-      "/assets/products/6. Awadhi Tikka Boti Kebab/6.jpg",
-      "/assets/products/6. Awadhi Tikka Boti Kebab/7.jpg",
-      "/assets/products/6. Awadhi Tikka Boti Kebab/8.jpg"
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/awadhi_tikka_boti_masala_cover.png",
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/2.jpg",
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/3.jpg",
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/4.png",
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/5.png",
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/6.jpg",
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/7.jpg",
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/8.jpg"
     ],
     infoImages: [
-      "/assets/products/6. Awadhi Tikka Boti Kebab/awadhi_tikka_boti_masala_cover.png",
-      "/assets/products/6. Awadhi Tikka Boti Kebab/2.jpg",
-      "/assets/products/6. Awadhi Tikka Boti Kebab/3.jpg"
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/awadhi_tikka_boti_masala_cover.png",
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/2.jpg",
+      import.meta.env.BASE_URL + "assets/products/6. Awadhi Tikka Boti Kebab/3.jpg"
     ],
 
 
@@ -314,20 +314,20 @@ Chicken/mutton kebabs can be stored in freezer for 15 days.`,
     description: 'Smoky, charred tandoori flavor for paneer & veggies.',
     weight: '25g',
     price: 69,
-    image: "/assets/products/7. Veg tandoori/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/1.png",
     images: [
-      "/assets/products/7. Veg tandoori/1.png",
-      "/assets/products/7. Veg tandoori/2.png",
-      "/assets/products/7. Veg tandoori/3.png",
-      "/assets/products/7. Veg tandoori/4.png",
-      "/assets/products/7. Veg tandoori/5.png",
-      "/assets/products/7. Veg tandoori/6.jpg",
-      "/assets/products/7. Veg tandoori/7.png"
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/1.png",
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/2.png",
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/3.png",
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/4.png",
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/5.png",
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/6.jpg",
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/7.png"
     ],
     infoImages: [
-      "/assets/products/7. Veg tandoori/1.png",
-      "/assets/products/7. Veg tandoori/2.png",
-      "/assets/products/7. Veg tandoori/3.png"
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/1.png",
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/2.png",
+      import.meta.env.BASE_URL + "assets/products/7. Veg tandoori/3.png"
     ],
 
 
@@ -365,20 +365,20 @@ Marinated chicken residue can be dried up in the pan on high flame before grilli
     description: 'Classic restaurant-style tandoori flavor for meats.',
     weight: '25g',
     price: 79,
-    image: "/assets/products/8. Non-Veg tandoori/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/1.png",
     images: [
-      "/assets/products/8. Non-Veg tandoori/1.png",
-      "/assets/products/8. Non-Veg tandoori/2.png",
-      "/assets/products/8. Non-Veg tandoori/3.png",
-      "/assets/products/8. Non-Veg tandoori/4.png",
-      "/assets/products/8. Non-Veg tandoori/5.png",
-      "/assets/products/8. Non-Veg tandoori/6.jpg",
-      "/assets/products/8. Non-Veg tandoori/7.png"
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/1.png",
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/2.png",
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/3.png",
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/4.png",
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/5.png",
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/6.jpg",
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/7.png"
     ],
     infoImages: [
-      "/assets/products/8. Non-Veg tandoori/1.png",
-      "/assets/products/8. Non-Veg tandoori/2.png",
-      "/assets/products/8. Non-Veg tandoori/3.png"
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/1.png",
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/2.png",
+      import.meta.env.BASE_URL + "assets/products/8. Non-Veg tandoori/3.png"
     ],
 
 
@@ -418,18 +418,18 @@ Marinated chicken residue can be dried up in the pan on high flame before grilli
     price: 69,
     image: selectedCover5,
     images: [
-      "/assets/products/9. garam masala/shahi_garam_masala_cover.png",
-      "/assets/products/9. garam masala/2.png",
-      "/assets/products/9. garam masala/3.png",
-      "/assets/products/9. garam masala/4.png",
-      "/assets/products/9. garam masala/5.png",
-      "/assets/products/9. garam masala/6.jpg",
-      "/assets/products/9. garam masala/7.png"
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/shahi_garam_masala_cover.png",
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/3.png",
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/4.png",
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/5.png",
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/6.jpg",
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/7.png"
     ],
     infoImages: [
-      "/assets/products/9. garam masala/shahi_garam_masala_cover.png",
-      "/assets/products/9. garam masala/2.png",
-      "/assets/products/9. garam masala/3.png"
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/shahi_garam_masala_cover.png",
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/9. garam masala/3.png"
     ],
 
 
@@ -453,19 +453,19 @@ A must try.`,
     description: 'Premium dehydrated garlic for instant flavor.',
     weight: '50g',
     price: 79,
-    image: "/assets/products/10. Garlic Powder/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/1.png",
     images: [
-      "/assets/products/10. Garlic Powder/1.png",
-      "/assets/products/10. Garlic Powder/2.png",
-      "/assets/products/10. Garlic Powder/3.png",
-      "/assets/products/10. Garlic Powder/4.png",
-      "/assets/products/10. Garlic Powder/5.png",
-      "/assets/products/10. Garlic Powder/6.png"
+      import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/1.png",
+      import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/2.png",
+      import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/3.png",
+      import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/4.png",
+      import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/5.png",
+      import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/6.png"
     ],
     infoImages: [
-      "/assets/products/10. Garlic Powder/1.png",
-      "/assets/products/10. Garlic Powder/2.png",
-      "/assets/products/10. Garlic Powder/3.png"
+      import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/1.png",
+      import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/2.png",
+      import.meta.env.BASE_URL + "assets/products/10. Garlic Powder/3.png"
     ],
 
 
@@ -487,19 +487,19 @@ To be used according to the taste.`,
     description: 'Natural ingredients for perfectly tender meats.',
     weight: '50g',
     price: 99,
-    image: "/assets/products/11. Meat Tenderizer/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/1.png",
     images: [
-      "/assets/products/11. Meat Tenderizer/1.png",
-      "/assets/products/11. Meat Tenderizer/2.png",
-      "/assets/products/11. Meat Tenderizer/3.png",
-      "/assets/products/11. Meat Tenderizer/4.png",
-      "/assets/products/11. Meat Tenderizer/5.png",
-      "/assets/products/11. Meat Tenderizer/6.png"
+      import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/1.png",
+      import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/2.png",
+      import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/3.png",
+      import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/4.png",
+      import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/5.png",
+      import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/6.png"
     ],
     infoImages: [
-      "/assets/products/11. Meat Tenderizer/1.png",
-      "/assets/products/11. Meat Tenderizer/2.png",
-      "/assets/products/11. Meat Tenderizer/3.png"
+      import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/1.png",
+      import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/2.png",
+      import.meta.env.BASE_URL + "assets/products/11. Meat Tenderizer/3.png"
     ],
 
 
@@ -522,21 +522,21 @@ To be used according to the taste.`,
     description: 'Rustic, spicy blend for authentic kadhai paneer.',
     weight: '32g',
     price: 59,
-    image: "/assets/products/12. Kadhai Paneer/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/1.png",
     images: [
-      "/assets/products/12. Kadhai Paneer/1.png",
-      "/assets/products/12. Kadhai Paneer/2.png",
-      "/assets/products/12. Kadhai Paneer/3.png",
-      "/assets/products/12. Kadhai Paneer/4.png",
-      "/assets/products/12. Kadhai Paneer/5.png",
-      "/assets/products/12. Kadhai Paneer/6.png",
-      "/assets/products/12. Kadhai Paneer/7.jpg",
-      "/assets/products/12. Kadhai Paneer/8.png"
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/1.png",
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/2.png",
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/3.png",
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/4.png",
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/5.png",
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/6.png",
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/7.jpg",
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/8.png"
     ],
     infoImages: [
-      "/assets/products/12. Kadhai Paneer/1.png",
-      "/assets/products/12. Kadhai Paneer/2.png",
-      "/assets/products/12. Kadhai Paneer/3.png"
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/1.png",
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/2.png",
+      import.meta.env.BASE_URL + "assets/products/12. Kadhai Paneer/3.png"
     ],
 
 
@@ -569,21 +569,21 @@ Garnish with fresh cilantro and serve hot with Butter Naan, Tandoori Roti, or Ri
     description: 'The ultimate versatile spice mix for everyday curries.',
     weight: '50g',
     price: 59,
-    image: "/assets/products/13. Kitchen King/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/13. Kitchen King/1.png",
     images: [
-      "/assets/products/13. Kitchen King/1.png",
-      "/assets/products/13. Kitchen King/2.png",
-      "/assets/products/13. Kitchen King/3.png",
-      "/assets/products/13. Kitchen King/4.png",
-      "/assets/products/13. Kitchen King/5.png",
-      "/assets/products/13. Kitchen King/6.png",
-      "/assets/products/13. Kitchen King/7.jpg",
-      "/assets/products/13. Kitchen King/8.png"
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/1.png",
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/2.png",
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/3.png",
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/4.png",
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/5.png",
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/6.png",
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/7.jpg",
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/8.png"
     ],
     infoImages: [
-      "/assets/products/13. Kitchen King/1.png",
-      "/assets/products/13. Kitchen King/2.png",
-      "/assets/products/13. Kitchen King/3.png"
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/1.png",
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/2.png",
+      import.meta.env.BASE_URL + "assets/products/13. Kitchen King/3.png"
     ],
 
 
@@ -616,19 +616,19 @@ Serve hot with rice or roti.`,
     price: 69,
     image: selectedCover3,
     images: [
-      "/assets/products/14. Chole Masala/chole_masale_cover.png",
-      "/assets/products/14. Chole Masala/2.png",
-      "/assets/products/14. Chole Masala/3.png",
-      "/assets/products/14. Chole Masala/4.png",
-      "/assets/products/14. Chole Masala/5.png",
-      "/assets/products/14. Chole Masala/6.png",
-      "/assets/products/14. Chole Masala/7.jpg",
-      "/assets/products/14. Chole Masala/8.png"
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/chole_masale_cover.png",
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/3.png",
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/4.png",
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/5.png",
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/6.png",
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/7.jpg",
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/8.png"
     ],
     infoImages: [
-      "/assets/products/14. Chole Masala/chole_masale_cover.png",
-      "/assets/products/14. Chole Masala/2.png",
-      "/assets/products/14. Chole Masala/3.png"
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/chole_masale_cover.png",
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/14. Chole Masala/3.png"
     ],
 
 
@@ -664,19 +664,19 @@ Your Chole is ready to be served with Kulcha or Bhatura.`,
     price: 59,
     image: selectedCover1,
     images: [
-      "/assets/products/15. Chaat Masala/chaat_masala_cover.png",
-      "/assets/products/15. Chaat Masala/2.png",
-      "/assets/products/15. Chaat Masala/3.png",
-      "/assets/products/15. Chaat Masala/4.png",
-      "/assets/products/15. Chaat Masala/5.png",
-      "/assets/products/15. Chaat Masala/6.png",
-      "/assets/products/15. Chaat Masala/7.jpg",
-      "/assets/products/15. Chaat Masala/8.png"
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/chaat_masala_cover.png",
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/3.png",
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/4.png",
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/5.png",
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/6.png",
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/7.jpg",
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/8.png"
     ],
     infoImages: [
-      "/assets/products/15. Chaat Masala/chaat_masala_cover.png",
-      "/assets/products/15. Chaat Masala/2.png",
-      "/assets/products/15. Chaat Masala/3.png"
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/chaat_masala_cover.png",
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/15. Chaat Masala/3.png"
     ],
 
 
@@ -713,22 +713,22 @@ Garnish with chopped coriander. Serve immediately and enjoy!`,
     description: 'Rich, creamy and mild spices for paneer makhani.',
     weight: '30g',
     price: 59,
-    image: "/assets/products/16. Butter Paneer Masala/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/1.png",
     images: [
-      "/assets/products/16. Butter Paneer Masala/1.png",
-      "/assets/products/16. Butter Paneer Masala/2.png",
-      "/assets/products/16. Butter Paneer Masala/3.png",
-      "/assets/products/16. Butter Paneer Masala/4.png",
-      "/assets/products/16. Butter Paneer Masala/5.png",
-      "/assets/products/16. Butter Paneer Masala/6.png",
-      "/assets/products/16. Butter Paneer Masala/7.png",
-      "/assets/products/16. Butter Paneer Masala/8.jpg",
-      "/assets/products/16. Butter Paneer Masala/9.png"
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/1.png",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/3.png",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/4.png",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/5.png",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/6.png",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/7.png",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/8.jpg",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/9.png"
     ],
     infoImages: [
-      "/assets/products/16. Butter Paneer Masala/1.png",
-      "/assets/products/16. Butter Paneer Masala/2.png",
-      "/assets/products/16. Butter Paneer Masala/3.png"
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/1.png",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/16. Butter Paneer Masala/3.png"
     ],
 
 
@@ -751,16 +751,16 @@ Garnish with chopped coriander. Serve immediately and enjoy!`,
     price: 49,
     image: selectedCover4,
     images: [
-      "/assets/products/17. Coriander Powder/coriander_powder_cover.png",
-      "/assets/products/17. Coriander Powder/2.png",
-      "/assets/products/17. Coriander Powder/3.jpg",
-      "/assets/products/17. Coriander Powder/4.png",
-      "/assets/products/17. Coriander Powder/5.png"
+      import.meta.env.BASE_URL + "assets/products/17. Coriander Powder/coriander_powder_cover.png",
+      import.meta.env.BASE_URL + "assets/products/17. Coriander Powder/2.png",
+      import.meta.env.BASE_URL + "assets/products/17. Coriander Powder/3.jpg",
+      import.meta.env.BASE_URL + "assets/products/17. Coriander Powder/4.png",
+      import.meta.env.BASE_URL + "assets/products/17. Coriander Powder/5.png"
     ],
     infoImages: [
-      "/assets/products/17. Coriander Powder/coriander_powder_cover.png",
-      "/assets/products/17. Coriander Powder/2.png",
-      "/assets/products/17. Coriander Powder/3.jpg"
+      import.meta.env.BASE_URL + "assets/products/17. Coriander Powder/coriander_powder_cover.png",
+      import.meta.env.BASE_URL + "assets/products/17. Coriander Powder/2.png",
+      import.meta.env.BASE_URL + "assets/products/17. Coriander Powder/3.jpg"
     ],
 
 
@@ -780,19 +780,19 @@ Garnish with chopped coriander. Serve immediately and enjoy!`,
     description: 'High-curcumin pure haldi powder.',
     weight: '100g',
     price: 69,
-    image: "/assets/products/18. Turmeric Powder/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/1.png",
     images: [
-      "/assets/products/18. Turmeric Powder/1.png",
-      "/assets/products/18. Turmeric Powder/2.png",
-      "/assets/products/18. Turmeric Powder/3.png",
-      "/assets/products/18. Turmeric Powder/4.png",
-      "/assets/products/18. Turmeric Powder/5.png",
-      "/assets/products/18. Turmeric Powder/6.png"
+      import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/1.png",
+      import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/2.png",
+      import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/3.png",
+      import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/4.png",
+      import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/5.png",
+      import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/6.png"
     ],
     infoImages: [
-      "/assets/products/18. Turmeric Powder/1.png",
-      "/assets/products/18. Turmeric Powder/2.png",
-      "/assets/products/18. Turmeric Powder/3.png"
+      import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/1.png",
+      import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/2.png",
+      import.meta.env.BASE_URL + "assets/products/18. Turmeric Powder/3.png"
     ],
 
 
@@ -812,19 +812,19 @@ Garnish with chopped coriander. Serve immediately and enjoy!`,
     description: 'Spicy and vibrant pure red chilli powder.',
     weight: '100g',
     price: 69,
-    image: "/assets/products/19. Red Chili Powder/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/1.png",
     images: [
-      "/assets/products/19. Red Chili Powder/1.png",
-      "/assets/products/19. Red Chili Powder/2.png",
-      "/assets/products/19. Red Chili Powder/3.png",
-      "/assets/products/19. Red Chili Powder/4.png",
-      "/assets/products/19. Red Chili Powder/5.png",
-      "/assets/products/19. Red Chili Powder/6.png"
+      import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/1.png",
+      import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/2.png",
+      import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/3.png",
+      import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/4.png",
+      import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/5.png",
+      import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/6.png"
     ],
     infoImages: [
-      "/assets/products/19. Red Chili Powder/1.png",
-      "/assets/products/19. Red Chili Powder/2.png",
-      "/assets/products/19. Red Chili Powder/3.png"
+      import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/1.png",
+      import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/2.png",
+      import.meta.env.BASE_URL + "assets/products/19. Red Chili Powder/3.png"
     ],
 
 
@@ -845,18 +845,18 @@ To be used according to the taste.`,
     description: 'Vibrant red color with very mild heat.',
     weight: '100g',
     price: 98,
-    image: "/assets/products/20. kashmiri Lal Mirch/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/20. kashmiri Lal Mirch/1.png",
     images: [
-      "/assets/products/20. kashmiri Lal Mirch/1.png",
-      "/assets/products/20. kashmiri Lal Mirch/2.png",
-      "/assets/products/20. kashmiri Lal Mirch/3.png",
-      "/assets/products/20. kashmiri Lal Mirch/4.png",
-      "/assets/products/20. kashmiri Lal Mirch/5.png"
+      import.meta.env.BASE_URL + "assets/products/20. kashmiri Lal Mirch/1.png",
+      import.meta.env.BASE_URL + "assets/products/20. kashmiri Lal Mirch/2.png",
+      import.meta.env.BASE_URL + "assets/products/20. kashmiri Lal Mirch/3.png",
+      import.meta.env.BASE_URL + "assets/products/20. kashmiri Lal Mirch/4.png",
+      import.meta.env.BASE_URL + "assets/products/20. kashmiri Lal Mirch/5.png"
     ],
     infoImages: [
-      "/assets/products/20. kashmiri Lal Mirch/1.png",
-      "/assets/products/20. kashmiri Lal Mirch/2.png",
-      "/assets/products/20. kashmiri Lal Mirch/3.png"
+      import.meta.env.BASE_URL + "assets/products/20. kashmiri Lal Mirch/1.png",
+      import.meta.env.BASE_URL + "assets/products/20. kashmiri Lal Mirch/2.png",
+      import.meta.env.BASE_URL + "assets/products/20. kashmiri Lal Mirch/3.png"
     ],
 
 
@@ -877,19 +877,19 @@ To be used according to the taste.`,
     description: 'Perfect balance of spices for delicious sambhar.',
     weight: '40g',
     price: 59,
-    image: "/assets/products/21. Sambar Masala/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/1.png",
     images: [
-      "/assets/products/21. Sambar Masala/1.png",
-      "/assets/products/21. Sambar Masala/2.png",
-      "/assets/products/21. Sambar Masala/3.png",
-      "/assets/products/21. Sambar Masala/4.png",
-      "/assets/products/21. Sambar Masala/5.png",
-      "/assets/products/21. Sambar Masala/6.png"
+      import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/1.png",
+      import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/3.png",
+      import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/4.png",
+      import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/5.png",
+      import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/6.png"
     ],
     infoImages: [
-      "/assets/products/21. Sambar Masala/1.png",
-      "/assets/products/21. Sambar Masala/2.png",
-      "/assets/products/21. Sambar Masala/3.png"
+      import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/1.png",
+      import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/2.png",
+      import.meta.env.BASE_URL + "assets/products/21. Sambar Masala/3.png"
     ],
 
 
@@ -910,19 +910,19 @@ To be used according to the taste.`,
     description: 'Signature blend for the perfect pav bhaji.',
     weight: '40g',
     price: 59,
-    image: "/assets/products/22. Pav Bhaji/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/1.png",
     images: [
-      "/assets/products/22. Pav Bhaji/1.png",
-      "/assets/products/22. Pav Bhaji/2.png",
-      "/assets/products/22. Pav Bhaji/3.png",
-      "/assets/products/22. Pav Bhaji/4.png",
-      "/assets/products/22. Pav Bhaji/5.png",
-      "/assets/products/22. Pav Bhaji/6.png"
+      import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/1.png",
+      import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/2.png",
+      import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/3.png",
+      import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/4.png",
+      import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/5.png",
+      import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/6.png"
     ],
     infoImages: [
-      "/assets/products/22. Pav Bhaji/1.png",
-      "/assets/products/22. Pav Bhaji/2.png",
-      "/assets/products/22. Pav Bhaji/3.png"
+      import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/1.png",
+      import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/2.png",
+      import.meta.env.BASE_URL + "assets/products/22. Pav Bhaji/3.png"
     ],
 
 
@@ -953,20 +953,20 @@ You can also add some lemon juice and chopped cilantro for extra flavor. Enjoy y
     description: 'Fragrant and rich spices for royal mutton biryani.',
     weight: '27g',
     price: 89,
-    image: "/assets/products/23. Mutton Biryani/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/1.png",
     images: [
-      "/assets/products/23. Mutton Biryani/1.png",
-      "/assets/products/23. Mutton Biryani/2.png",
-      "/assets/products/23. Mutton Biryani/3.png",
-      "/assets/products/23. Mutton Biryani/4.png",
-      "/assets/products/23. Mutton Biryani/5.png",
-      "/assets/products/23. Mutton Biryani/6.png",
-      "/assets/products/23. Mutton Biryani/7.png"
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/1.png",
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/2.png",
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/3.png",
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/4.png",
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/5.png",
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/6.png",
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/7.png"
     ],
     infoImages: [
-      "/assets/products/23. Mutton Biryani/1.png",
-      "/assets/products/23. Mutton Biryani/2.png",
-      "/assets/products/23. Mutton Biryani/3.png"
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/1.png",
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/2.png",
+      import.meta.env.BASE_URL + "assets/products/23. Mutton Biryani/3.png"
     ],
 
 
@@ -1013,17 +1013,17 @@ KabgeerΓÇÖs Mutton Biryani is ready. Serve hot  and enjoy with Raita, Onions 
     price: 89,
     image: selectedCover2,
     images: [
-      "/assets/products/24. chicken Biryani/chicken_biryani_masala_cover.png",
-      "/assets/products/24. chicken Biryani/2.png",
-      "/assets/products/24. chicken Biryani/3.png",
-      "/assets/products/24. chicken Biryani/4.png",
-      "/assets/products/24. chicken Biryani/5.png",
-      "/assets/products/24. chicken Biryani/6.png"
+      import.meta.env.BASE_URL + "assets/products/24. chicken Biryani/chicken_biryani_masala_cover.png",
+      import.meta.env.BASE_URL + "assets/products/24. chicken Biryani/2.png",
+      import.meta.env.BASE_URL + "assets/products/24. chicken Biryani/3.png",
+      import.meta.env.BASE_URL + "assets/products/24. chicken Biryani/4.png",
+      import.meta.env.BASE_URL + "assets/products/24. chicken Biryani/5.png",
+      import.meta.env.BASE_URL + "assets/products/24. chicken Biryani/6.png"
     ],
     infoImages: [
-      "/assets/products/24. chicken Biryani/chicken_biryani_masala_cover.png",
-      "/assets/products/24. chicken Biryani/2.png",
-      "/assets/products/24. chicken Biryani/3.png"
+      import.meta.env.BASE_URL + "assets/products/24. chicken Biryani/chicken_biryani_masala_cover.png",
+      import.meta.env.BASE_URL + "assets/products/24. chicken Biryani/2.png",
+      import.meta.env.BASE_URL + "assets/products/24. chicken Biryani/3.png"
     ],
 
 
@@ -1073,19 +1073,19 @@ KabgeerΓÇÖs Chicken Biryani is ready. Serve hot  and enjoy with Raita, Onions
     description: 'Aromatic spices for flavorful vegetable biryani and pulao.',
     weight: '22g',
     price: 79,
-    image: "/assets/products/25. Veg Biryani/1.png",
+    image: import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/1.png",
     images: [
-      "/assets/products/25. Veg Biryani/1.png",
-      "/assets/products/25. Veg Biryani/2.png",
-      "/assets/products/25. Veg Biryani/3.png",
-      "/assets/products/25. Veg Biryani/4.png",
-      "/assets/products/25. Veg Biryani/5.png",
-      "/assets/products/25. Veg Biryani/6.png"
+      import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/1.png",
+      import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/2.png",
+      import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/3.png",
+      import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/4.png",
+      import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/5.png",
+      import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/6.png"
     ],
     infoImages: [
-      "/assets/products/25. Veg Biryani/1.png",
-      "/assets/products/25. Veg Biryani/2.png",
-      "/assets/products/25. Veg Biryani/3.png"
+      import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/1.png",
+      import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/2.png",
+      import.meta.env.BASE_URL + "assets/products/25. Veg Biryani/3.png"
     ],
 
 
