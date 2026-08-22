@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, CheckCircle } from 'lucide-react';
-import bannerImg from '../assets/banner.jpg';
+import bannerImg from '../assets/banner.png';
 import './BulkEnquiryPage.css';
 
 const WhatsAppIcon = ({ size = 20 }) => (
