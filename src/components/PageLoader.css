@@ -1,0 +1,237 @@
+.page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-primary); /* Royal Deep Forest Green */
+  background-image: radial-gradient(circle at center, #1a4026 0%, #0f2818 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-loader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Cooking Animation Styles */
+.cooking-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.shaker-container {
+  position: relative;
+  width: 100px;
+  height: 130px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.shaker {
+  position: relative;
+  width: 40px;
+  height: 65px;
+  transform-origin: center center;
+  animation: shake 2.5s infinite ease-in-out;
+  z-index: 2;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes shake {
+  0%, 60%, 100% { transform: rotate(165deg) translateY(0); }
+  10% { transform: rotate(165deg) translateY(-15px); }
+  20% { transform: rotate(165deg) translateY(5px); }
+  30% { transform: rotate(165deg) translateY(-15px); }
+  40% { transform: rotate(165deg) translateY(5px); }
+  50% { transform: rotate(165deg) translateY(-15px); }
+}
+
+/* --- CAP --- */
+.shaker-cap {
+  position: relative;
+  width: 32px;
+  height: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+}
+
+.shaker-cap-top {
+  width: 28px;
+  height: 10px;
+  background: linear-gradient(to right, #d4af37, #f3e5ab, #d4af37, #aa8000);
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  padding-top: 2px;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+
+.shaker-cap-top .hole {
+  width: 3px;
+  height: 3px;
+  background-color: #333;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.5);
+}
+
+.shaker-cap-rim {
+  width: 32px;
+  height: 4px;
+  background: linear-gradient(to right, #aa8000, #f3e5ab, #d4af37);
+  border-radius: 1px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* --- GLASS BODY --- */
+.shaker-glass {
+  position: relative;
+  width: 40px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1), 0 4px 10px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  z-index: 2;
+}
+
+.shaker-highlight {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  width: 6px;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.05));
+  border-radius: 3px;
+  z-index: 3;
+}
+
+.shaker-spices-inside {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 25px;
+  background: var(--color-accent);
+  background-image: radial-gradient(circle, rgba(0,0,0,0.1) 1px, transparent 1px);
+  background-size: 4px 4px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 80% 90%, 60% 100%, 40% 85%, 20% 95%, 0 100%);
+  z-index: 1;
+}
+
+.shaker-label {
+  position: absolute;
+  bottom: 8px;
+  width: 20px;
+  height: 14px;
+  background-color: var(--color-bg);
+  border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-heading);
+  font-size: 10px;
+  color: var(--color-primary);
+  font-weight: bold;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  transform: rotate(180deg);
+  z-index: 2;
+}
+
+.spices-falling {
+  position: absolute;
+  top: 70px;
+  left: 45px;
+  width: 30px;
+  height: 60px;
+  z-index: 1;
+}
+
+.spice {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+@keyframes spice-drop {
+  0%, 10% { transform: translateY(0) scale(0.5); opacity: 0; }
+  15% { opacity: 1; transform: translateY(5px) scale(1); }
+  60% { opacity: 0; transform: translateY(50px) scale(0.8); }
+  100% { opacity: 0; transform: translateY(50px) scale(0.8); }
+}
+
+.spice-1 { top: 0; left: 5px; animation: spice-drop 2.5s infinite ease-in; animation-delay: 0.25s; width: 5px; height: 5px; }
+.spice-2 { top: 5px; left: 15px; animation: spice-drop 2.5s infinite ease-in; animation-delay: 0.3s; width: 3px; height: 3px; }
+.spice-3 { top: 0; left: 25px; animation: spice-drop 2.5s infinite ease-in; animation-delay: 0.2s; width: 4px; height: 4px; }
+.spice-4 { top: 5px; left: 10px; animation: spice-drop 2.5s infinite ease-in; animation-delay: 0.75s; width: 2px; height: 2px; }
+.spice-5 { top: 10px; left: 20px; animation: spice-drop 2.5s infinite ease-in; animation-delay: 0.8s; width: 5px; height: 5px; }
+.spice-6 { top: 5px; left: 5px; animation: spice-drop 2.5s infinite ease-in; animation-delay: 0.7s; width: 3px; height: 3px; }
+.spice-7 { top: 0; left: 12px; animation: spice-drop 2.5s infinite ease-in; animation-delay: 1.25s; width: 4px; height: 4px; }
+.spice-8 { top: 5px; left: 22px; animation: spice-drop 2.5s infinite ease-in; animation-delay: 1.3s; width: 2px; height: 2px; }
+.spice-9 { top: 2px; left: 8px; animation: spice-drop 2.5s infinite ease-in; animation-delay: 1.2s; width: 5px; height: 5px; }
+
+/* Text Styles */
+.loader-text {
+  font-family: var(--font-heading);
+  color: var(--color-accent); /* Saffron Gold */
+  font-size: 2.5rem;
+  letter-spacing: 4px;
+  margin: 0;
+  font-weight: 400;
+  text-transform: uppercase;
+  animation: gold-glow 2.5s ease-in-out infinite alternate;
+}
+
+.loader-divider {
+  width: 40px;
+  height: 1px;
+  background-color: var(--color-accent);
+  margin: 1rem 0;
+  opacity: 0.5;
+}
+
+.loader-subtext {
+  font-family: var(--font-body);
+  color: #fff;
+  font-size: 0.85rem;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin: 0;
+  opacity: 0.7;
+}
+
+@keyframes gold-glow {
+  0% { text-shadow: 0 0 10px rgba(217, 144, 38, 0.2); }
+  100% { text-shadow: 0 0 20px rgba(217, 144, 38, 0.6), 0 0 30px rgba(217, 144, 38, 0.4); }
+}

@@ -1,0 +1,147 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Mail, Lock, ArrowRight } from 'lucide-react';
+
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+    try {
+      await login(email, password);
+      navigate('/profile');
+    } catch (err) {
+      let errorMessage = 'Failed to login. Please check your credentials.';
+      if (err.code === 'auth/user-not-found') errorMessage = 'No account found with this email.';
+      else if (err.code === 'auth/wrong-password') errorMessage = 'Incorrect password.';
+      else if (err.code === 'auth/invalid-credential') errorMessage = 'Invalid email or password.';
+      else if (err.code === 'auth/too-many-requests') errorMessage = 'Too many failed attempts. Try again later.';
+      else errorMessage = `Failed to login: ${err.message}`;
+      console.error(err);
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', minHeight: 'calc(100vh - 80px)', backgroundColor: 'var(--color-bg)' }}>
+      {/* Left Side: Image/Branding */}
+      <div style={{
+        flex: 1,
+        backgroundImage: `linear-gradient(rgba(15, 40, 24, 0.7), rgba(15, 40, 24, 0.8)), url('/spice-bg.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        padding: '4rem',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        color: 'white'
+      }} className="desktop-only-flex">
+        <h1 style={{ fontSize: '3.5rem', marginBottom: '1.5rem', lineHeight: '1.1', color: 'white' }}>
+          Welcome back to <span style={{ color: 'var(--color-accent-light)' }}>Kabgeer</span>.
+        </h1>
+        <p style={{ fontSize: '1.2rem', opacity: 0.9, maxWidth: '80%', lineHeight: '1.6' }}>
+          Experience the authentic taste of tradition. Sign in to track your orders, manage your profile, and explore our premium selection of aromatic spices.
+        </p>
+      </div>
+
+      {/* Right Side: Form */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '2rem',
+        backgroundColor: 'var(--color-white)'
+      }}>
+        <div style={{ width: '100%', maxWidth: '420px' }}>
+          <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--color-primary)' }}>Sign In</h2>
+          <p style={{ color: 'var(--color-text-light)', marginBottom: '2.5rem' }}>Please enter your details to continue.</p>
+
+          {error && (
+            <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid #fca5a5' }}>
+              {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>Email Address</label>
+              <div style={{ position: 'relative' }}>
+                <Mail size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-light)' }} />
+                <input 
+                  type="email" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  required 
+                  placeholder="name@example.com"
+                  style={{ 
+                    width: '100%', padding: '0.85rem 1rem 0.85rem 2.8rem', 
+                    border: '1px solid var(--color-border)', borderRadius: '8px',
+                    fontFamily: 'var(--font-body)', fontSize: '0.95rem',
+                    transition: 'all 0.3s ease', outline: 'none'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--color-accent)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                />
+              </div>
+            </div>
+            
+            <div style={{ marginBottom: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '500' }}>Password</label>
+                <a href="#" onClick={(e) => { e.preventDefault(); alert('Reset link sent!'); }} style={{ fontSize: '0.85rem', color: 'var(--color-accent)', fontWeight: '500' }}>Forgot password?</a>
+              </div>
+              <div style={{ position: 'relative' }}>
+                <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-light)' }} />
+                <input 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  required 
+                  placeholder="••••••••"
+                  style={{ 
+                    width: '100%', padding: '0.85rem 1rem 0.85rem 2.8rem', 
+                    border: '1px solid var(--color-border)', borderRadius: '8px',
+                    fontFamily: 'var(--font-body)', fontSize: '0.95rem',
+                    transition: 'all 0.3s ease', outline: 'none'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--color-accent)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                />
+              </div>
+            </div>
+            
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              style={{ width: '100%', padding: '1rem', borderRadius: '8px', fontSize: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing In...' : 'Sign In'}
+              {!isLoading && <ArrowRight size={18} />}
+            </button>
+          </form>
+          
+
+          
+          <p style={{ textAlign: 'center', marginTop: '2.5rem', color: 'var(--color-text-light)', fontSize: '0.95rem' }}>
+            Don't have an account? <Link to="/signup" style={{ color: 'var(--color-primary)', fontWeight: '600', textDecoration: 'underline', textUnderlineOffset: '4px' }}>Create one</Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage;

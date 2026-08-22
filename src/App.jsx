@@ -1,0 +1,71 @@
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
+import './index.css';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const CataloguePage = lazy(() => import('./pages/CataloguePage'));
+const ProductPage = lazy(() => import('./pages/ProductPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignupPage = lazy(() => import('./pages/SignupPage'));
+const OrderSuccessPage = lazy(() => import('./pages/OrderSuccessPage'));
+const BuildBundlePage = lazy(() => import('./pages/BuildBundlePage'));
+const BulkEnquiryPage = lazy(() => import('./pages/BulkEnquiryPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const RecipesPage = lazy(() => import('./pages/RecipesPage'));
+const FaqsPage = lazy(() => import('./pages/FaqsPage'));
+const ShippingPage = lazy(() => import('./pages/ShippingPage'));
+const ReturnsPage = lazy(() => import('./pages/ReturnsPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+
+function App() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <>
+            <ScrollToTop />
+            <div className="app-container">
+              <Header />
+              <main className="main-content">
+                <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', fontSize: '1.2rem', color: 'var(--color-primary)' }}>Loading...</div>}>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/recipes" element={<RecipesPage />} />
+                    <Route path="/products" element={<CataloguePage />} />
+                    <Route path="/product/:id" element={<ProductPage />} />
+                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/order-success" element={<OrderSuccessPage />} />
+                    <Route path="/bundle" element={<BuildBundlePage />} />
+                    <Route path="/bulk" element={<BulkEnquiryPage />} />
+                    <Route path="/faqs" element={<FaqsPage />} />
+                    <Route path="/shipping" element={<ShippingPage />} />
+                    <Route path="/returns" element={<ReturnsPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/terms" element={<TermsPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                  </Routes>
+                </Suspense>
+              </main>
+              <Footer />
+            </div>
+          </>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
+  );
+}
+
+export default App;
