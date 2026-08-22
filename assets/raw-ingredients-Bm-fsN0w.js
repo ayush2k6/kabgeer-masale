@@ -1,0 +1,1 @@
+var e=`/kabgeer-masale/assets/raw-ingredients-CeXbcB_8.png`;export{e as t};

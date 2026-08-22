@@ -1,0 +1,1 @@
+var e=`/kabgeer-masale/assets/banner-gBUW-GLV.png`;export{e as t};
