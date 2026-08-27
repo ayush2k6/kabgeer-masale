@@ -3,11 +3,12 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Search, User, ShoppingBag, X, ArrowUp, Home, Package, Sparkles, ChefHat, ChevronDown } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import CartDrawer from './CartDrawer';
 import './Header.css';
 import logo from '../assets/logo.png';
 
 const Header = () => {
-  const { getCartCount } = useCart();
+  const { getCartCount, openCartDrawer } = useCart();
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -63,7 +64,6 @@ const Header = () => {
           </div>
         </div>
 
-
         {/* Main Desktop Header */}
         <div className="main-header">
           <div className="container header-inner">
@@ -115,7 +115,7 @@ const Header = () => {
 
               <button
                 className="icon-btn cart-btn"
-                onClick={() => navigate('/checkout')}
+                onClick={openCartDrawer}
                 aria-label="Cart"
               >
                 <ShoppingBag size={20} />
@@ -127,6 +127,9 @@ const Header = () => {
           </div>
         </div>
       </header>
+
+      {/* Slide-Out Cart Drawer */}
+      <CartDrawer />
 
       {/* Mobile Bottom Navigation Bar */}
       <nav className="mobile-bottom-nav">
@@ -146,7 +149,12 @@ const Header = () => {
           <ChefHat size={20} />
           <span>Recipes</span>
         </NavLink>
-        <NavLink to="/checkout" className={({ isActive }) => isActive ? "mobile-nav-item active cart-item" : "mobile-nav-item cart-item"}>
+        <button
+          type="button"
+          onClick={openCartDrawer}
+          className="mobile-nav-item cart-item"
+          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+        >
           <div className="mobile-cart-wrapper">
             <ShoppingBag size={20} />
             {getCartCount() > 0 && (
@@ -154,7 +162,7 @@ const Header = () => {
             )}
           </div>
           <span>Cart</span>
-        </NavLink>
+        </button>
       </nav>
 
       {/* Scroll to Top Button */}

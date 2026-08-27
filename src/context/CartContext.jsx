@@ -4,18 +4,26 @@ const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
+const VALID_COUPONS = {
+  KABGEER10: { code: 'KABGEER10', type: 'percent', value: 10, description: '10% OFF on all masalas' },
+  FREESHIP: { code: 'FREESHIP', type: 'shipping', value: 0, description: 'Free Express Shipping' },
+  ROYAL15: { code: 'ROYAL15', type: 'percent', value: 15, description: '15% OFF Royal Lucknavi Collection' }
+};
+
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     const saved = localStorage.getItem('kabgeer_cart');
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
+  const toastTimeout = useRef(null);
+
   useEffect(() => {
     localStorage.setItem('kabgeer_cart', JSON.stringify(cartItems));
   }, [cartItems]);
-
-  const [toastMessage, setToastMessage] = useState(null);
-  const toastTimeout = useRef(null);
 
   const showToast = (message) => {
     setToastMessage(message);
@@ -23,6 +31,18 @@ export const CartProvider = ({ children }) => {
     toastTimeout.current = setTimeout(() => {
       setToastMessage(null);
     }, 3000);
+  };
+
+  const toggleCartDrawer = () => {
+    setIsCartDrawerOpen(prev => !prev);
+  };
+
+  const openCartDrawer = () => {
+    setIsCartDrawerOpen(true);
+  };
+
+  const closeCartDrawer = () => {
+    setIsCartDrawerOpen(false);
   };
 
   const addToCart = (product, quantity = 1) => {
@@ -37,6 +57,7 @@ export const CartProvider = ({ children }) => {
       return [...prev, { ...product, quantity: addQty }];
     });
     showToast(`${product.name} added to your cart!`);
+    openCartDrawer();
   };
 
   const removeFromCart = (productId) => {
@@ -63,6 +84,34 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => {
     setCartItems([]);
+    setAppliedCoupon(null);
+  };
+
+  const applyCoupon = (code) => {
+    const cleanCode = code ? code.trim().toUpperCase() : '';
+    if (!cleanCode) return { success: false, message: 'Please enter a coupon code.' };
+
+    const coupon = VALID_COUPONS[cleanCode];
+    if (coupon) {
+      setAppliedCoupon(coupon);
+      showToast(`Coupon ${coupon.code} applied successfully!`);
+      return { success: true, message: `Coupon ${coupon.code} applied!` };
+    }
+    return { success: false, message: 'Invalid coupon code. Try KABGEER10 or FREESHIP' };
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    showToast('Coupon removed.');
+  };
+
+  const getDiscountAmount = () => {
+    if (!appliedCoupon) return 0;
+    const subtotal = getCartTotal();
+    if (appliedCoupon.type === 'percent') {
+      return Math.round((subtotal * appliedCoupon.value) / 100);
+    }
+    return 0;
   };
 
   return (
@@ -73,7 +122,15 @@ export const CartProvider = ({ children }) => {
       updateQuantity,
       getCartTotal,
       getCartCount,
-      clearCart
+      clearCart,
+      isCartDrawerOpen,
+      toggleCartDrawer,
+      openCartDrawer,
+      closeCartDrawer,
+      appliedCoupon,
+      applyCoupon,
+      removeCoupon,
+      getDiscountAmount
     }}>
       {children}
       
@@ -97,8 +154,8 @@ export const CartProvider = ({ children }) => {
           transition: 'all 0.3s ease'
         }}>
           <div style={{
-            width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#d99026',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '12px'
+            width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#d4af37',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1a2f22', fontSize: '12px', fontWeight: 'bold'
           }}>
             ✓
           </div>

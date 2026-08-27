@@ -13,7 +13,12 @@ Part 5 — Real-World Production & Integration QA Verification (`#KAB-20260827-4
 - **Home Page Redesign**: Upgraded [HomePage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/HomePage.jsx) and [HomePage.css](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/HomePage.css) with quick category nav pills, 4-pillar trust & quality section (*100% Pure & Natural*, *65-Year Old Secret Recipe*, *Hygiene & Freshness Packed*, *Pan-India Fast Delivery*), section badges, and review rating stars.
 - **Professional Checkout Page**: Removed dummy express checkout buttons (`Pay with Google Pay` / `Pay with Shop Pay`) in [CheckoutPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/CheckoutPage.jsx). Added official brand logo header, 256-Bit SSL security badge, standard shipping radio card, and Razorpay gateway badge (*UPI, Cards, NetBanking, Wallets*).
 - **Cart & Order Summary Enhancements**: Updated [CartContext.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/context/CartContext.jsx) to support minimum 1-unit quantities and smooth item removals. Added **"Clear Cart"** button and individual item trash icons to the Order Summary sidebar.
+- **High-Converting Cart Drawer (`<CartDrawer />`)**: Implemented [CartDrawer.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/components/CartDrawer.jsx) and [CartDrawer.css](file:///c:/Users/Acer/Documents/kabgeer-ji/src/components/CartDrawer.css) with glassmorphism backdrop overlay. Features free shipping progress bar (*"Add ₹120.00 more for FREE Express Shipping across India!"*), 1-click add-ons (*Frequently Bought Together*), quantity controls, item totals, and instant checkout button.
+- **Discount Coupon Code System**: Added promo code support (`KABGEER10` for 10% OFF, `FREESHIP` for Free Express Shipping) in [CartContext.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/context/CartContext.jsx) with real-time discount calculation.
+- **Strict Form Field Validations**: Enforced numeric-only handlers for Phone (10 digits) and PIN Code (6 digits), alpha-only handlers for First and Last Name, and expanded State dropdown to all 36 Indian States & UTs in [CheckoutPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/CheckoutPage.jsx).
+- **Professional Placeholders & Autofill**: Updated all form fields with explicit example placeholders and standard HTML `autoComplete` attributes.
 - **Quality Checks**: Executed `npm run lint` (0 errors) and `npm run build` (0 errors). Pushed clean release commits to `main` branch.
+
 
 
 
