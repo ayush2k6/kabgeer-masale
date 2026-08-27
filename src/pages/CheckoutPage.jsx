@@ -5,7 +5,9 @@ import { ChevronLeft, Info, CreditCard, Lock, ShieldCheck, AlertCircle, Trash2, 
 import { Link, useNavigate } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
 import { supabase } from '../lib/supabaseClient';
+import logo from '../assets/logo.png';
 import './CheckoutPage.css';
+
 
 
 // Helper to safely load Razorpay Checkout SDK script
@@ -222,19 +224,16 @@ const CheckoutPage = () => {
     <div className="checkout-page">
       <div className="checkout-container">
         <div className="checkout-main">
-          <div className="checkout-header-mobile">
-            <h2>Kabgeer Masale</h2>
+          {/* Brand Header Banner */}
+          <div className="checkout-brand-header">
+            <Link to="/" className="brand-logo-link">
+              <img src={logo} alt="Kabgeer Masale" className="checkout-brand-logo" />
+            </Link>
+            <div className="checkout-steps-badge">
+              <ShieldCheck size={16} color="#16a34a" /> 256-Bit SSL Encrypted Checkout
+            </div>
           </div>
-          
-          <div className="express-checkout">
-            <button type="button" className="express-checkout-btn btn-gpay">
-              Pay with Google Pay
-            </button>
-            <button type="button" className="express-checkout-btn btn-shoppay">
-              Pay with Shop Pay
-            </button>
-          </div>
-          <div className="divider"><span>OR</span></div>
+
           
           {errorMessage && (
             <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid #fca5a5', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -310,31 +309,41 @@ const CheckoutPage = () => {
             {/* Shipping Method */}
             <div className="checkout-section">
               <h3>Shipping method</h3>
-              <div className="info-box text-text-light text-sm">
-                Standard shipping options calculated at checkout.
+              <div className="radio-group" style={{ marginTop: '0.75rem' }}>
+                <label className="radio-label active" style={{ justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <input type="radio" name="shippingMethod" checked readOnly />
+                    <span>Standard Express Shipping (2–4 Working Days)</span>
+                  </div>
+                  <strong style={{ color: '#16a34a', fontSize: '0.9rem' }}>FREE</strong>
+                </label>
               </div>
             </div>
+
 
             {/* Payment Section */}
             <div className="checkout-section">
               <h3>Payment</h3>
-              <p className="text-sm text-text-light mb-2">All transactions are secure and encrypted.</p>
+              <p className="text-sm text-text-light mb-2">All transactions are 100% secure and encrypted with Razorpay.</p>
               
               <div className="payment-box">
                 <div className="payment-header">
-                  <span>Razorpay Secure</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-primary)' }}>Razorpay Secure Gateway</span>
                   <div className="payment-icons">
-                    <span className="cc-icon visa">VISA</span>
-                    <span className="cc-icon mc">MC</span>
-                    <span className="cc-icon rupay">RuPay</span>
+                    <span className="cc-icon">UPI</span>
+                    <span className="cc-icon">Cards</span>
+                    <span className="cc-icon">NetBanking</span>
                   </div>
                 </div>
-                <div className="payment-body text-center text-sm text-text-light">
-                  <CreditCard size={48} className="mb-2 opacity-50" style={{margin: '0 auto'}}/>
-                  <p>A secure payment window will open when you click 'Pay now'.</p>
+                <div className="payment-body text-center text-sm text-text-light" style={{ padding: '2rem 1.5rem', backgroundColor: '#fafafa' }}>
+                  <CreditCard size={40} className="mb-2" style={{ margin: '0 auto', color: 'var(--color-primary)', opacity: 0.8 }} />
+                  <p style={{ margin: '0.5rem 0 0', color: '#555', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                    After clicking <strong>"Pay now"</strong>, you will be redirected to Razorpay Secure to complete your purchase safely using GPay, PhonePe, Paytm, Cards, or NetBanking.
+                  </p>
                 </div>
               </div>
             </div>
+
 
             {/* Billing Address */}
             <div className="checkout-section">
