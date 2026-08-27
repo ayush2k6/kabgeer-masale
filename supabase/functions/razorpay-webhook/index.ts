@@ -83,7 +83,7 @@ serve(async (req) => {
               .eq('id', dbOrder.id)
               .eq('payment_status', 'Pending');
 
-            // Insert Payment Record (Aligned with public.payments schema columns)
+            // Insert Payment Record
             if (rzpPaymentId) {
               await supabase.from('payments').insert({
                 order_id: dbOrder.id,
@@ -137,6 +137,15 @@ serve(async (req) => {
             });
           } catch (sheetErr: any) {
             console.warn('Non-blocking webhook sync-google-sheets trigger notice:', sheetErr?.message);
+          }
+
+          // Trigger Trackon Shipment Booking (Non-blocking fail-safe call)
+          try {
+            await supabase.functions.invoke('create-shipment', {
+              body: { orderId: dbOrder.id }
+            });
+          } catch (shipErr: any) {
+            console.warn('Non-blocking webhook create-shipment trigger notice:', shipErr?.message);
           }
         }
       }

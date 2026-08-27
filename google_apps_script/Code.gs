@@ -1,9 +1,11 @@
 /**
  * KABGEER MASALE — GOOGLE APPS SCRIPT ORDER SYNC RECEIVER
  * 
- * IMPORTANT:
- * For best results, open Apps Script DIRECTLY from inside your Google Sheet:
- * Open your Google Sheet -> Click Extensions -> Apps Script -> Paste this code.
+ * Instructions for Tanmay / Ayush:
+ * 1. Open your Kabgeer Orders Google Sheet.
+ * 2. Click Extensions -> Apps Script.
+ * 3. Replace all code in Code.gs with this script.
+ * 4. Click Deploy -> Manage deployments -> Edit (Pencil) -> Select "New version" -> Click Deploy.
  */
 
 function doPost(e) {
@@ -21,7 +23,7 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
     
-    // Get Target Sheet (Supports Container-bound and Standalone scripts with spreadsheetId)
+    // Get Target Sheet
     var spreadsheet = null;
     if (contents.spreadsheetId) {
       spreadsheet = SpreadsheetApp.openById(contents.spreadsheetId);
@@ -32,15 +34,17 @@ function doPost(e) {
     if (!spreadsheet) {
       return ContentService.createTextOutput(JSON.stringify({ 
         status: "error", 
-        message: "Spreadsheet not found. Please open Apps Script directly from your Google Sheet (Extensions -> Apps Script) or provide spreadsheetId." 
+        message: "Spreadsheet not found." 
       })).setMimeType(ContentService.MimeType.JSON);
     }
     
     var sheet = spreadsheet.getActiveSheet();
     
-    // Auto-create Header Row if Sheet is Empty
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow([
+    // ALWAYS Guarantee Header Row on Row 1 if A1 is not 'Display Order ID'
+    var firstCellValue = sheet.getRange(1, 1).getValue();
+    if (!firstCellValue || firstCellValue.toString().trim() === "" || firstCellValue.toString() !== "Display Order ID") {
+      sheet.insertRowBefore(1);
+      sheet.getRange(1, 1, 1, 15).setValues([[
         "Display Order ID",
         "Order Timestamp",
         "Customer Name",
@@ -56,7 +60,7 @@ function doPost(e) {
         "Payment Status",
         "Razorpay Payment ID",
         "Shipping Address"
-      ]);
+      ]]);
       
       // Style Header Row
       var headerRange = sheet.getRange(1, 1, 1, 15);

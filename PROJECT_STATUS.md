@@ -1,14 +1,14 @@
 # Kabgeer Ji — Project Status Dashboard
 
-Last Updated: 2026-08-26
+Last Updated: 2026-08-27
 Current Branch: tanmay-development
 
 ---
 
 ## 1. Overall Project Progress
 
-* **Status**: 2 / 8 Parts Completed
-* **Percentage**: 25% Complete
+* **Status**: 6 / 8 Parts Completed
+* **Percentage**: 75% Complete
 
 | Part | Module | Status |
 |---|---|---|
@@ -17,21 +17,20 @@ Current Branch: tanmay-development
 | Part 3.5 | Backend + Razorpay Payment (Supabase Migration) | ✅ COMPLETE |
 | Part 3.6 | Resend Transactional Email Automation | ✅ COMPLETE |
 | Part 3.7 | Google Sheets Order Sync | ✅ COMPLETE |
-| Part 3.8 | Shiprocket Logistics / Tracking | 🔵 READY TO START |
-| Part 4 | Security + Backend Hardening | ⬜ NOT STARTED |
+| Part 3.8 | Trackon Shipping & Courier Tracking | 🟡 DEV-COMPLETE |
+| Part 4 | Security + Backend Hardening | 🔵 READY TO START |
 | Part 5 | Final QA + Deployment | ⬜ NOT STARTED |
 
 ---
 
 ## 2. Current Active Part
 
-* **Part Number**: Part 3.8 (Part 3.7 complete!)
-* **Part Name**: Shiprocket Logistics & Automated Courier Tracking Workflow
-* **Current Status**: 🔵 READY TO START
-* **Current Task**: Completed Part 3.7 Google Sheets Real-Time Order Sync. Created database migration for `sheets_synced_at` timestamp column; created production Google Apps Script receiver (`google_apps_script/Code.gs`); implemented `sync-google-sheets` serverless Edge Function with simulation fallback and non-blocking fail-safe integration. All tests (100% pass), linter (0 errors), and build (0 errors) verified. **Part 3.7 is 100% COMPLETE**.
-* **What is waiting on Tanmay**: Approval to proceed to Part 3.8 (Shiprocket Logistics Integration).
-* **What is waiting on Ayush**: Confirmation of COD, shipping threshold, and GST invoice rules.
-* **What Antigravity is currently doing**: Stopped at Part 3.7 completion as instructed. Ready for Part 3.8.
+* **Part Number**: Part 3.8
+* **Part Name**: Trackon Shipping Integration & Courier Tracking Workflow
+* **Current Status**: 🟡 DEVELOPMENT-COMPLETE (Blocked on production Trackon API credentials)
+* **Current Task**: Completed Part 3.8 Trackon Shipping Integration in Simulation Mode. Created database migration `20260827020000_add_shipping_trackon_columns.sql` adding `trackon_awb`, `shipment_id`, `shipment_status`, `courier_partner`, `shipped_at`, `delivered_at`, `shipment_synced_at` to `public.orders` and created top-level `public.shipments` table; implemented `create-shipment` serverless Edge Function with isolated Trackon adapter interface (`TrackonCourierAdapter`), realistic simulation mode (`TRK-LKO-XXXXXX`), tracking history lookup, cancellation handler, and non-blocking retry/idempotency protection. All tests (100% pass), linter (0 errors), and build (0 errors) verified. **Part 3.8 is DEVELOPMENT-COMPLETE**.
+* **What is waiting on Tanmay / Ayush**: Production Trackon API Credentials (`TRACKON_API_KEY`, `TRACKON_CLIENT_ID`) & API documentation from client.
+* **What Antigravity is currently doing**: Completed Part 3.8. Ready for Part 4 (Security Hardening & RLS Audit).
 
 ---
 

@@ -3,6 +3,38 @@
 ## 2026-08-27
 
 ### Task
+Part 3.8 — Trackon Shipping Integration & Automated Courier Tracking Workflow.
+
+### Changes
+- Created migration [supabase/migrations/20260827020000_add_shipping_trackon_columns.sql](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/migrations/20260827020000_add_shipping_trackon_columns.sql):
+  - Added `courier_partner`, `shipment_id`, `trackon_awb`, `shipment_status`, `shipped_at`, `delivered_at`, `shipment_synced_at` columns to `public.orders`.
+  - Created top-level `public.shipments` table for tracking audit logs and event history.
+  - Executed migration on live Supabase Cloud project (`cfvopnzcqbtqcupdomto`).
+- Implemented [supabase/functions/create-shipment/index.ts](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/create-shipment/index.ts):
+  - Created serverless Edge Function with isolated Trackon adapter interface (`TrackonCourierAdapter`).
+  - Implemented realistic simulation mode generating Trackon AWBs (`TRK-LKO-XXXXXX`) when live credentials are unconfigured.
+  - Implemented `action: 'create'`, `action: 'track'`, and `action: 'cancel'` handlers.
+  - Added idempotency guard (`shipment_synced_at` check) to prevent duplicate shipment bookings for the same order.
+  - Added audit log insertion into `public.shipments`.
+- Updated [supabase/functions/verify-razorpay-payment/index.ts](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/verify-razorpay-payment/index.ts) and [supabase/functions/razorpay-webhook/index.ts](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/razorpay-webhook/index.ts):
+  - Wired non-blocking fail-safe calls to `create-shipment` post-payment confirmation.
+- Deployed Edge Functions (`create-shipment`, `verify-razorpay-payment`, `razorpay-webhook`) to Supabase Cloud.
+- Updated [PROJECT_PROGRESS.md](file:///c:/Users/Acer/Documents/kabgeer-ji/PROJECT_PROGRESS.md) and [PROJECT_STATUS.md](file:///c:/Users/Acer/Documents/kabgeer-ji/PROJECT_STATUS.md).
+
+### Testing
+- Automated Edge Function Test (`test_part_3_8_trackon_shipping.mjs`): 100% **PASSED**.
+  - Verified order creation, shipment booking (`TRK-SHP-KAB-...`), AWB generation (`TRK-LKO-...`), idempotency protection, tracking history lookup, cancellation handler, and database record creation.
+- Executed `npm run lint` — passed with 0 errors.
+- Executed `npm run build` — passed with 0 errors.
+
+### Summary
+Part 3.8 (Trackon Shipping Integration) is now **DEVELOPMENT-COMPLETE**.
+
+---
+
+## 2026-08-27
+
+### Task
 Part 3.7 — Google Sheets Real-Time Order Sync Implementation & Verification.
 
 ### Changes

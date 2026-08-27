@@ -44,12 +44,14 @@ CREATE TRIGGER on_auth_user_created
 -- RLS for Profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view own profile" 
-    ON public.profiles FOR SELECT 
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT 
     USING (auth.uid() = id);
 
-CREATE POLICY "Users can update own profile" 
-    ON public.profiles FOR UPDATE 
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE 
     USING (auth.uid() = id);
 
 -- ============================================================================
@@ -90,8 +92,8 @@ CREATE INDEX IF NOT EXISTS idx_products_sku ON public.products(sku);
 -- RLS for Products (Public Read Access)
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Public product catalog access" 
-    ON public.products FOR SELECT 
+DROP POLICY IF EXISTS "Public product catalog access" ON public.products;
+CREATE POLICY "Public product catalog access" ON public.products FOR SELECT 
     USING (true);
 
 -- ============================================================================
@@ -111,8 +113,9 @@ CREATE INDEX IF NOT EXISTS idx_inventory_product_id ON public.inventory(product_
 -- RLS for Inventory
 ALTER TABLE public.inventory ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Public read inventory" 
-    ON public.inventory FOR SELECT 
+DROP POLICY IF EXISTS "Public read inventory" ON public.inventory;
+DROP POLICY IF EXISTS "Public read inventory" ON public.inventory;
+CREATE POLICY "Public read inventory" ON public.inventory FOR SELECT 
     USING (true);
 
 -- ============================================================================
@@ -155,8 +158,9 @@ CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON public.orders(payment_st
 -- RLS for Orders
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Customers can view own orders" 
-    ON public.orders FOR SELECT 
+DROP POLICY IF EXISTS "Customers can view own orders" ON public.orders;
+DROP POLICY IF EXISTS "Customers can view own orders" ON public.orders;
+CREATE POLICY "Customers can view own orders" ON public.orders FOR SELECT 
     USING (auth.uid() = customer_id);
 
 -- ============================================================================
@@ -181,8 +185,9 @@ CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON public.order_items(prod
 -- RLS for Order Items
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Customers can view own order items" 
-    ON public.order_items FOR SELECT 
+DROP POLICY IF EXISTS "Customers can view own order items" ON public.order_items;
+DROP POLICY IF EXISTS "Customers can view own order items" ON public.order_items;
+CREATE POLICY "Customers can view own order items" ON public.order_items FOR SELECT 
     USING (
         EXISTS (
             SELECT 1 FROM public.orders 
@@ -215,8 +220,9 @@ CREATE INDEX IF NOT EXISTS idx_payments_razorpay_payment_id ON public.payments(r
 -- RLS for Payments
 ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Customers can view own payments" 
-    ON public.payments FOR SELECT 
+DROP POLICY IF EXISTS "Customers can view own payments" ON public.payments;
+DROP POLICY IF EXISTS "Customers can view own payments" ON public.payments;
+CREATE POLICY "Customers can view own payments" ON public.payments FOR SELECT 
     USING (
         EXISTS (
             SELECT 1 FROM public.orders 
@@ -243,7 +249,8 @@ CREATE INDEX IF NOT EXISTS idx_wishlists_product_id ON public.wishlists(product_
 -- RLS for Wishlists
 ALTER TABLE public.wishlists ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can manage own wishlist" 
-    ON public.wishlists FOR ALL 
+DROP POLICY IF EXISTS "Users can manage own wishlist" ON public.wishlists;
+DROP POLICY IF EXISTS "Users can manage own wishlist" ON public.wishlists;
+CREATE POLICY "Users can manage own wishlist" ON public.wishlists FOR ALL 
     USING (auth.uid() = customer_id)
     WITH CHECK (auth.uid() = customer_id);

@@ -2,26 +2,30 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 import { corsHeaders } from '../_shared/cors.ts';
 
-// Web Crypto API HMAC-SHA256 verification helper
-async function verifyHmacSha256(secret: string, body: string, expectedSignature: string): Promise<boolean> {
+interface VerifyPaymentPayload {
+  orderId: string;
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+async function verifyHmacSha256(secret: string, text: string, signature: string): Promise<boolean> {
   try {
     const encoder = new TextEncoder();
-    const keyData = encoder.encode(secret);
-    const messageData = encoder.encode(body);
-
-    const cryptoKey = await crypto.subtle.importKey(
+    const key = await crypto.subtle.importKey(
       'raw',
-      keyData,
+      encoder.encode(secret),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['sign']
     );
 
-    const signatureBuffer = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
-    const hashArray = Array.from(new Uint8Array(signatureBuffer));
-    const computedHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(text));
+    const computedHex = Array.from(new Uint8Array(signatureBuffer))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
 
-    return computedHex.toLowerCase() === expectedSignature.toLowerCase();
+    return computedHex.toLowerCase() === signature.toLowerCase();
   } catch (err) {
     console.error('HMAC computation error:', err);
     return false;
@@ -40,48 +44,40 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const body = await req.json();
+    const body: VerifyPaymentPayload = await req.json();
     const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
 
-    if (!razorpay_order_id || !razorpay_payment_id) {
+    if (!orderId || !razorpay_order_id || !razorpay_payment_id) {
       return new Response(
-        JSON.stringify({ error: 'Missing required payment verification parameters (razorpay_order_id, razorpay_payment_id).' }),
+        JSON.stringify({ error: 'Missing required payment verification parameters.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // 1. Query target order from public.orders for Idempotency & Status verification
-    const { data: dbOrder, error: orderErr } = await supabase
-      .from('orders')
-      .select('id, display_order_id, total_amount, order_status, payment_status, customer_id')
-      .or(`id.eq.${orderId || '00000000-0000-0000-0000-000000000000'},razorpay_order_id.eq.${razorpay_order_id}`)
-      .maybeSingle();
+    // 1. Fetch Order Record from public.orders
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId);
+    let orderQuery = supabase.from('orders').select('id, display_order_id, total_amount, payment_status, razorpay_order_id');
+    if (isUuid) {
+      orderQuery = orderQuery.eq('id', orderId);
+    } else {
+      orderQuery = orderQuery.eq('display_order_id', orderId);
+    }
 
-    if (orderErr || !dbOrder) {
+    const { data: dbOrder, error: fetchErr } = await orderQuery.maybeSingle();
+
+    if (fetchErr || !dbOrder) {
       return new Response(
-        JSON.stringify({ error: 'Order not found for payment verification.', details: orderErr?.message }),
+        JSON.stringify({ error: 'Order not found in database.', details: fetchErr?.message }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // 2. Idempotency Guard: Prevent double-processing already paid orders
+    // Idempotency check: If order is already paid, return clean success response
     if (dbOrder.payment_status === 'Paid') {
-      // Trigger email and Google Sheets dispatch as fail-safe even if idempotent call
-      try {
-        await supabase.functions.invoke('send-order-email', { body: { orderId: dbOrder.id } });
-      } catch (emailErr: any) {
-        console.warn('Non-blocking send-order-email trigger notice:', emailErr?.message);
-      }
-      try {
-        await supabase.functions.invoke('sync-google-sheets', { body: { orderId: dbOrder.id } });
-      } catch (sheetErr: any) {
-        console.warn('Non-blocking sync-google-sheets trigger notice:', sheetErr?.message);
-      }
-
       return new Response(
         JSON.stringify({
           success: true,
-          message: 'Order is already marked as Paid (Idempotent call).',
+          message: 'Order payment is already verified and marked as Paid.',
           orderId: dbOrder.id,
           displayOrderId: dbOrder.display_order_id
         }),
@@ -89,7 +85,15 @@ serve(async (req) => {
       );
     }
 
-    // 3. Verify Razorpay HMAC Signature (or test simulation mode if key is unconfigured)
+    // 2. Verify Razorpay Order ID alignment
+    if (dbOrder.razorpay_order_id && dbOrder.razorpay_order_id !== razorpay_order_id) {
+      return new Response(
+        JSON.stringify({ error: 'Mismatched Razorpay Order ID.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 3. Perform HMAC Signature Verification if secret is configured
     const signPayload = `${razorpay_order_id}|${razorpay_payment_id}`;
     let isSignatureValid = false;
 
@@ -131,30 +135,26 @@ serve(async (req) => {
       );
     }
 
-    // 5. Insert Record into public.payments Table (100% aligned with public.payments schema columns)
-    const paymentRecord = {
+    // 5. Insert Payment Audit Record into public.payments
+    await supabase.from('payments').insert({
       order_id: dbOrder.id,
-      razorpay_order_id: razorpay_order_id,
       razorpay_payment_id: razorpay_payment_id,
-      razorpay_signature: razorpay_signature || 'simulated',
+      razorpay_order_id: razorpay_order_id,
+      razorpay_signature: razorpay_signature,
       amount: dbOrder.total_amount,
       currency: 'INR',
-      status: 'captured'
-    };
+      status: 'captured',
+      raw_payload: { verified_via: 'verify-razorpay-payment', timestamp: new Date().toISOString() }
+    });
 
-    const { error: payErr } = await supabase.from('payments').insert(paymentRecord);
-    if (payErr) {
-      console.warn('Payments record insert notice (may be duplicate webhook):', payErr.message);
-    }
-
-    // 6. Deduct Inventory for items in this order
-    const { data: orderItems } = await supabase
+    // 6. Deduct Stock Quantity from public.inventory
+    const { data: items } = await supabase
       .from('order_items')
       .select('product_id, quantity')
       .eq('order_id', dbOrder.id);
 
-    if (orderItems && orderItems.length > 0) {
-      for (const item of orderItems) {
+    if (items && items.length > 0) {
+      for (const item of items) {
         if (!item.product_id) continue;
         const { data: inv } = await supabase
           .from('inventory')
@@ -190,10 +190,19 @@ serve(async (req) => {
       console.warn('Non-blocking sync-google-sheets trigger notice:', sheetErr?.message);
     }
 
+    // 9. Trigger Trackon Shipment Booking (Non-blocking fail-safe call)
+    try {
+      await supabase.functions.invoke('create-shipment', {
+        body: { orderId: dbOrder.id }
+      });
+    } catch (shipErr: any) {
+      console.warn('Non-blocking create-shipment trigger notice:', shipErr?.message);
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Payment verified, order confirmed, and integrations triggered successfully.',
+        message: 'Payment verified, order confirmed, and all fulfillment integrations triggered successfully.',
         orderId: dbOrder.id,
         displayOrderId: dbOrder.display_order_id
       }),
