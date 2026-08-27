@@ -6,46 +6,11 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 import './ProductPage.css';
 
-// Mutton Stew Specific Images
-import img1 from '../assets/products/mutton-stew/1.png';
-import img2 from '../assets/products/mutton-stew/2.jpg';
-import img3 from '../assets/products/mutton-stew/3.jpg';
-import img4 from '../assets/products/mutton-stew/4.jpg';
-import img41 from '../assets/products/mutton-stew/41.png';
 import makeInIndiaLogo from '../assets/make in india logo.png';
-
-const MOCK_PRODUCT = {
-  id: 'p1',
-  name: 'Mutton Stew Masala',
-  price: 69,
-  originalPrice: 80,
-  discount: '15% OFF',
-  description: 'A signature 9-spice blend crafted specially for rich and authentic Mughlai-style mutton stew. Ready to cook with Ginger & Garlic added.',
-  weight: 'For 1Kg Mutton',
-  images: [img41, img1, img2, img3, img4],
-  features: [
-    { icon: <Leaf size={16} />, label: '100% Pure Natural' },
-    { icon: <BookOpen size={16} />, label: '65 Year Old Recipe' },
-    { icon: <ShieldCheck size={16} />, label: 'No Preservatives' },
-    { icon: <Droplets size={16} />, label: 'No Artificial Color' },
-    { icon: <Clock size={16} />, label: 'Less Time Consuming' },
-    { icon: <Layers size={16} />, label: 'Versatile' }
-  ],
-  ingredients: 'Coriander Seeds, Cumin, Peppercorns, Black Cardamom, Iodized salt, Chilies, Green Cardamom, Cinnamon, Nutmeg, Mace and Cloves.',
-  howToUse: 'To be cooked. 750g Vegetables / Meat - (full box). Without Garlic and Onion. Store in Dry and Cool place.',
-  chefTip: 'A must - let Kabgeer biryani or stew set for 40-50 mins before serving.'
-};
-
-const RELATED_PRODUCTS = [
-  { id: 'chicken-korma', name: 'Chicken Korma Masala', price: 69, desc: 'Creamy, mild & perfect for traditional korma.', image: '/assets/products/2. Chicken Korma/1.jpg', tags: ['Bestseller'] },
-  { id: 'shami-kebab', name: 'Shami Kebab Masala', price: 79, desc: 'Authentic blend for soft, juicy shami kebabs.', image: '/assets/products/4. Shami Kebab Masala/1.png', tags: [] },
-  { id: 'sambhar', name: 'Sambar Masala', price: 69, desc: 'No Onion & No Garlic, perfect for delicious sambar.', image: '/assets/products/21. Sambar Masala/1.png', tags: [] },
-  { id: 'veg-biryani', name: 'Veg Biryani Masala', price: 79, desc: 'Aromatic spices for the perfect Veg Biryani.', image: '/assets/products/25. Veg Biryani/1.png', tags: ['Bestseller'] }
-];
 
 const ProductPage = () => {
   const { id } = useParams();
-  const [quantity, setQuantity] = useState(2);
+  const [quantity, setQuantity] = useState(1);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const { addToCart } = useCart();
   const { user, toggleWishlist } = useAuth();
@@ -53,11 +18,12 @@ const ProductPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setActiveImageIdx(0);
   }, [id]);
 
   const product = PRODUCTS.find(p => p.id === id);
 
-  if (!product && id !== 'p1') {
+  if (!product) {
     return (
       <div className="container error-container">
         <AlertCircle size={64} className="error-icon" />
@@ -68,19 +34,39 @@ const ProductPage = () => {
     );
   }
 
-  const displayProduct = {
-    ...MOCK_PRODUCT,
-    ...product,
-    originalPrice: (product?.price || 69) + 15,
-    discount: '15% OFF'
-  };
+  // Calculate dynamic product properties from authoritative data
+  const originalPrice = product.mrp || Math.round(product.price * 1.15);
+  const discountPercent = product.mrp && product.mrp > product.price
+    ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
+    : 15;
 
-  const images = displayProduct.images && displayProduct.images.length > 0
-    ? displayProduct.images
-    : [displayProduct.image];
+  const images = Array.isArray(product.images) && product.images.length > 0
+    ? product.images
+    : [product.image].filter(Boolean);
 
-  const handleAddToCart = () => addToCart(displayProduct, quantity);
-  const handleBuyNow = () => { addToCart(displayProduct, quantity); navigate('/checkout'); };
+  const features = product.features || [
+    { icon: <Leaf size={16} />, label: '100% Pure Natural' },
+    { icon: <BookOpen size={16} />, label: 'Traditional Recipe' },
+    { icon: <ShieldCheck size={16} />, label: 'No Preservatives' },
+    { icon: <Droplets size={16} />, label: 'No Artificial Color' },
+    { icon: <Clock size={16} />, label: 'Aromatic & Fresh' },
+    { icon: <Layers size={16} />, label: 'Versatile Spice' }
+  ];
+
+  const ingredientsText = Array.isArray(product.ingredients)
+    ? product.ingredients.join(', ')
+    : (product.ingredients || 'Pure ground spices, aromatic herbs, and natural seasonings.');
+
+  const usageText = Array.isArray(product.usageInstructions)
+    ? product.usageInstructions.join(' ')
+    : (product.usageInstructions || product.howToUse || `Cook with your favorite recipe. Store in a dry and cool place.`);
+
+  const chefTipText = product.chefTip || 'Let your dish rest for 10-15 minutes after cooking to allow the spice flavors to fully infuse.';
+
+  const handleAddToCart = () => addToCart(product, quantity);
+  const handleBuyNow = () => { addToCart(product, quantity); navigate('/checkout'); };
+
+  const relatedProducts = PRODUCTS.filter(p => p.id !== product.id).slice(0, 4);
 
   return (
     <div className="pdp-wrapper">
@@ -90,7 +76,7 @@ const ProductPage = () => {
         <div className="pdp-breadcrumbs">
           <Link to="/">Home</Link> <ChevronRight size={14} />
           <Link to="/products">Products</Link> <ChevronRight size={14} />
-          <span className="current">{displayProduct.name}</span>
+          <span className="current">{product.name}</span>
         </div>
 
         {/* Main Product Section */}
@@ -99,24 +85,27 @@ const ProductPage = () => {
           {/* Left: Images */}
           <div className="pdp-gallery">
             <div className="pdp-main-image-wrapper">
-              <button className="wishlist-btn" onClick={() => toggleWishlist(displayProduct)}>
-                <Heart size={20} className={user?.wishlist?.some(p => p.id === displayProduct.id) ? 'active' : ''} />
+              <button className="wishlist-btn" onClick={() => toggleWishlist(product)}>
+                <Heart size={20} className={user?.wishlist?.some(p => p.id === product.id) ? 'active' : ''} />
               </button>
-              <span className="pdp-discount-badge">-{parseInt(displayProduct.discount, 10)}%</span>
+              {discountPercent > 0 && (
+                <span className="pdp-discount-badge">-{discountPercent}%</span>
+              )}
 
               <img
-                src={images[activeImageIdx]}
-                alt={displayProduct.name}
+                src={images[activeImageIdx] || product.image}
+                alt={product.name}
                 className="pdp-main-img"
               />
             </div>
+
             {images.length > 1 && (
               <div className="pdp-thumbnails">
                 {images.map((img, idx) => (
                   <img
                     key={idx}
                     src={img}
-                    alt={`Thumb ${idx}`}
+                    alt={`${product.name} thumbnail ${idx + 1}`}
                     className={`pdp-thumb ${idx === activeImageIdx ? 'active' : ''}`}
                     onClick={() => setActiveImageIdx(idx)}
                   />
@@ -127,20 +116,22 @@ const ProductPage = () => {
 
           {/* Right: Details */}
           <div className="pdp-details">
-            <h1 className="pdp-title">{displayProduct.name}</h1>
-            <p className="pdp-subtitle">Premium Masala • {displayProduct.weight || '50g'}</p>
-            <p className="pdp-description">{displayProduct.description}</p>
+            <h1 className="pdp-title">{product.name}</h1>
+            <p className="pdp-subtitle">
+              {product.category || 'Premium Masala'} • {product.weight || (product.weightInGrams ? `${product.weightInGrams}g` : '50g')}
+            </p>
+            <p className="pdp-description">{product.description || product.about}</p>
 
             {/* Pricing */}
             <div className="pdp-pricing-row">
-              <span className="pdp-price">₹{displayProduct.price}.00</span>
-              <span className="pdp-mrp">M.R.P.: <s>₹{displayProduct.originalPrice}.00</s></span>
+              <span className="pdp-price">₹{product.price}.00</span>
+              <span className="pdp-mrp">M.R.P.: <s>₹{originalPrice}.00</s></span>
               <span className="pdp-taxes">Inclusive of all taxes</span>
             </div>
 
             {/* Feature Badges Grid */}
             <div className="pdp-features-grid">
-              {displayProduct.features.map((feat, idx) => (
+              {features.map((feat, idx) => (
                 <div key={idx} className="pdp-feature-item">
                   <Check size={16} className="feature-check" />
                   <span>{feat.label}</span>
@@ -153,9 +144,9 @@ const ProductPage = () => {
             {/* Actions */}
             <div className="pdp-actions">
               <div className="pdp-quantity">
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))}><Minus size={18} /></button>
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity"><Minus size={18} /></button>
                 <span>{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)}><Plus size={18} /></button>
+                <button onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity"><Plus size={18} /></button>
               </div>
               <div className="pdp-buttons">
                 <button className="btn-add-cart" onClick={handleAddToCart}>
@@ -171,21 +162,21 @@ const ProductPage = () => {
                 <Truck size={20} />
                 <div>
                   <strong>Estimated Delivery</strong>
-                  <span>2-4 working days</span>
+                  <span>2-4 working days across India</span>
                 </div>
               </div>
               <div className="trust-item">
                 <ShieldCheck size={20} />
                 <div>
                   <strong>Secure Payment</strong>
-                  <span>100% safe & secure</span>
+                  <span>100% safe Razorpay checkout</span>
                 </div>
               </div>
               <div className="trust-item">
                 <RefreshCcw size={20} />
                 <div>
                   <strong>Easy Returns</strong>
-                  <span>7 days return policy</span>
+                  <span>Hassle-free return policy</span>
                 </div>
               </div>
             </div>
@@ -199,31 +190,31 @@ const ProductPage = () => {
           <div className="info-block chef-tip-block">
             <div className="info-header">
               <div className="info-icon"><Quote size={20} /></div>
-              <h3>Chef's Tip behind every box</h3>
+              <h3>Chef's Tip</h3>
             </div>
-            <p>{displayProduct.chefTip}</p>
+            <p>{chefTipText}</p>
           </div>
 
           <div className="info-block ingredients-block">
             <div className="info-header">
               <div className="info-icon">🌿</div>
-              <h3>Authentic Blend</h3>
+              <h3>Authentic Ingredients</h3>
             </div>
-            <p>{displayProduct.ingredients}</p>
+            <p>{ingredientsText}</p>
           </div>
 
           <div className="info-block usage-block">
             <div className="info-header">
               <div className="info-icon">🍲</div>
-              <h3>How To Use</h3>
+              <h3>How To Use & Storage</h3>
             </div>
-            <p>Discover the perfect recipe for this masala.</p>
+            <p>{usageText}</p>
             <Link
               to="/recipes"
-              state={{ openRecipeFor: displayProduct.name }}
+              state={{ openRecipeFor: product.name }}
               className="btn-recipe"
             >
-              <BookOpen size={18} /> View Recipe
+              <BookOpen size={18} /> View Recipes
             </Link>
           </div>
 
@@ -236,49 +227,51 @@ const ProductPage = () => {
               <Sparkles size={28} />
             </div>
             <h4>Authentic Blends</h4>
-            <p>Traditional recipes crafted to perfection.</p>
+            <p>Traditional Lucknavi recipes crafted to perfection.</p>
           </div>
           <div className="brand-feat">
             <div className="b-icon-wrapper">
               <Award size={28} />
             </div>
             <h4>Premium Quality</h4>
-            <p>Hygienically packed to lock in freshness.</p>
+            <p>Hygienically packed to lock in aroma & freshness.</p>
           </div>
           <div className="brand-feat">
             <div className="b-icon-wrapper">
               <Heart size={28} />
             </div>
             <h4>Loved by Thousands</h4>
-            <p>Trusted by home cooks across the country.</p>
+            <p>Trusted by home cooks across India.</p>
           </div>
           <div className="brand-feat">
             <div className="b-icon-wrapper">
               <img src={makeInIndiaLogo} alt="Make in India" className="make-in-india-img" />
             </div>
             <h4>Proudly Indian</h4>
-            <p>Made for Indian kitchens.</p>
+            <p>Made for authentic Indian kitchens.</p>
           </div>
         </div>
 
         {/* Recommended Products */}
         <div className="pdp-related-section">
           <div className="related-header">
-            <h2> Recommended Products </h2>
+            <h2>Recommended Products</h2>
             <p>Explore More Flavourful Blends</p>
           </div>
           <div className="related-grid">
-            {RELATED_PRODUCTS.map(product => (
-              <div key={product.id} className="related-card">
-                <div className="related-img-wrapper">
-                  <img src={product.image} alt={product.name} />
-                </div>
+            {relatedProducts.map(relProd => (
+              <div key={relProd.id} className="related-card">
+                <Link to={`/product/${relProd.id}`} className="related-img-wrapper">
+                  <img src={relProd.image} alt={relProd.name} />
+                </Link>
                 <div className="related-info">
-                  <h4>{product.name}</h4>
-                  <p className="r-weight">• 50g</p>
-                  <p className="r-type">Single Pack</p>
-                  <p className="r-price">₹{product.price}</p>
-                  <button className="r-btn" onClick={() => addToCart(product, 1)}>
+                  <Link to={`/product/${relProd.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <h4>{relProd.name}</h4>
+                  </Link>
+                  <p className="r-weight">• {relProd.weight || (relProd.weightInGrams ? `${relProd.weightInGrams}g` : '50g')}</p>
+                  <p className="r-type">{relProd.packType || 'Single Pack'}</p>
+                  <p className="r-price">₹{relProd.price}.00</p>
+                  <button className="r-btn" onClick={() => addToCart(relProd, 1)}>
                     Add To Box
                   </button>
                 </div>
