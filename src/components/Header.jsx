@@ -11,13 +11,11 @@ const Header = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   const [showTopBtn, setShowTopBtn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show scroll-to-top button if scrolled past 400px
       if (window.scrollY > 400) {
         setShowTopBtn(true);
       } else {
@@ -45,103 +43,111 @@ const Header = () => {
   return (
     <>
       <header className="header-wrapper">
-      <div className="top-bar">
-        <div className="top-bar-marquee">
-          <div className="top-bar-content">
-            <span>🌿 Ghar se Ghar Tak – Pure Spices. Rich Flavours.</span>
-            <span>🚚 Freshly Packed • Delivered Across India</span>
-            <span>🌿 Ghar se Ghar Tak – Pure Spices. Rich Flavours.</span>
-            <span>🚚 Freshly Packed • Delivered Across India</span>
-            <span>🌿 Ghar se Ghar Tak – Pure Spices. Rich Flavours.</span>
-            <span>🚚 Freshly Packed • Delivered Across India</span>
-          </div>
-          <div className="top-bar-content" aria-hidden="true">
-            <span>🌿 Ghar se Ghar Tak – Pure Spices. Rich Flavours.</span>
-            <span>🚚 Freshly Packed • Delivered Across India</span>
-            <span>🌿 Ghar se Ghar Tak – Pure Spices. Rich Flavours.</span>
-            <span>🚚 Freshly Packed • Delivered Across India</span>
-            <span>🌿 Ghar se Ghar Tak – Pure Spices. Rich Flavours.</span>
-            <span>🚚 Freshly Packed • Delivered Across India</span>
+        {/* Top Marquee Announcement Bar */}
+        <div className="top-bar">
+          <div className="top-bar-marquee">
+            <div className="top-bar-content">
+              <span>🌿 Ghar se Ghar Tak – Pure Lucknavi Spices & Rich Flavours</span>
+              <span>🚚 Freshly Packed • Delivered Across India</span>
+              <span>✨ 100% Pure & Natural • No Added Preservatives</span>
+              <span>🌿 Ghar se Ghar Tak – Pure Lucknavi Spices & Rich Flavours</span>
+              <span>🚚 Freshly Packed • Delivered Across India</span>
+            </div>
+            <div className="top-bar-content" aria-hidden="true">
+              <span>🌿 Ghar se Ghar Tak – Pure Lucknavi Spices & Rich Flavours</span>
+              <span>🚚 Freshly Packed • Delivered Across India</span>
+              <span>✨ 100% Pure & Natural • No Added Preservatives</span>
+              <span>🌿 Ghar se Ghar Tak – Pure Lucknavi Spices & Rich Flavours</span>
+              <span>🚚 Freshly Packed • Delivered Across India</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="main-header">
-        <div className="container header-inner">
-          <div className="logo-container" style={{ display: 'flex', alignItems: 'center' }}>
-            <Link to="/" className="logo-link">
-              <img src={logo} alt="Kabgeer Masale Logo" style={{ height: '90px', width: 'auto', mixBlendMode: 'multiply', margin: '-15px 0' }} />
-            </Link>
-          </div>
 
-          <nav className="desktop-nav">
-            <NavLink to="/" className={({isActive}) => isActive ? "nav-link active" : "nav-link"} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Home size={18} strokeWidth={1.5} /> Home
-            </NavLink>
-            <NavLink to="/products" className={({isActive}) => isActive ? "nav-link has-dropdown active" : "nav-link has-dropdown"} style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}>
-              <Package size={18} strokeWidth={1.5} /> Products <ChevronDown size={14} className="dropdown-arrow" />
-            </NavLink>
-            <NavLink to="/bundle" className={({isActive}) => isActive ? "nav-link active" : "nav-link"} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#a88820', fontWeight: '600' }}>
-              <Sparkles size={18} strokeWidth={1.5} /> Build your Bundle
-            </NavLink>
-            <NavLink to="/recipes" className={({isActive}) => isActive ? "nav-link active" : "nav-link"} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <ChefHat size={18} strokeWidth={1.5} /> Recipes
-            </NavLink>
-          </nav>
+        {/* Main Desktop Header */}
+        <div className="main-header">
+          <div className="container header-inner">
+            <div className="logo-container">
+              <Link to="/" className="logo-link">
+                <img src={logo} alt="Kabgeer Masale Logo" className="header-brand-logo" />
+              </Link>
+            </div>
 
-          <div className="header-icons" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            {isSearchOpen ? (
-              <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--color-bg-alt)', borderRadius: '20px', padding: '5px 15px' }}>
-                <input
-                  type="text"
-                  placeholder="Search masalas..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                  style={{ border: 'none', background: 'transparent', outline: 'none', width: '150px', fontSize: '0.9rem' }}
-                />
-                <button type="button" onClick={() => setIsSearchOpen(false)} className="icon-btn" style={{ width: '30px', height: '30px' }}><X size={16} strokeWidth={1.5} /></button>
-              </form>
-            ) : (
-              <button className="icon-btn" aria-label="Search" onClick={() => setIsSearchOpen(true)}><Search size={20} strokeWidth={1.5} /></button>
-            )}
+            <nav className="desktop-nav">
+              <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                <Home size={17} /> Home
+              </NavLink>
+              <NavLink to="/products" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                <Package size={17} /> Products <ChevronDown size={14} className="dropdown-arrow" />
+              </NavLink>
+              <NavLink to="/bundle" className={({ isActive }) => isActive ? "nav-link bundle-link active" : "nav-link bundle-link"}>
+                <Sparkles size={17} /> Build Your Bundle
+              </NavLink>
+              <NavLink to="/recipes" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                <ChefHat size={17} /> Recipes
+              </NavLink>
+            </nav>
 
-
-            <button
-              className="icon-btn cart-btn"
-              onClick={() => navigate('/checkout')}
-              aria-label="Cart"
-            >
-              <ShoppingBag size={20} strokeWidth={1.5} />
-              {getCartCount() > 0 && (
-                <span className="cart-badge">{getCartCount()}</span>
+            <div className="header-actions">
+              {isSearchOpen ? (
+                <form onSubmit={handleSearchSubmit} className="header-search-form">
+                  <input
+                    type="text"
+                    placeholder="Search masalas..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                    className="header-search-input"
+                  />
+                  <button type="button" onClick={() => setIsSearchOpen(false)} className="icon-btn close-search-btn">
+                    <X size={16} />
+                  </button>
+                </form>
+              ) : (
+                <button className="icon-btn" aria-label="Search" onClick={() => setIsSearchOpen(true)}>
+                  <Search size={20} />
+                </button>
               )}
-            </button>
+
+              <Link to={user ? "/account" : "/login"} className="icon-btn user-btn" aria-label="Account">
+                <User size={20} />
+              </Link>
+
+              <button
+                className="icon-btn cart-btn"
+                onClick={() => navigate('/checkout')}
+                aria-label="Cart"
+              >
+                <ShoppingBag size={20} />
+                {getCartCount() > 0 && (
+                  <span className="cart-badge">{getCartCount()}</span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
       </header>
 
       {/* Mobile Bottom Navigation Bar */}
       <nav className="mobile-bottom-nav">
         <NavLink to="/" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <Home size={20} strokeWidth={1.8} />
+          <Home size={20} />
           <span>Home</span>
         </NavLink>
         <NavLink to="/products" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <Package size={20} strokeWidth={1.8} />
+          <Package size={20} />
           <span>Products</span>
         </NavLink>
         <NavLink to="/bundle" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <Sparkles size={20} strokeWidth={1.8} />
+          <Sparkles size={20} />
           <span>Bundle</span>
         </NavLink>
         <NavLink to="/recipes" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <ChefHat size={20} strokeWidth={1.8} />
+          <ChefHat size={20} />
           <span>Recipes</span>
         </NavLink>
         <NavLink to="/checkout" className={({ isActive }) => isActive ? "mobile-nav-item active cart-item" : "mobile-nav-item cart-item"}>
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ShoppingBag size={20} strokeWidth={1.8} />
+          <div className="mobile-cart-wrapper">
+            <ShoppingBag size={20} />
             {getCartCount() > 0 && (
               <span className="mobile-cart-badge">{getCartCount()}</span>
             )}
@@ -150,17 +156,16 @@ const Header = () => {
         </NavLink>
       </nav>
 
-      {/* Scroll to top button */}
+      {/* Scroll to Top Button */}
       <button 
         className={`scroll-top-btn ${showTopBtn ? 'show' : ''}`} 
         onClick={scrollToTop}
         aria-label="Scroll to top"
       >
-        <ArrowUp size={24} />
+        <ArrowUp size={22} />
       </button>
     </>
   );
 };
 
 export default Header;
-
