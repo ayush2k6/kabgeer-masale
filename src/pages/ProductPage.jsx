@@ -4,7 +4,9 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
+import ProductCard from '../components/ProductCard';
 import './ProductPage.css';
+
 
 import makeInIndiaLogo from '../assets/make in india logo.png';
 
@@ -260,22 +262,7 @@ const ProductPage = () => {
           </div>
           <div className="related-grid">
             {relatedProducts.map(relProd => (
-              <div key={relProd.id} className="related-card">
-                <Link to={`/product/${relProd.id}`} className="related-img-wrapper">
-                  <img src={relProd.image} alt={relProd.name} />
-                </Link>
-                <div className="related-info">
-                  <Link to={`/product/${relProd.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <h4>{relProd.name}</h4>
-                  </Link>
-                  <p className="r-weight">• {relProd.weight || (relProd.weightInGrams ? `${relProd.weightInGrams}g` : '50g')}</p>
-                  <p className="r-type">{relProd.packType || 'Single Pack'}</p>
-                  <p className="r-price">₹{relProd.price}.00</p>
-                  <button className="r-btn" onClick={() => addToCart(relProd, 1)}>
-                    Add To Box
-                  </button>
-                </div>
-              </div>
+              <ProductCard key={relProd.id} product={relProd} />
             ))}
           </div>
         </div>
@@ -286,3 +273,4 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+

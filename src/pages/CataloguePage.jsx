@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Filter, Star, ShoppingCart } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { PRODUCTS, CATEGORIES } from '../data/products';
-import { useCart } from '../context/CartContext';
+import ProductCard from '../components/ProductCard';
 import './CataloguePage.css';
 import catalogueBannerImg from '../assets/catalogue banner.png';
 
@@ -15,7 +14,6 @@ const CataloguePage = () => {
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFilter, setPriceFilter] = useState('all');
-  const { addToCart } = useCart();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,12 +45,6 @@ const CataloguePage = () => {
     if (sortBy === 'alpha-desc') return b.name.localeCompare(a.name);
     return 0;
   });
-
-  const handleAddToCart = (e, product) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addToCart(product);
-  };
 
   return (
     <div className="catalogue-page">
@@ -133,59 +125,9 @@ const CataloguePage = () => {
           </div>
         ) : (
           <div className="ref-catalogue-grid" style={{ marginBottom: '6rem' }}>
-            {sortedProducts.map(product => {
-              const originalPrice = product.mrp || Math.round(product.price * 1.15);
-              const discountPercent = product.mrp && product.mrp > product.price
-                ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
-                : 15;
-              const weightDisplay = product.weight || (product.weightInGrams ? `${product.weightInGrams}g` : '50g');
-
-              return (
-                <Link to={`/product/${product.id}`} key={product.id} className="ref-product-card">
-                  <div className="ref-product-image-container">
-                    {discountPercent > 0 && (
-                      <div className="ref-discount-badge">-{discountPercent}%</div>
-                    )}
-                    <img 
-                      src={product.image || product.images?.[0]} 
-                      alt={product.name} 
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="ref-product-info">
-                    <h3 className="ref-product-title">{product.name}</h3>
-                    <div className="ref-product-weight">{weightDisplay} • {product.packType || 'Single Pack'}</div>
-                    
-                    <div className="ref-product-reviews">
-                      <div style={{ display: 'flex', gap: '2px' }}>
-                        <Star size={12} fill="#d99026" color="#d99026" />
-                        <Star size={12} fill="#d99026" color="#d99026" />
-                        <Star size={12} fill="#d99026" color="#d99026" />
-                        <Star size={12} fill="#d99026" color="#d99026" />
-                        <Star size={12} fill="#d99026" color="#d99026" />
-                      </div>
-                      <span className="ref-review-count">(5.0)</span>
-                    </div>
-
-                    <div className="ref-product-pricing">
-                      <span className="ref-price">₹{product.price}.00</span>
-                      {originalPrice > product.price && (
-                        <span className="ref-mrp">₹{originalPrice}.00</span>
-                      )}
-                    </div>
-                    
-                    <div style={{ marginTop: 'auto', paddingTop: '12px' }}>
-                      <button 
-                        onClick={(e) => handleAddToCart(e, product)}
-                        className="ref-add-cart-btn"
-                      >
-                        <ShoppingCart size={16} /> Add to Cart
-                      </button>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+            {sortedProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         )}
       </div>
