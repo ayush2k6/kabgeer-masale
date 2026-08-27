@@ -1,0 +1,2 @@
+-- Kabgeer Masale Seed SQL Data
+-- Authoritative seed data is managed via migrations/20260826000000_initial_schema.sql

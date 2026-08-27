@@ -21,11 +21,16 @@ const LoginPage = () => {
       navigate('/profile');
     } catch (err) {
       let errorMessage = 'Failed to login. Please check your credentials.';
-      if (err.code === 'auth/user-not-found') errorMessage = 'No account found with this email.';
-      else if (err.code === 'auth/wrong-password') errorMessage = 'Incorrect password.';
-      else if (err.code === 'auth/invalid-credential') errorMessage = 'Invalid email or password.';
-      else if (err.code === 'auth/too-many-requests') errorMessage = 'Too many failed attempts. Try again later.';
-      else errorMessage = `Failed to login: ${err.message}`;
+      const msg = err?.message || '';
+      if (err?.code === 'auth/user-not-found' || msg.includes('Invalid login credentials') || msg.includes('Invalid credentials')) {
+        errorMessage = 'Invalid email or password.';
+      } else if (err?.code === 'auth/wrong-password') {
+        errorMessage = 'Incorrect password.';
+      } else if (err?.code === 'auth/too-many-requests' || msg.includes('Email rate limit exceeded')) {
+        errorMessage = 'Too many failed attempts. Try again later.';
+      } else {
+        errorMessage = `Failed to login: ${err?.message || 'Unknown error'}`;
+      }
       console.error(err);
       setError(errorMessage);
     } finally {

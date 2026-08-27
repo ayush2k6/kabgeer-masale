@@ -1,28 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ChevronLeft, Info, CreditCard, Lock, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, Info, CreditCard, Lock, ShieldCheck, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
 import emailjs from '@emailjs/browser';
+import { supabase } from '../lib/supabaseClient';
 import './CheckoutPage.css';
+
+// Helper to safely load Razorpay Checkout SDK script
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 const CheckoutPage = () => {
   const { cartItems, getCartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
-  const { user, addOrder } = useAuth();
-  
-  const totalItems = cartItems.reduce((count, item) => count + item.quantity, 0);
-  const isBundleEligible = totalItems >= 4;
-  
-  const subtotal = getCartTotal();
-  const discountAmount = isBundleEligible ? subtotal * 0.10 : 0;
-  const discountedSubtotal = subtotal - discountAmount;
-  
-  const tax = discountedSubtotal * 0.05; // Dummy tax
-  const shippingFee = cartItems.length > 0 ? 50 : 0;
-  const total = discountedSubtotal + tax + shippingFee;
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  const subtotal = getCartTotal();
+
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [pendingServerOrder, setPendingServerOrder] = useState(null);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -41,7 +52,7 @@ const CheckoutPage = () => {
     billingAddress: 'same'
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (user) {
       setFormData(prev => ({
         ...prev,
@@ -65,62 +76,175 @@ const CheckoutPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  // 1. Submit form & call create-razorpay-order Edge Function
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (cartItems.length === 0) {
       alert("Your cart is empty!");
       return;
     }
-    setShowPaymentModal(true);
+
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      // Zero-Trust Payload: Send ONLY product IDs and quantities (NO frontend prices or totals)
+      const payload = {
+        items: cartItems.map(item => ({
+          productId: item.id,
+          quantity: item.quantity
+        })),
+        shippingDetails: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          apartment: formData.apartment,
+          city: formData.city,
+          state: formData.state,
+          pinCode: formData.pinCode,
+          country: formData.country
+        },
+        billingAddress: formData.billingAddress
+      };
+
+      const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
+        body: payload
+      });
+
+      if (error || !data?.success) {
+        const errorText = error?.message || data?.error || 'Failed to create payment order.';
+        setErrorMessage(errorText);
+        setIsSubmitting(false);
+        return;
+      }
+
+      const { orderId, displayOrderId, razorpayOrderId, amountInPaise, totalAmount, keyId, isTestMode } = data;
+      const orderInfo = { orderId, displayOrderId, razorpayOrderId, amountInPaise, totalAmount, keyId };
+      setPendingServerOrder(orderInfo);
+
+      // If in simulation / test mode or unconfigured key, open test payment modal
+      if (isTestMode || !keyId || keyId.includes('PENDING') || keyId.includes('PLACEHOLDER')) {
+        setShowPaymentModal(true);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Load Razorpay Checkout JS and open payment window
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        setErrorMessage('Failed to load Razorpay payment SDK. Please check your internet connection.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const options = {
+        key: keyId,
+        amount: amountInPaise,
+        currency: 'INR',
+        name: 'Kabgeer Masale',
+        description: `Order #${displayOrderId}`,
+        order_id: razorpayOrderId,
+        prefill: {
+          name: `${formData.firstName} ${formData.lastName}`.trim(),
+          email: formData.email,
+          contact: formData.phone
+        },
+        theme: { color: '#0f2818' },
+        handler: async (response) => {
+          await handleServerPaymentVerification({
+            orderId: orderId,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            displayOrderId: displayOrderId
+          });
+        },
+        modal: {
+          ondismiss: () => {
+            setIsSubmitting(false);
+            setErrorMessage('Payment window was closed. Your order remains pending.');
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (resp) {
+        console.error('Razorpay payment failed:', resp.error);
+        setIsSubmitting(false);
+        setErrorMessage(`Payment failed: ${resp.error?.description || 'Transaction declined.'}`);
+      });
+      rzp.open();
+    } catch (err) {
+      console.error('Checkout submit error:', err);
+      setErrorMessage('An unexpected error occurred during checkout.');
+      setIsSubmitting(false);
+    }
   };
 
-  const handlePaymentSuccess = (orderId) => {
-    // Format cart items for the dynamic template
-    const ordersArray = cartItems.map(item => ({
-      name: item.name,
-      units: item.quantity,
-      price: item.price,
-      image_url: window.location.origin + item.image
-    }));
-    
-    const templateParams = {
-      order_id: orderId,
-      email: formData.email,
-      customer_name: `${formData.firstName} ${formData.lastName}`,
-      customer_phone: formData.phone,
-      shipping_address: `${formData.address}, ${formData.apartment ? formData.apartment + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pinCode}`,
-      
-      // Values expected by your specific EmailJS template
-      orders: ordersArray,
-      cost: {
-        shipping: shippingFee.toFixed(2),
-        tax: tax.toFixed(2),
-        total: total.toFixed(2)
+  // 2. Server-side payment verification (verify-razorpay-payment Edge Function)
+  const handleServerPaymentVerification = async (verifyPayload) => {
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-razorpay-payment', {
+        body: {
+          orderId: verifyPayload.orderId,
+          razorpay_order_id: verifyPayload.razorpay_order_id,
+          razorpay_payment_id: verifyPayload.razorpay_payment_id,
+          razorpay_signature: verifyPayload.razorpay_signature
+        }
+      });
+
+      if (error || !data?.success) {
+        const errorMsg = error?.message || data?.error || 'Server-side payment verification failed.';
+        setErrorMessage(errorMsg);
+        setIsSubmitting(false);
+        return;
       }
-    };
 
-    // Send email using EmailJS
-    emailjs.send(
-      import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID',
-      import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID',
-      templateParams,
-      { publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY' }
-    ).then((response) => {
-       console.log('Order email sent successfully!', response.status, response.text);
-    }).catch((err) => {
-       console.error('Failed to send order email:', err);
-       alert("Email sending failed! Error: " + JSON.stringify(err));
-    });
+      // EmailJS confirmation email trigger (if configured)
+      try {
+        const ordersArray = cartItems.map(item => ({
+          name: item.name,
+          units: item.quantity,
+          price: item.price,
+          image_url: window.location.origin + item.image
+        }));
+        
+        const templateParams = {
+          order_id: verifyPayload.displayOrderId,
+          email: formData.email,
+          customer_name: `${formData.firstName} ${formData.lastName}`.trim(),
+          customer_phone: formData.phone,
+          shipping_address: `${formData.address}, ${formData.apartment ? formData.apartment + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pinCode}`,
+          orders: ordersArray
+        };
 
-    addOrder({
-      id: orderId,
-      items: cartItems,
-      total: total,
-      shipping: formData
-    });
-    setShowPaymentModal(false);
-    clearCart();
-    navigate(`/order-success?id=${orderId}`);
+        if (import.meta.env.VITE_EMAILJS_SERVICE_ID) {
+          emailjs.send(
+            import.meta.env.VITE_EMAILJS_SERVICE_ID,
+            import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+            templateParams,
+            import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+          ).catch(e => console.warn('EmailJS notice:', e));
+        }
+      } catch (e) {
+        console.warn('EmailJS error:', e);
+      }
+
+      // ONLY clear cart & navigate after SUCCESSFUL server-side verification
+      clearCart();
+      setShowPaymentModal(false);
+      setIsSubmitting(false);
+      navigate(`/order-success?id=${verifyPayload.displayOrderId}`);
+    } catch (err) {
+      console.error('Verification call error:', err);
+      setErrorMessage('An unexpected error occurred while verifying your payment.');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -141,12 +265,19 @@ const CheckoutPage = () => {
           </div>
           <div className="divider"><span>OR</span></div>
           
+          {errorMessage && (
+            <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid #fca5a5', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <AlertCircle size={18} />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit}>
             {/* Contact Section */}
             <div className="checkout-section">
               <div className="section-header">
                 <h3>Contact</h3>
-                <Link to="/login" className="login-link">Sign in</Link>
+                {!user && <Link to="/login" className="login-link">Sign in</Link>}
               </div>
               <input 
                 type="email" 
@@ -209,7 +340,7 @@ const CheckoutPage = () => {
             <div className="checkout-section">
               <h3>Shipping method</h3>
               <div className="info-box text-text-light text-sm">
-                Enter your shipping address to view available shipping methods.
+                Standard shipping options calculated at checkout.
               </div>
             </div>
 
@@ -249,8 +380,13 @@ const CheckoutPage = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary btn-large w-100 mt-2" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-              <Lock size={18} /> Pay now
+            <button 
+              type="submit" 
+              disabled={isSubmitting || cartItems.length === 0} 
+              className="btn btn-primary btn-large w-100 mt-2" 
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+            >
+              <Lock size={18} /> {isSubmitting ? 'Initializing Payment...' : 'Pay now'}
             </button>
 
             <div className="trust-badge-container">
@@ -259,10 +395,10 @@ const CheckoutPage = () => {
             </div>
 
             <div className="checkout-footer-links mt-4 text-sm text-accent">
-              <Link to="/refund-policy">Refund policy</Link>
-              <Link to="/shipping-policy">Shipping</Link>
-              <Link to="/privacy-policy">Privacy policy</Link>
-              <Link to="/terms-of-service">Terms of service</Link>
+              <Link to="/returns">Returns policy</Link>
+              <Link to="/shipping">Shipping</Link>
+              <Link to="/privacy">Privacy policy</Link>
+              <Link to="/terms">Terms of service</Link>
             </div>
           </form>
         </div>
@@ -288,7 +424,7 @@ const CheckoutPage = () => {
                       <button 
                         type="button"
                         onClick={() => {
-                          if (item.quantity > 2) {
+                          if (item.quantity > 1) {
                             updateQuantity(item.id, item.quantity - 1);
                           } else {
                             removeFromCart(item.id);
@@ -318,47 +454,40 @@ const CheckoutPage = () => {
               )}
             </div>
 
-            <div className="discount-form mt-3">
-              <input type="text" className="form-input" placeholder="Discount code" />
-              <button className="btn btn-outline" type="button" onClick={() => alert('Invalid discount code.')}>Apply</button>
-            </div>
-
             <div className="summary-totals mt-3">
               <div className="summary-row">
                 <span>Subtotal</span>
                 <span>₹{subtotal.toFixed(2)}</span>
               </div>
-              {isBundleEligible && (
-                <div className="summary-row text-accent" style={{ color: '#16a34a' }}>
-                  <span>Bundle Discount (10%)</span>
-                  <span>-₹{discountAmount.toFixed(2)}</span>
-                </div>
-              )}
-              {isBundleEligible && (
-                <div className="summary-row text-accent" style={{ color: '#16a34a', fontSize: '0.85rem' }}>
-                  <span>🎁 2 Free Mini Masala Boxes</span>
-                  <span>Included</span>
-                </div>
-              )}
-              <div className="summary-row">
-                <span>Shipping</span>
-                <span>₹{shippingFee.toFixed(2)}</span>
-              </div>
               <div className="summary-row total-row mt-2">
-                <span>Total</span>
-                <span className="total-price"><span className="currency-code">INR</span> ₹{total.toFixed(2)}</span>
+                <span>Items Subtotal</span>
+                <span className="total-price"><span className="currency-code">INR</span> ₹{subtotal.toFixed(2)}</span>
               </div>
-              <p className="tax-info text-sm text-text-light mt-1">Including ₹{tax.toFixed(2)} in taxes</p>
+              <p className="tax-info text-sm text-text-light mt-1">Final taxes, shipping & discounts calculated securely by server at payment.</p>
             </div>
           </div>
         </div>
       </div>
       
-      {showPaymentModal && (
+      {showPaymentModal && pendingServerOrder && (
         <MockPaymentModal 
-          amount={total} 
-          onClose={() => setShowPaymentModal(false)} 
-          onSuccess={handlePaymentSuccess} 
+          amount={pendingServerOrder.totalAmount} 
+          displayOrderId={pendingServerOrder.displayOrderId}
+          razorpayOrderId={pendingServerOrder.razorpayOrderId}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setIsSubmitting(false);
+            setErrorMessage('Payment simulation window closed.');
+          }} 
+          onSuccess={(simulatedResponse) => {
+            handleServerPaymentVerification({
+              orderId: pendingServerOrder.orderId,
+              razorpay_order_id: simulatedResponse.razorpay_order_id,
+              razorpay_payment_id: simulatedResponse.razorpay_payment_id,
+              razorpay_signature: simulatedResponse.razorpay_signature,
+              displayOrderId: pendingServerOrder.displayOrderId
+            });
+          }} 
         />
       )}
     </div>

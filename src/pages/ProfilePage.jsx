@@ -5,7 +5,7 @@ import { Navigate, Link } from 'react-router-dom';
 import { Package, User, LogOut, Heart, ShoppingCart, Trash2 } from 'lucide-react';
 
 const ProfilePage = () => {
-  const { user, logout, updateProfileDetails, toggleWishlist } = useAuth();
+  const { user, orders, logout, updateProfileDetails, toggleWishlist } = useAuth();
   const { addToCart } = useCart();
   const [activeTab, setActiveTab] = useState('orders');
   const [isSaving, setIsSaving] = useState(false);
@@ -52,9 +52,6 @@ const ProfilePage = () => {
             <button onClick={() => setActiveTab('orders')} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: 'none', background: 'none', color: activeTab === 'orders' ? 'var(--color-primary)' : 'var(--color-text)', fontWeight: activeTab === 'orders' ? '500' : '400', cursor: 'pointer', textAlign: 'left', borderRadius: '8px', backgroundColor: activeTab === 'orders' ? 'var(--color-bg-alt)' : 'transparent' }}>
               <Package size={18} /> Order History
             </button>
-            <button onClick={() => setActiveTab('details')} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: 'none', background: 'none', color: activeTab === 'details' ? 'var(--color-primary)' : 'var(--color-text)', fontWeight: activeTab === 'details' ? '500' : '400', cursor: 'pointer', textAlign: 'left', borderRadius: '8px', backgroundColor: activeTab === 'details' ? 'var(--color-bg-alt)' : 'transparent' }}>
-              <User size={18} /> Account Details
-            </button>
             <button onClick={() => setActiveTab('wishlist')} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: 'none', background: 'none', color: activeTab === 'wishlist' ? 'var(--color-primary)' : 'var(--color-text)', fontWeight: activeTab === 'wishlist' ? '500' : '400', cursor: 'pointer', textAlign: 'left', borderRadius: '8px', backgroundColor: activeTab === 'wishlist' ? 'var(--color-bg-alt)' : 'transparent' }}>
               <Heart size={18} /> Wishlist
             </button>
@@ -85,7 +82,7 @@ const ProfilePage = () => {
                 }
               `}} />
               
-              {!user.orders || user.orders.length === 0 ? (
+              {!orders || orders.length === 0 ? (
             <div style={{ backgroundColor: 'var(--color-white)', borderRadius: '12px', padding: '3rem', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
               <Package size={48} color="var(--color-border)" style={{ margin: '0 auto 1rem auto' }} />
               <h3 style={{ marginBottom: '1rem' }}>No orders yet</h3>
@@ -94,7 +91,7 @@ const ProfilePage = () => {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {[...user.orders].reverse().map(order => {
+              {orders.map(order => {
                 const status = order.status || 'Processing';
                 const steps = ['Processing', 'Shipped', 'Delivered'];
                 const currentIndex = steps.indexOf(status) !== -1 ? steps.indexOf(status) : 0;

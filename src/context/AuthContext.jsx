@@ -1,21 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged
-} from 'firebase/auth';
-import { 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  arrayUnion,
-  arrayRemove,
-  onSnapshot
-} from 'firebase/firestore';
-import { auth, db, googleProvider } from '../firebase';
+import { supabase } from '../lib/supabaseClient';
 import PageLoader from '../components/PageLoader';
+import { PRODUCTS } from '../data/products';
 
 const AuthContext = createContext();
 
@@ -23,15 +9,79 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   
   const [isFading, setIsFading] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
+  // Helper to fetch core user auth & wishlist data (Profile details editing is deferred)
+  const fetchUserProfile = async (sessionUser) => {
+    if (!sessionUser) return null;
+    const userId = sessionUser.id;
+
+    // Fetch wishlist from public.wishlists
+    const { data: wishlistRows, error: wishErr } = await supabase
+      .from('wishlists')
+      .select('product_id')
+      .eq('customer_id', userId);
+
+    if (wishErr) {
+      console.error('Error fetching user wishlist:', wishErr.message);
+    }
+
+    // Map wishlist product IDs to static product objects from PRODUCTS
+    const wishlistedProductIds = (wishlistRows || []).map(r => r.product_id);
+    const userWishlist = PRODUCTS.filter(p => wishlistedProductIds.includes(p.id));
+
+    // Core user object for Auth, Wishlist, and Orders (Profile details editing deferred)
+    return {
+      id: userId,
+      email: sessionUser.email,
+      name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email?.split('@')[0] || 'Customer',
+      wishlist: userWishlist
+    };
+  };
+
+  // Helper to fetch user orders from public.orders
+  const fetchUserOrders = async (userId) => {
+    if (!userId) {
+      setOrders([]);
+      return;
+    }
+
+    const { data: orderRows, error: ordersErr } = await supabase
+      .from('orders')
+      .select('*, order_items(*)')
+      .eq('customer_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (ordersErr) {
+      console.error('Error fetching user orders:', ordersErr.message);
+      setOrders([]);
+      return;
+    }
+
+    // Map database order columns to UI expected format
+    const formattedOrders = (orderRows || []).map(order => ({
+      id: order.display_order_id || order.id,
+      date: order.created_at,
+      status: order.order_status,
+      total: Number(order.total_amount) || 0,
+      items: (order.order_items || []).map(item => ({
+        id: item.product_id,
+        name: item.product_name,
+        price: Number(item.unit_price) || 0,
+        quantity: item.quantity,
+        image: item.product_image
+      })),
+      ...order
+    }));
+
+    setOrders(formattedOrders);
+  };
+
   useEffect(() => {
-    let unsubscribeSnapshot = null;
-    let minLoadTimer = null;
-    let isMinLoadComplete = false;
     let isAuthComplete = false;
     let hasFinishedLoading = false;
 
@@ -42,135 +92,147 @@ export const AuthProvider = ({ children }) => {
         setTimeout(() => {
           setLoading(false);
           setShowContent(true);
-        }, 300); // 300ms fade for faster perceived load
+        }, 300);
       }
     };
 
-    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
-        // Setup real-time listener for user data (including orders)
-        const userDocRef = doc(db, 'users', firebaseUser.uid);
-        unsubscribeSnapshot = onSnapshot(userDocRef, (docSnap) => {
-          if (docSnap.exists()) {
-            setUser({ id: firebaseUser.uid, ...docSnap.data() });
-          } else {
-            // Fallback for new accounts before document is fully created
-            setUser({ id: firebaseUser.uid, email: firebaseUser.email, name: firebaseUser.displayName, orders: [] });
-          }
+    // 1. Check current session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        Promise.all([
+          fetchUserProfile(session.user),
+          fetchUserOrders(session.user.id)
+        ]).then(([userData]) => {
+          setUser(userData);
           isAuthComplete = true;
           attemptFinishLoading();
-        }, (error) => {
-          console.error("Error in realtime listener:", error);
+        }).catch(() => {
           isAuthComplete = true;
           attemptFinishLoading();
         });
       } else {
         setUser(null);
+        setOrders([]);
         isAuthComplete = true;
         attemptFinishLoading();
-        if (unsubscribeSnapshot) {
-          unsubscribeSnapshot();
-        }
       }
+    }).catch(err => {
+      console.error('Session get error:', err);
+      isAuthComplete = true;
+      attemptFinishLoading();
+    });
+
+    // 2. Subscribe to auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const userData = await fetchUserProfile(session.user);
+        setUser(userData);
+        await fetchUserOrders(session.user.id);
+      } else {
+        setUser(null);
+        setOrders([]);
+      }
+      isAuthComplete = true;
+      attemptFinishLoading();
     });
 
     return () => {
-      unsubscribeAuth();
-      if (unsubscribeSnapshot) {
-        unsubscribeSnapshot();
-      }
+      subscription.unsubscribe();
     };
   }, []);
 
   const login = async (email, password) => {
-    await signInWithEmailAndPassword(auth, email, password);
-  };
-
-  const register = async (name, email, password) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = userCredential.user.uid;
-    
-    // Create user document in Firestore
-    const newUser = {
-      name,
-      email,
-      orders: [],
-      wishlist: []
-    };
-    
-    await setDoc(doc(db, 'users', uid), newUser);
-    setUser({ id: uid, ...newUser });
-  };
-
-  const updateProfileDetails = async (details) => {
-    if (user && user.id) {
-      try {
-        const userDocRef = doc(db, 'users', user.id);
-        await updateDoc(userDocRef, details);
-        setUser(prev => ({ ...prev, ...details }));
-      } catch (error) {
-        console.error("Error updating profile details:", error);
-      }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    if (data.user) {
+      const userData = await fetchUserProfile(data.user);
+      setUser(userData);
+      await fetchUserOrders(data.user.id);
     }
   };
 
-  const toggleWishlist = async (product) => {
-    if (user && user.id) {
-      try {
-        const userDocRef = doc(db, 'users', user.id);
-        const wishlist = user.wishlist || [];
-        const isWishlisted = wishlist.some(p => p.id === product.id);
-        
-        if (isWishlisted) {
-          await updateDoc(userDocRef, {
-            wishlist: arrayRemove(wishlist.find(p => p.id === product.id))
-          });
-        } else {
-          await updateDoc(userDocRef, {
-            wishlist: arrayUnion(product)
-          });
+  const register = async (name, email, password) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          name: name
         }
-      } catch (error) {
-        console.error("Error toggling wishlist:", error);
       }
-    } else {
+    });
+    if (error) throw error;
+
+    if (data.user) {
+      const userData = await fetchUserProfile(data.user);
+      setUser(userData);
+    }
+  };
+
+  // DEFERRED FUNCTION: Profile editing deferred for initial launch
+  const updateProfileDetails = async () => {
+    console.log("Profile editing feature is deferred for initial launch.");
+  };
+
+  const toggleWishlist = async (product) => {
+    if (!user || !user.id) {
       alert("Please log in to add items to your wishlist.");
+      return;
+    }
+
+    try {
+      const wishlist = user.wishlist || [];
+      const isWishlisted = wishlist.some(p => p.id === product.id);
+
+      if (isWishlisted) {
+        const { error } = await supabase
+          .from('wishlists')
+          .delete()
+          .eq('customer_id', user.id)
+          .eq('product_id', product.id);
+
+        if (error) throw error;
+
+        setUser(prev => ({
+          ...prev,
+          wishlist: prev.wishlist.filter(p => p.id !== product.id)
+        }));
+      } else {
+        const { error } = await supabase
+          .from('wishlists')
+          .insert({
+            customer_id: user.id,
+            product_id: product.id
+          });
+
+        if (error) throw error;
+
+        setUser(prev => ({
+          ...prev,
+          wishlist: [...(prev.wishlist || []), product]
+        }));
+      }
+    } catch (error) {
+      console.error("Error toggling wishlist:", error);
+      throw error;
     }
   };
 
   const logout = async () => {
-    await signOut(auth);
+    const { error } = await supabase.auth.signOut();
+    if (error) console.error("Error signing out:", error);
+    setUser(null);
+    setOrders([]);
   };
 
   const addOrder = async (order) => {
-    const newOrder = { ...order, id: order.id, date: new Date().toISOString(), status: 'Processing' };
-    
-    if (user && user.id) {
-      try {
-        const userDocRef = doc(db, 'users', user.id);
-        await updateDoc(userDocRef, {
-          orders: arrayUnion(newOrder)
-        });
-        
-        // Optimistically update local state
-        setUser(prev => ({
-          ...prev,
-          orders: [...(prev.orders || []), newOrder]
-        }));
-      } catch (error) {
-        console.error("Error saving order to Firestore:", error);
-      }
-    } else {
-      // Guest checkout
-      const guestOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
-      guestOrders.push(newOrder);
-      localStorage.setItem('guest_orders', JSON.stringify(guestOrders));
-    }
+    console.log("Order addition requested in AuthContext (Part 3.5 will wire direct Supabase order inserts).", order);
   };
 
   return (
     <AuthContext.Provider value={{ 
-      user, loading, login, register, logout, addOrder, updateProfileDetails, toggleWishlist
+      user, orders, loading, login, register, logout, addOrder, updateProfileDetails, toggleWishlist
     }}>
       {!showContent && <PageLoader isFading={isFading} />}
       {showContent && children}

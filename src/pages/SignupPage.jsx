@@ -21,10 +21,16 @@ const SignupPage = () => {
       navigate('/profile');
     } catch (err) {
       let errorMessage = 'Failed to create account.';
-      if (err.code === 'auth/email-already-in-use') errorMessage = 'This email is already registered.';
-      else if (err.code === 'auth/invalid-email') errorMessage = 'Please enter a valid email address.';
-      else if (err.code === 'auth/weak-password') errorMessage = 'Password should be at least 6 characters.';
-      else errorMessage = `Failed to create account: ${err.message}`;
+      const msg = err?.message || '';
+      if (err?.code === 'auth/email-already-in-use' || msg.includes('already registered') || msg.includes('User already exists')) {
+        errorMessage = 'This email is already registered.';
+      } else if (err?.code === 'auth/invalid-email' || msg.includes('invalid email')) {
+        errorMessage = 'Please enter a valid email address.';
+      } else if (err?.code === 'auth/weak-password' || msg.includes('at least 6 characters') || msg.includes('Password should be')) {
+        errorMessage = 'Password should be at least 6 characters.';
+      } else {
+        errorMessage = `Failed to create account: ${err?.message || 'Unknown error'}`;
+      }
       console.error(err);
       setError(errorMessage);
     } finally {

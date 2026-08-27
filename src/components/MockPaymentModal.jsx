@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import { CreditCard, X, ShieldCheck } from 'lucide-react';
 import './MockPaymentModal.css';
 
-const MockPaymentModal = ({ amount, onClose, onSuccess }) => {
+const MockPaymentModal = ({ amount, displayOrderId, razorpayOrderId, onClose, onSuccess }) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handlePayment = () => {
     setIsProcessing(true);
-    // Simulate API call and payment processing
     setTimeout(() => {
       setIsProcessing(false);
-      onSuccess(`ORD-${Math.floor(Math.random() * 1000000)}`);
-    }, 2500);
+      const simulatedPaymentId = `pay_simulated_${Date.now()}`;
+      onSuccess({
+        razorpay_order_id: razorpayOrderId || `order_simulated_${Date.now()}`,
+        razorpay_payment_id: simulatedPaymentId,
+        razorpay_signature: `sig_simulated_${Date.now()}`
+      });
+    }, 1500);
   };
 
   return (
@@ -23,12 +27,13 @@ const MockPaymentModal = ({ amount, onClose, onSuccess }) => {
         
         <div className="payment-modal-header">
           <h3>Kabgeer Masale</h3>
-          <p>Secure Checkout by Razorpay</p>
+          <p>Secure Checkout by Razorpay (Test Mode)</p>
+          {displayOrderId && <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '4px' }}>Order: {displayOrderId}</p>}
         </div>
         
         <div className="payment-modal-amount">
           <span>Amount to Pay</span>
-          <h2>₹{amount.toFixed(2)}</h2>
+          <h2>₹{Number(amount || 0).toFixed(2)}</h2>
         </div>
 
         <div className="payment-modal-body">
@@ -52,7 +57,7 @@ const MockPaymentModal = ({ amount, onClose, onSuccess }) => {
             onClick={handlePayment}
             disabled={isProcessing}
           >
-            {isProcessing ? 'Processing Payment...' : `Pay ₹${amount.toFixed(2)}`}
+            {isProcessing ? 'Processing Payment...' : `Pay ₹${Number(amount || 0).toFixed(2)}`}
           </button>
         </div>
       </div>
