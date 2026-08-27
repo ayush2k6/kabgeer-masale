@@ -47,21 +47,22 @@ const Header = () => {
         <div className="top-bar">
           <div className="top-bar-marquee">
             <div className="top-bar-content">
-              <span>🌿 Ghar se Ghar Tak – Pure Lucknavi Spices & Rich Flavours</span>
-              <span>🚚 Freshly Packed • Delivered Across India</span>
-              <span>✨ 100% Pure & Natural • No Added Preservatives</span>
-              <span>🌿 Ghar se Ghar Tak – Pure Lucknavi Spices & Rich Flavours</span>
-              <span>🚚 Freshly Packed • Delivered Across India</span>
+              <span>🌿 GHAR SE GHAR TAK <span className="gold-accent">•</span> PURE LUCKNAVI SPICES & RICH FLAVOURS</span>
+              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> FREE DELIVERY ACROSS INDIA</span>
+              <span>✨ 100% PURE & NATURAL <span className="gold-accent">•</span> NO ADDED PRESERVATIVES</span>
+              <span>🌿 GHAR SE GHAR TAK <span className="gold-accent">•</span> PURE LUCKNAVI SPICES & RICH FLAVOURS</span>
+              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> FREE DELIVERY ACROSS INDIA</span>
             </div>
             <div className="top-bar-content" aria-hidden="true">
-              <span>🌿 Ghar se Ghar Tak – Pure Lucknavi Spices & Rich Flavours</span>
-              <span>🚚 Freshly Packed • Delivered Across India</span>
-              <span>✨ 100% Pure & Natural • No Added Preservatives</span>
-              <span>🌿 Ghar se Ghar Tak – Pure Lucknavi Spices & Rich Flavours</span>
-              <span>🚚 Freshly Packed • Delivered Across India</span>
+              <span>🌿 GHAR SE GHAR TAK <span className="gold-accent">•</span> PURE LUCKNAVI SPICES & RICH FLAVOURS</span>
+              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> FREE DELIVERY ACROSS INDIA</span>
+              <span>✨ 100% PURE & NATURAL <span className="gold-accent">•</span> NO ADDED PRESERVATIVES</span>
+              <span>🌿 GHAR SE GHAR TAK <span className="gold-accent">•</span> PURE LUCKNAVI SPICES & RICH FLAVOURS</span>
+              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> FREE DELIVERY ACROSS INDIA</span>
             </div>
           </div>
         </div>
+
 
         {/* Main Desktop Header */}
         <div className="main-header">
