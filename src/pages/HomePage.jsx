@@ -101,12 +101,13 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Why Choose Us Banner Section */}
-      <section className="why-choose-us-section" style={{ padding: 0, margin: '2rem 0', width: '100%' }}>
-        <div className="container" style={{ padding: 0, maxWidth: '100%' }}>
-          <img src={whyChooseUsImg} alt="Why choose us" style={{ width: '100%', height: 'auto', display: 'block' }} />
+      {/* Why Choose Us Section */}
+      <section className="why-choose-us-section" style={{ padding: '3rem 0', margin: 0, width: '100%', backgroundColor: 'var(--color-bg)' }}>
+        <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px' }}>
+          <img src={whyChooseUsImg} alt="Why Choose Us — Kabgeer Masale" style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '12px' }} />
         </div>
       </section>
+
 
       {/* Our Quick Non-Veg Masala */}
       <section className="quick-masala-section non-veg-bg">

@@ -177,13 +177,12 @@
 }
 
 .checkout-brand-logo {
-  height: 50px;
+  height: 55px;
   width: auto;
   object-fit: contain;
   display: block;
-  mix-blend-mode: multiply;
-  background-color: transparent;
 }
+
 
 
 .checkout-steps-badge {
