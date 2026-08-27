@@ -28,12 +28,15 @@
 }
 
 .footer-brand-logo {
-  height: 65px;
+  height: 52px;
   width: auto;
   object-fit: contain;
   filter: brightness(0) invert(1);
+  mix-blend-mode: screen;
+  background-color: transparent;
   display: block;
 }
+
 
 .brand-desc {
   color: rgba(255, 255, 255, 0.75);
