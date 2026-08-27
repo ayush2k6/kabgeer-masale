@@ -273,23 +273,97 @@
   font-size: 1.2rem;
 }
 
+.bundle-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #cc0c39;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 12px;
+  z-index: 2;
+}
+
+.bundle-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.bundle-mrp {
+  font-size: 0.85rem;
+  color: #888;
+  text-decoration: line-through;
+}
+
+.btn-add-bundle.in-cart {
+  background-color: #12281a;
+  color: #d4af37;
+}
+
+.card-image-wrapper {
+  position: relative;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.5rem;
+  .build-bundle-page-wrapper {
+    padding-bottom: 80px;
   }
-  .bundle-exclusive-card {
-    padding: 1.5rem;
+  .bundle-hero {
+    padding: 3rem 1rem 6rem 1rem;
+  }
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  .hero-subtitle {
+    font-size: 1rem;
   }
   .how-it-works-steps {
-    flex-direction: column;
-    gap: 1rem;
+    flex-direction: row;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .hiw-arrow {
+    display: none;
+  }
+  .bundle-main-content {
+    margin-top: -3rem;
   }
   .bundle-shop-container {
-    padding: 1.5rem;
+    padding: 1rem 0;
+  }
+  .bundle-filters {
+    gap: 0.5rem;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .category-pill {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
   }
   .premium-product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .product-name {
+    font-size: 0.9rem;
   }
 }
+
+@media (max-width: 480px) {
+  .premium-product-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
