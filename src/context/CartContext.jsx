@@ -25,15 +25,16 @@ export const CartProvider = ({ children }) => {
     }, 3000);
   };
 
-  const addToCart = (product, quantity = 2) => {
+  const addToCart = (product, quantity = 1) => {
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
+      const addQty = Math.max(1, quantity);
       if (existing) {
         return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+          item.id === product.id ? { ...item, quantity: item.quantity + addQty } : item
         );
       }
-      return [...prev, { ...product, quantity: Math.max(2, quantity) }];
+      return [...prev, { ...product, quantity: addQty }];
     });
     showToast(`${product.name} added to your cart!`);
   };
@@ -43,7 +44,10 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (productId, newQuantity) => {
-    if (newQuantity < 2) return;
+    if (newQuantity < 1) {
+      removeFromCart(productId);
+      return;
+    }
     setCartItems(prev => 
       prev.map(item => item.id === productId ? { ...item, quantity: newQuantity } : item)
     );
@@ -79,23 +83,22 @@ export const CartProvider = ({ children }) => {
           position: 'fixed',
           bottom: '30px',
           right: '30px',
-          backgroundColor: '#3A2414',
+          backgroundColor: '#1a2f22',
           color: '#fff',
-          padding: '16px 24px',
+          padding: '14px 20px',
           borderRadius: '8px',
           boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
           zIndex: 99999,
           display: 'flex',
           alignItems: 'center',
-          gap: '12px',
-          fontSize: '1rem',
+          gap: '10px',
+          fontSize: '0.95rem',
           fontWeight: '500',
-          transition: 'all 0.3s ease',
-          animation: 'toastFadeIn 0.3s forwards'
+          transition: 'all 0.3s ease'
         }}>
           <div style={{
-            width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#4CAF50',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '14px'
+            width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#d99026',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '12px'
           }}>
             ✓
           </div>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ChevronLeft, Info, CreditCard, Lock, ShieldCheck, AlertCircle } from 'lucide-react';
+import { ChevronLeft, Info, CreditCard, Lock, ShieldCheck, AlertCircle, Trash2, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
-import emailjs from '@emailjs/browser';
 import { supabase } from '../lib/supabaseClient';
 import './CheckoutPage.css';
+
 
 // Helper to safely load Razorpay Checkout SDK script
 const loadRazorpayScript = () => {
@@ -205,39 +205,10 @@ const CheckoutPage = () => {
         return;
       }
 
-      // EmailJS confirmation email trigger (if configured)
-      try {
-        const ordersArray = cartItems.map(item => ({
-          name: item.name,
-          units: item.quantity,
-          price: item.price,
-          image_url: window.location.origin + item.image
-        }));
-        
-        const templateParams = {
-          order_id: verifyPayload.displayOrderId,
-          email: formData.email,
-          customer_name: `${formData.firstName} ${formData.lastName}`.trim(),
-          customer_phone: formData.phone,
-          shipping_address: `${formData.address}, ${formData.apartment ? formData.apartment + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pinCode}`,
-          orders: ordersArray
-        };
-
-        if (import.meta.env.VITE_EMAILJS_SERVICE_ID) {
-          emailjs.send(
-            import.meta.env.VITE_EMAILJS_SERVICE_ID,
-            import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-            templateParams,
-            import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-          ).catch(e => console.warn('EmailJS notice:', e));
-        }
-      } catch (e) {
-        console.warn('EmailJS error:', e);
-      }
-
-      // ONLY clear cart & navigate after SUCCESSFUL server-side verification
+      // Server-side payment verification succeeded — clear cart & navigate
       clearCart();
       setShowPaymentModal(false);
+
       setIsSubmitting(false);
       navigate(`/order-success?id=${verifyPayload.displayOrderId}`);
     } catch (err) {
@@ -405,69 +376,116 @@ const CheckoutPage = () => {
 
         <div className="checkout-sidebar">
           <div className="order-summary">
+            <div className="summary-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e0e0e0' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--color-primary)', fontWeight: 700 }}>
+                Order Summary ({cartItems.reduce((acc, i) => acc + i.quantity, 0)})
+              </h3>
+              {cartItems.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearCart}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#cc0c39',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <Trash2 size={14} /> Clear Cart
+                </button>
+              )}
+            </div>
+
             <div className="summary-items">
               {cartItems.map((item) => (
                 <div key={item.id} className="summary-item">
                   <div className="summary-item-img placeholder-img" style={{ position: 'relative' }}>
                     <span className="item-badge">{item.quantity}</span>
-                    {item.image ? (
-                      <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px', borderRadius: '8px', backgroundColor: '#fff' }} />
-                    ) : (
-                      <div style={{ width: '100%', height: '100%', backgroundColor: item.color || '#ddd', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
-                        {item.name.substring(0,2)}
-                      </div>
-                    )}
+                    <img 
+                      src={item.image || item.images?.[0]} 
+                      alt={item.name} 
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px', borderRadius: '8px', backgroundColor: '#fff' }} 
+                    />
                   </div>
-                  <div className="summary-item-details" style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, paddingRight: '15px' }}>
+                  <div className="summary-item-details" style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, paddingRight: '10px' }}>
                     <span className="item-name">{item.name}</span>
                     <div className="quantity-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <button 
                         type="button"
-                        onClick={() => {
-                          if (item.quantity > 1) {
-                            updateQuantity(item.id, item.quantity - 1);
-                          } else {
-                            removeFromCart(item.id);
-                          }
-                        }}
-                        style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem', lineHeight: 1 }}
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        aria-label="Decrease quantity"
+                        style={{ width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem' }}
                       >
                         -
                       </button>
-                      <span style={{ fontSize: '0.9rem', minWidth: '16px', textAlign: 'center' }}>{item.quantity}</span>
+                      <span style={{ fontSize: '0.9rem', minWidth: '16px', textAlign: 'center', fontWeight: 600 }}>{item.quantity}</span>
                       <button 
                         type="button"
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem', lineHeight: 1 }}
+                        aria-label="Increase quantity"
+                        style={{ width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem' }}
                       >
                         +
                       </button>
                     </div>
                   </div>
-                  <div className="summary-item-price">
-                    ₹{(item.price * item.quantity).toFixed(2)}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                    <span className="summary-item-price" style={{ fontWeight: 700 }}>
+                      ₹{(item.price * item.quantity).toFixed(2)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeFromCart(item.id)}
+                      title="Remove item"
+                      style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', padding: '2px' }}
+                      onMouseOver={(e) => e.target.style.color = '#cc0c39'}
+                      onMouseOut={(e) => e.target.style.color = '#999'}
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 </div>
               ))}
+
               {cartItems.length === 0 && (
-                <p className="text-sm text-text-light">Your cart is empty.</p>
+                <div style={{ textAlignment: 'center', padding: '2rem 1rem', color: '#666' }}>
+                  <ShoppingBag size={36} style={{ margin: '0 auto 0.5rem auto', color: '#ccc', display: 'block' }} />
+                  <p className="text-sm text-text-light text-center">Your cart is currently empty.</p>
+                  <Link to="/products" className="btn-primary" style={{ display: 'inline-block', marginTop: '1rem', padding: '0.5rem 1.25rem', fontSize: '0.9rem' }}>
+                    Browse Spices
+                  </Link>
+                </div>
               )}
             </div>
 
-            <div className="summary-totals mt-3">
-              <div className="summary-row">
-                <span>Subtotal</span>
-                <span>₹{subtotal.toFixed(2)}</span>
+            {cartItems.length > 0 && (
+              <div className="summary-totals mt-3">
+                <div className="summary-row">
+                  <span>Subtotal</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
+                </div>
+                <div className="summary-row">
+                  <span>Estimated Shipping</span>
+                  <span style={{ color: '#16a34a', fontWeight: 600 }}>FREE</span>
+                </div>
+                <div className="summary-row total-row mt-2" style={{ borderTop: '1px solid #e0e0e0', paddingTop: '1rem' }}>
+                  <span>Total Amount</span>
+                  <span className="total-price" style={{ fontWeight: 700, color: 'var(--color-primary)' }}>
+                    <span className="currency-code">INR</span> ₹{subtotal.toFixed(2)}
+                  </span>
+                </div>
+                <p className="tax-info text-sm text-text-light mt-1">Inclusive of all taxes. Verified securely by server during checkout.</p>
               </div>
-              <div className="summary-row total-row mt-2">
-                <span>Items Subtotal</span>
-                <span className="total-price"><span className="currency-code">INR</span> ₹{subtotal.toFixed(2)}</span>
-              </div>
-              <p className="tax-info text-sm text-text-light mt-1">Final taxes, shipping & discounts calculated securely by server at payment.</p>
-            </div>
+            )}
           </div>
         </div>
       </div>
+
       
       {showPaymentModal && pendingServerOrder && (
         <MockPaymentModal 
