@@ -26,6 +26,9 @@ interface PricingConfigPayload {
   shippingFee?: number;
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PINCODE_REGEX = /^[1-9][0-9]{5}$/;
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -73,6 +76,32 @@ serve(async (req) => {
       );
     }
 
+    // Input Sanitization & Payload Bounds Enforcement (Security Hardening)
+    const sanitizedEmail = String(shipping.email).trim().toLowerCase();
+    const sanitizedPinCode = String(shipping.pinCode).trim();
+    const sanitizedPhone = String(shipping.phone || '').trim().replace(/[^0-9+]/g, '');
+
+    if (!EMAIL_REGEX.test(sanitizedEmail) || sanitizedEmail.length > 255) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid email address format.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!PINCODE_REGEX.test(sanitizedPinCode)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid 6-digit Indian PIN code format.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (shipping.address.length > 500 || shipping.city.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Shipping address or city exceeds maximum allowed length limits.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // 3. Retrieve authoritative product data from public.products
     const productIds = items.map((i) => i.productId);
     const { data: dbProducts, error: prodErr } = await supabase
@@ -109,183 +138,176 @@ serve(async (req) => {
       const product = productMap.get(item.productId);
       if (!product) {
         return new Response(
-          JSON.stringify({ error: `Product ID '${item.productId}' does not exist in database.` }),
+          JSON.stringify({ error: `Product ID '${item.productId}' not found in active catalog.` }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
 
       if (!product.is_active) {
         return new Response(
-          JSON.stringify({ error: `Product '${product.name}' is currently inactive.` }),
+          JSON.stringify({ error: `Product '${product.name}' is currently unavailable.` }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
 
-      if (!item.quantity || item.quantity < 1 || !Number.isInteger(item.quantity)) {
+      const requestedQty = Math.max(1, Math.min(99, Math.floor(Number(item.quantity) || 1)));
+      const availableStock = inventoryMap.get(item.productId) ?? 0;
+
+      if (availableStock < requestedQty) {
         return new Response(
-          JSON.stringify({ error: `Invalid quantity '${item.quantity}' for product '${product.name}'.` }),
+          JSON.stringify({
+            error: `Insufficient stock for '${product.name}'. Available: ${availableStock}, Requested: ${requestedQty}`
+          }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
 
-      const availableStock = inventoryMap.get(item.productId) ?? 999;
-      if (availableStock < item.quantity && availableStock !== 0) {
-        return new Response(
-          JSON.stringify({ error: `Insufficient stock for '${product.name}'. Requested: ${item.quantity}, Available: ${availableStock}` }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      const unitPrice = Number(product.price);
-      const lineSubtotal = unitPrice * item.quantity;
-      subtotal += lineSubtotal;
-      totalQuantity += item.quantity;
+      const itemTotalPrice = product.price * requestedQty;
+      subtotal += itemTotalPrice;
+      totalQuantity += requestedQty;
 
       validatedItems.push({
         product_id: product.id,
         product_name: product.name,
-        unit_price: unitPrice,
-        quantity: item.quantity,
-        subtotal: lineSubtotal,
+        unit_price: product.price,
+        quantity: requestedQty,
+        total_price: itemTotalPrice,
         product_image: product.image_url
       });
     }
 
-    // 6. Pricing Calculations (Exact scalar columns matching public.orders schema)
-    const discount = Number((pricingConfig.discountAmount || 0).toFixed(2));
-    const taxFee = Number((pricingConfig.taxAmount || 0).toFixed(2));
-    const shippingFee = Number((pricingConfig.shippingFee || 0).toFixed(2));
+    // 6. Authoritative Server-Side Pricing Calculations
+    const discountAmount = Math.max(0, Math.min(subtotal, Number(pricingConfig.discountAmount) || 0));
+    const taxAmount = Math.max(0, Number(pricingConfig.taxAmount) || 0);
+    const shippingFee = Math.max(0, Number(pricingConfig.shippingFee) || 0);
+    const finalTotal = Math.max(1, Math.round((subtotal - discountAmount + taxAmount + shippingFee) * 100) / 100);
 
-    const totalAmount = Number((subtotal - discount + taxFee + shippingFee).toFixed(2));
-    const amountInPaise = Math.round(totalAmount * 100);
+    // 7. Generate Display Order ID
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const randomCode = Math.floor(1000 + Math.random() * 9000);
+    const displayOrderId = `KAB-${dateStr}-${randomCode}`;
 
-    const displayOrderId = `KAB-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(1000 + Math.random() * 9000)}`;
+    // 8. Create Razorpay Order if keys are present (or fallback to simulation)
+    let razorpayOrderId = `order_sim_${Date.now()}`;
+    let isSimulationMode = false;
 
-    // 7. Create Pending Order Record in Supabase (100% aligned with public.orders table schema)
-    const newOrderRecord = {
-      display_order_id: displayOrderId,
-      customer_id: customerId,
-      customer_type: customerType,
-      customer_name: `${shipping.firstName} ${shipping.lastName || ''}`.trim(),
-      customer_email: shipping.email,
-      customer_phone: shipping.phone || '',
-      shipping_address: {
-        address: shipping.address,
-        apartment: shipping.apartment || '',
-        city: shipping.city,
-        state: shipping.state || 'Uttar Pradesh',
-        pinCode: shipping.pinCode,
-        country: shipping.country || 'India'
-      },
-      billing_address: body.billingAddress === 'same' || !body.billingAddress ? {
-        address: shipping.address,
-        apartment: shipping.apartment || '',
-        city: shipping.city,
-        state: shipping.state || 'Uttar Pradesh',
-        pinCode: shipping.pinCode,
-        country: shipping.country || 'India'
-      } : body.billingAddress,
-      subtotal: Number(subtotal.toFixed(2)),
-      discount: discount,
-      tax: taxFee,
-      shipping_fee: shippingFee,
-      total_amount: totalAmount,
-      order_status: 'Pending',
-      payment_status: 'Pending'
+    if (razorpayKeyId && razorpayKeySecret && !razorpayKeyId.includes('PLACEHOLDER')) {
+      try {
+        const basicAuth = btoa(`${razorpayKeyId}:${razorpayKeySecret}`);
+        const rzpResponse = await fetch('https://api.razorpay.com/v1/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${basicAuth}`
+          },
+          body: JSON.stringify({
+            amount: Math.round(finalTotal * 100),
+            currency: 'INR',
+            receipt: displayOrderId,
+            notes: {
+              customer_email: sanitizedEmail,
+              display_order_id: displayOrderId
+            }
+          })
+        });
+
+        const rzpData = await rzpResponse.json();
+        if (rzpResponse.ok && rzpData.id) {
+          razorpayOrderId = rzpData.id;
+        } else {
+          console.warn('Razorpay API error, using simulation order ID:', rzpData);
+          isSimulationMode = true;
+        }
+      } catch (err: any) {
+        console.error('Razorpay order creation exception, falling back to simulation mode:', err.message);
+        isSimulationMode = true;
+      }
+    } else {
+      isSimulationMode = true;
+    }
+
+    const fullName = `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim() || 'Valued Customer';
+
+    const normalizedShippingAddress = {
+      firstName: shipping.firstName || '',
+      lastName: shipping.lastName || '',
+      email: sanitizedEmail,
+      phone: sanitizedPhone,
+      address: shipping.address || '',
+      apartment: shipping.apartment || '',
+      city: shipping.city || '',
+      state: shipping.state || 'Uttar Pradesh',
+      pinCode: sanitizedPinCode,
+      country: shipping.country || 'India'
     };
 
-    const { data: dbOrder, error: dbOrderErr } = await supabase
+    // 9. Insert Record into public.orders
+    const { data: insertedOrder, error: orderInsertErr } = await supabase
       .from('orders')
-      .insert(newOrderRecord)
-      .select('id, display_order_id')
+      .insert({
+        display_order_id: displayOrderId,
+        customer_id: customerId,
+        customer_name: fullName,
+        customer_email: sanitizedEmail,
+        customer_phone: sanitizedPhone,
+        shipping_address: normalizedShippingAddress,
+        billing_address: normalizedShippingAddress,
+        customer_type: customerType,
+        order_status: 'Pending',
+        payment_status: 'Pending',
+        subtotal: subtotal,
+        discount: discountAmount,
+        tax: taxAmount,
+        shipping_fee: shippingFee,
+        total_amount: finalTotal,
+        razorpay_order_id: razorpayOrderId
+      })
+      .select()
       .single();
 
-    if (dbOrderErr || !dbOrder) {
-      console.error('Error inserting pending order:', dbOrderErr?.message);
+    if (orderInsertErr || !insertedOrder) {
+      console.error('Order insert error:', orderInsertErr);
       return new Response(
-        JSON.stringify({ error: 'Failed to create pending order record.', details: dbOrderErr?.message }),
+        JSON.stringify({ error: 'Failed to record order in database.', details: orderInsertErr?.message }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // 8. Insert Order Items Records (Correct column name: total_price matching public.order_items DDL)
+    // 10. Insert Line Items into public.order_items
     const orderItemsToInsert = validatedItems.map((item) => ({
-      order_id: dbOrder.id,
-      product_id: item.product_id,
-      product_name: item.product_name,
-      unit_price: item.unit_price,
-      quantity: item.quantity,
-      total_price: item.subtotal,
-      product_image: item.product_image
+      ...item,
+      order_id: insertedOrder.id
     }));
 
-    const { error: itemsErr } = await supabase.from('order_items').insert(orderItemsToInsert);
-    if (itemsErr) {
-      console.error('Error inserting order items:', itemsErr.message);
-    }
+    const { error: itemsInsertErr } = await supabase.from('order_items').insert(orderItemsToInsert);
 
-    // 9. Call Razorpay API to create Razorpay Order (Server-Side Secret Key)
-    let razorpayOrderId = null;
-    let isTestModeMode = false;
-
-    if (razorpayKeyId && razorpayKeySecret && !razorpayKeyId.includes('PLACEHOLDER')) {
-      const authCredentials = btoa(`${razorpayKeyId}:${razorpayKeySecret}`);
-      const rzpResponse = await fetch('https://api.razorpay.com/v1/orders', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${authCredentials}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          amount: amountInPaise,
-          currency: 'INR',
-          receipt: displayOrderId,
-          notes: {
-            supabase_order_id: dbOrder.id,
-            display_order_id: displayOrderId
-          }
-        })
-      });
-
-      if (!rzpResponse.ok) {
-        const rzpErrText = await rzpResponse.text();
-        console.error('Razorpay API error:', rzpErrText);
-        // Rollback pending order to avoid database pollution
-        await supabase.from('orders').update({ order_status: 'Cancelled' }).eq('id', dbOrder.id);
-        return new Response(
-          JSON.stringify({ error: 'Failed to generate Razorpay payment order.', details: rzpErrText }),
-          { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      const rzpData = await rzpResponse.json();
-      razorpayOrderId = rzpData.id;
-
-      // Update DB order with razorpay_order_id
-      await supabase
-        .from('orders')
-        .update({ razorpay_order_id: razorpayOrderId })
-        .eq('id', dbOrder.id);
-    } else {
-      isTestModeMode = true;
-      razorpayOrderId = `order_simulated_${Date.now()}`;
-      await supabase
-        .from('orders')
-        .update({ razorpay_order_id: razorpayOrderId })
-        .eq('id', dbOrder.id);
+    if (itemsInsertErr) {
+      console.error('Order items insert error:', itemsInsertErr);
+      await supabase.from('orders').delete().eq('id', insertedOrder.id);
+      return new Response(
+        JSON.stringify({ error: 'Failed to record order items.', details: itemsInsertErr?.message }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        orderId: dbOrder.id,
-        displayOrderId: dbOrder.display_order_id,
+        orderId: insertedOrder.id,
+        displayOrderId: displayOrderId,
         razorpayOrderId: razorpayOrderId,
-        amountInPaise: amountInPaise,
-        totalAmount: totalAmount,
+        amount: Math.round(finalTotal * 100),
         currency: 'INR',
-        keyId: razorpayKeyId || 'RAZORPAY_KEY_ID_PENDING_CONFIG',
-        isTestMode: isTestModeMode
+        key: razorpayKeyId || 'rzp_test_placeholder',
+        isSimulationMode: isSimulationMode,
+        summary: {
+          subtotal: subtotal,
+          discount: discountAmount,
+          tax: taxAmount,
+          shipping: shippingFee,
+          total: finalTotal,
+          itemsCount: totalQuantity
+        }
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

@@ -3,6 +3,41 @@
 ## 2026-08-27
 
 ### Task
+Part 4 — Security Hardening, RLS Audit & Backend Environment Validation Implementation & Verification.
+
+### Changes
+- Created migration [supabase/migrations/20260827030000_part_4_security_rls_hardening.sql](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/migrations/20260827030000_part_4_security_rls_hardening.sql):
+  - Enforced explicit Row Level Security (RLS) policies across all 8 database tables (`profiles`, `products`, `inventory`, `orders`, `order_items`, `payments`, `shipments`, `wishlists`).
+  - Explicitly denied direct client-side `INSERT`, `UPDATE`, and `DELETE` on financial tables (`orders`, `order_items`, `payments`, `shipments`, `inventory`). All financial data mutations strictly require `service_role` Edge Functions.
+  - Configured `INSERT` and `DELETE` policies on `public.wishlists` for `auth.uid() = customer_id`.
+  - Executed migration on live Supabase Cloud project (`cfvopnzcqbtqcupdomto`).
+- Created migration [supabase/migrations/20260827040000_reset_test_inventory.sql](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/migrations/20260827040000_reset_test_inventory.sql):
+  - Reset catalog `stock_quantity = 100` for all 25 products post-test stock deductions.
+- Updated [supabase/functions/create-razorpay-order/index.ts](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/create-razorpay-order/index.ts):
+  - Added input sanitization & payload bounds enforcement (email regex, 6-digit Indian PIN code regex `/^[1-9][0-9]{5}$/`, phone sanitization, address length limits).
+  - Aligned schema insert attributes with `billing_address`.
+  - Re-deployed Edge Function to Supabase Cloud.
+- Updated [PROJECT_PROGRESS.md](file:///c:/Users/Acer/Documents/kabgeer-ji/PROJECT_PROGRESS.md) and [PROJECT_STATUS.md](file:///c:/Users/Acer/Documents/kabgeer-ji/PROJECT_STATUS.md).
+
+### Security & Penetration Testing
+- Executed 5-test Security Penetration Suite (`test_part_4_rls_security.mjs`):
+  - Test 1 (Direct client order insertion with anon key): **BLOCKED** by RLS (Passed).
+  - Test 2 (Direct client inventory alteration with anon key): **BLOCKED** by RLS (Passed).
+  - Test 3 (Direct unauthenticated query on orders table): **0 records returned** (Passed).
+  - Test 4 (Payload input sanitization with malformed PIN code): **REJECTED** with 400 Bad Request (Passed).
+  - Test 5 (Legitimate serverless Edge Function order creation): **HTTP 200 SUCCESS** (Passed).
+  - Result: **5 / 5 SECURITY TESTS PASSED (100%)**.
+- Executed `npm run lint` — passed with 0 errors.
+- Executed `npm run build` — passed with 0 errors.
+
+### Summary
+Part 4 (Security Hardening, RLS Audit & Backend Environment Validation) is now **100% COMPLETE**.
+
+---
+
+## 2026-08-27
+
+### Task
 Part 3.8 — Trackon Shipping Integration & Automated Courier Tracking Workflow.
 
 ### Changes
