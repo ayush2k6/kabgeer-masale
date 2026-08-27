@@ -121,6 +121,35 @@ const Header = () => {
       </div>
       </header>
 
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="mobile-bottom-nav">
+        <NavLink to="/" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+          <Home size={20} strokeWidth={1.8} />
+          <span>Home</span>
+        </NavLink>
+        <NavLink to="/products" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+          <Package size={20} strokeWidth={1.8} />
+          <span>Products</span>
+        </NavLink>
+        <NavLink to="/bundle" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+          <Sparkles size={20} strokeWidth={1.8} />
+          <span>Bundle</span>
+        </NavLink>
+        <NavLink to="/recipes" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+          <ChefHat size={20} strokeWidth={1.8} />
+          <span>Recipes</span>
+        </NavLink>
+        <NavLink to="/checkout" className={({ isActive }) => isActive ? "mobile-nav-item active cart-item" : "mobile-nav-item cart-item"}>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ShoppingBag size={20} strokeWidth={1.8} />
+            {getCartCount() > 0 && (
+              <span className="mobile-cart-badge">{getCartCount()}</span>
+            )}
+          </div>
+          <span>Cart</span>
+        </NavLink>
+      </nav>
+
       {/* Scroll to top button */}
       <button 
         className={`scroll-top-btn ${showTopBtn ? 'show' : ''}`} 
@@ -134,3 +163,4 @@ const Header = () => {
 };
 
 export default Header;
+

@@ -712,13 +712,43 @@
     grid-template-columns: 1fr;
   }
   .product-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   .section-title,
   .tenderizer-text h2 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
   }
   .middle-info-text p {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
+  }
+  .star-title {
+    font-size: 2.5rem;
+  }
+  .star-desc {
+    font-size: 1rem;
+  }
+  .btn-star {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+  .home-page {
+    padding-bottom: 70px;
   }
 }
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .why-choose-us-title {
+    font-size: 2rem;
+  }
+  .section-title {
+    font-size: 1.8rem;
+  }
+  .container {
+    padding: 0 12px;
+  }
+}

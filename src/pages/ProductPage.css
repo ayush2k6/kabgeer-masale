@@ -649,3 +649,30 @@
   color: #cc0c39;
   margin: 0 auto 1.5rem auto;
 }
+
+@media (max-width: 767px) {
+  .pdp-wrapper {
+    padding-bottom: 80px;
+  }
+
+  .pdp-title {
+    font-size: 1.8rem;
+  }
+
+  .pdp-price {
+    font-size: 1.8rem;
+  }
+
+  .pdp-buttons {
+    flex-direction: column;
+  }
+
+  .btn-add-cart, .btn-buy-now {
+    width: 100%;
+  }
+
+  .pdp-main-image-wrapper {
+    padding: 1rem;
+  }
+}
+

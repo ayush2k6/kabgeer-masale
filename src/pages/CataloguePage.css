@@ -145,3 +145,29 @@
   color: #111;
   font-weight: 600;
 }
+
+@media (max-width: 767px) {
+  .catalogue-page {
+    padding-bottom: 80px;
+  }
+
+  .catalogue-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .ref-product-info {
+    padding: 0.5rem 0.6rem 0.8rem 0.6rem;
+  }
+
+  .ref-product-title {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .catalogue-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
