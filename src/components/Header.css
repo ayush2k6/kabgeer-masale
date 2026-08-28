@@ -1,6 +1,8 @@
 /* Header Wrapper */
 .header-wrapper {
   width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -8,6 +10,7 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   border-bottom: 1px solid rgba(26, 47, 34, 0.08);
 }
+
 
 /* Slim Top Marquee Bar */
 .top-bar {
