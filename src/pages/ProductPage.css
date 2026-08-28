@@ -741,7 +741,7 @@
   }
 
   .pdp-main-card {
-    padding: 1.25rem 1rem;
+    padding: 1rem 0.85rem;
     border-radius: 14px;
     margin-bottom: 1.75rem;
     width: 100%;
@@ -749,7 +749,7 @@
   }
 
   .pdp-main-grid {
-    gap: 1.5rem;
+    gap: 1.25rem;
     width: 100%;
     box-sizing: border-box;
   }
@@ -787,11 +787,24 @@
     margin: auto;
   }
 
-
-
   .pdp-details {
     width: 100%;
     box-sizing: border-box;
+  }
+
+  .pdp-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .stock-status {
+    display: inline-flex;
+    max-width: max-content;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.76rem;
   }
 
   .pdp-pricing-card {
@@ -830,7 +843,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0.65rem 0.75rem;
+    padding: 0.7rem 0.85rem;
     width: 100%;
     box-sizing: border-box;
     text-align: left;
@@ -865,9 +878,10 @@
 
   .pack-badge {
     font-size: 0.6rem;
-    padding: 1px 4px;
+    padding: 1px 5px;
     white-space: nowrap;
   }
+
 
   .pdp-features-grid {
     grid-template-columns: repeat(2, 1fr);
