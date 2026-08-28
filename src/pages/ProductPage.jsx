@@ -189,13 +189,18 @@ const ProductPage = () => {
                       className={`pack-option-pill ${selectedPack.weight === pack.weight ? 'active' : ''}`}
                       onClick={() => setSelectedPack(pack)}
                     >
-                      <span className="pack-weight">{pack.label}</span>
-                      <span className="pack-price">₹{Math.round(product.price * pack.multiplier)}.00</span>
-                      {pack.badge && <span className="pack-badge">{pack.badge}</span>}
+                      <div className="pack-pill-left">
+                        <span className="pack-weight">{pack.label}</span>
+                      </div>
+                      <div className="pack-pill-right">
+                        <span className="pack-price">₹{Math.round(product.price * pack.multiplier)}.00</span>
+                        {pack.badge && <span className="pack-badge">{pack.badge}</span>}
+                      </div>
                     </button>
                   ))}
                 </div>
               </div>
+
 
               {/* Feature Badges Grid */}
               <div className="pdp-features-grid">
