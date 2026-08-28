@@ -727,71 +727,79 @@
   }
 
   .pdp-breadcrumbs {
-    padding: 0.75rem 0;
-    font-size: 0.78rem;
+    padding: 0.5rem 0;
+    font-size: 0.76rem;
     overflow-x: auto;
     white-space: nowrap;
   }
 
   .pdp-main-card {
-    padding: 1rem 0.85rem;
+    padding: 0.85rem 0.65rem;
     border-radius: 12px;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.5rem;
     width: 100%;
     box-sizing: border-box;
   }
 
   .pdp-main-grid {
-    gap: 1.5rem;
-  }
-
-  .pdp-main-image-wrapper {
-    padding: 1rem;
-    border-radius: 10px;
+    gap: 1.25rem;
     width: 100%;
     box-sizing: border-box;
   }
 
+  .pdp-gallery {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .pdp-main-image-wrapper {
+    padding: 0.85rem;
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    aspect-ratio: 1 / 1;
+  }
+
   .pdp-main-img {
     max-width: 100%;
-    max-height: 260px;
+    max-height: 240px;
+    margin: 0 auto;
+    display: block;
+    object-fit: contain;
   }
 
-  .pdp-discount-badge {
-    top: 0.75rem;
-    left: 0.75rem;
-    font-size: 0.7rem;
-    padding: 0.25rem 0.65rem;
+  .pdp-details {
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .wishlist-btn {
-    top: 0.75rem;
-    right: 0.75rem;
-    width: 34px;
-    height: 34px;
+  .pdp-pricing-card {
+    padding: 0.85rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .pdp-title {
-    font-size: 1.5rem;
+  .price-row {
+    gap: 0.5rem;
   }
 
   .pdp-price {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   .pdp-mrp {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
 
-  .pdp-description {
-    font-size: 0.88rem;
-    margin-bottom: 1rem;
+  .pdp-savings-badge {
+    font-size: 0.72rem;
+    padding: 2px 6px;
   }
 
   .pack-options-grid {
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
+    gap: 0.5rem;
     width: 100%;
     box-sizing: border-box;
   }
@@ -801,38 +809,69 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0.85rem 1rem;
+    padding: 0.65rem 0.75rem;
     width: 100%;
     box-sizing: border-box;
     text-align: left;
+    min-width: 0;
+  }
+
+  .pack-pill-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .pack-pill-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
   }
 
   .pack-weight {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .pack-price {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
   }
 
+  .pack-badge {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+    white-space: nowrap;
+  }
 
   .pdp-features-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.4rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .pdp-feature-pill {
-    font-size: 0.74rem;
-    padding: 5px 8px;
+    font-size: 0.72rem;
+    padding: 5px 6px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .pdp-actions-row {
     flex-direction: column;
     gap: 0.65rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .pdp-quantity-selector {
     width: 100%;
+    box-sizing: border-box;
     justify-content: center;
     gap: 2rem;
     padding: 0.6rem;
@@ -841,11 +880,13 @@
   .pdp-action-btns {
     flex-direction: column;
     width: 100%;
+    box-sizing: border-box;
     gap: 0.65rem;
   }
 
   .btn-add-cart, .btn-buy-now {
     width: 100%;
+    box-sizing: border-box;
     padding: 0.8rem;
     font-size: 0.92rem;
   }
@@ -853,10 +894,14 @@
   .pdp-trust-grid {
     grid-template-columns: 1fr;
     gap: 0.65rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .trust-pill-card {
     padding: 0.65rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .pdp-info-blocks {
