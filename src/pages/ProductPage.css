@@ -766,28 +766,29 @@
   .pdp-main-image-wrapper {
     padding: 0.75rem;
     border-radius: 12px;
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    max-height: 240px;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 220px !important;
+    max-height: 220px !important;
+    aspect-ratio: unset !important;
     margin: 0 auto;
     box-sizing: border-box;
-    aspect-ratio: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     overflow: hidden;
+    position: relative;
   }
 
   .pdp-main-img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 200px;
+    width: auto !important;
+    height: auto !important;
+    max-width: 90% !important;
+    max-height: 180px !important;
     object-fit: contain;
     display: block;
-    margin: 0 auto;
   }
+
 
 
   .pdp-details {
