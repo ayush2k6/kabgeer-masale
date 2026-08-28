@@ -316,18 +316,18 @@
     padding-bottom: 80px;
   }
   .bundle-hero {
-    padding: 3rem 1rem 6rem 1rem;
+    padding: 2.5rem 1rem 5rem 1rem;
   }
   .hero-title {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
   .hero-subtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   .how-it-works-steps {
     flex-direction: row;
     gap: 0.5rem;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
   .hiw-arrow {
     display: none;
@@ -353,7 +353,7 @@
   }
   .premium-product-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 10px;
   }
   .product-name {
     font-size: 0.9rem;
@@ -362,8 +362,9 @@
 
 @media (max-width: 480px) {
   .premium-product-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 }
+
 
