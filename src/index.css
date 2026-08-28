@@ -199,6 +199,14 @@ button {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+  .container {
+    padding: 0 0.75rem;
+  }
 }
 
 /* Global Form Input Styling */
