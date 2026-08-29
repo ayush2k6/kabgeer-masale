@@ -153,10 +153,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (name, email, password) => {
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/account` : undefined;
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: String(email || '').trim().toLowerCase(),
       password,
       options: {
+        emailRedirectTo: redirectUrl,
         data: {
           full_name: name,
           name: name
