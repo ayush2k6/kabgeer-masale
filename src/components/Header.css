@@ -527,16 +527,6 @@
   font-weight: 700;
 }
 
-.mobile-nav-item.active::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  width: 20px;
-  height: 2.5px;
-  background-color: var(--color-primary, #1a2f22);
-  border-radius: 0 0 2px 2px;
-}
-
 .mobile-cart-wrapper {
   position: relative;
   display: flex;
