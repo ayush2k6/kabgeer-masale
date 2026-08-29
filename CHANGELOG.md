@@ -1,5 +1,25 @@
 # Kabgeer Ji — Changelog
 
+## 2026-08-29
+
+### Task
+Customer Account Page V1 Implementation & Wishlist Feature Removal.
+
+### Implemented Upgrades & Changes
+- **Account Section**: Created minimal customer overview displaying Customer Name, Email, and Sign Out action in [ProfilePage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/ProfilePage.jsx).
+- **My Orders Section**: Connected to existing Supabase Auth & order query. Displays past orders with Order ID, formatted Date, item count, total price, and real-time status pills (`Paid` / `Pending` / `Confirmed` / `Shipped` / `Delivered`).
+- **Order Details Toggle**: Added expandable order details view with itemized product names, quantities, unit prices, total, and complete delivery address.
+- **Wishlist Removal from V1**:
+  - Removed Wishlist tab and list from customer profile.
+  - Removed Wishlist heart button from [ProductPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/ProductPage.jsx) and removed `.wishlist-btn` CSS from [ProductPage.css](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/ProductPage.css).
+  - Removed `toggleWishlist` function, imports, and state from [AuthContext.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/context/AuthContext.jsx).
+  - Verified 0 active frontend references remain while preserving the backend database schema.
+- **Profile Editing**: Deferred for initial launch.
+- **Route Support**: Added `/account` alias route alongside `/profile` in [App.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/App.jsx).
+- **Quality Checks**: Executed `npm run lint` (0 errors) and `npm run build` (0 errors). Pushed commit to `tanmay-development` and `main` on GitHub.
+
+---
+
 ## 2026-08-28
 
 ### Task

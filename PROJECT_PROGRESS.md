@@ -43,7 +43,7 @@
 - [x] **Part 2** — Product Master Data & Static Catalogue Synchronization (100% COMPLETE)
 - [x] **Part 3.1** — Supabase Audit, Architectural Planning & Table Specification (100% COMPLETE)
 - [x] **Part 3.2** — Supabase Database Foundation, RLS Policies & 25-Product Data Seeding (100% COMPLETE)
-- [x] **Part 3.3** — Supabase Auth Integration (Sign Up, Login, Session Persistence, Wishlist & Orders) (100% COMPLETE)
+- [x] **Part 3.3** — Supabase Auth Integration (Sign Up, Login, Session Persistence & Orders) (100% COMPLETE)
 - [x] **Part 3.4** — Complete Firebase Infrastructure & Package Removal (100% COMPLETE)
 - [x] **Part 3.5** — Secure Order Creation & Razorpay Serverless Payment Flow (100% COMPLETE)
 - [x] **Part 3.6** — Resend Transactional Email Automation (100% COMPLETE — LIVE VERIFIED)
@@ -51,6 +51,17 @@
 - [x] **Part 3.8** — Trackon Courier Integration (DEVELOPMENT-COMPLETE / PRODUCTION CREDENTIALS PENDING)
 - [x] **Part 4** — Security Hardening, RLS Audit & Backend Environment Validation (100% Complete)
 - [x] **Part 5** — Master E2E QA, Mobile Responsiveness & Production Deployment (Development-Verified, Mobile Responsive & Production Integrations Verified; Shipping Activation Pending Credentials)
+- [x] **Customer Page V1** — Minimal Production-Ready Account & Order History (100% COMPLETE)
+
+---
+
+## 👤 CUSTOMER PAGE V1
+- **Account**: COMPLETE (Displays Customer Name, Email, Logout button)
+- **Order History**: COMPLETE (Displays Order ID, Date, Item Count, Total, Payment Status, Order Status)
+- **Order Details**: COMPLETE (Expandable item breakdown with names, quantities, unit prices, total, and delivery address)
+- **Wishlist**: REMOVED FROM V1 (Removed UI, buttons, context methods; DB schema kept intact)
+- **Profile Editing**: DEFERRED
+
 
 
 ---
