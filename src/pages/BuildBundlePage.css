@@ -5,7 +5,7 @@
 .build-bundle-page-wrapper {
   background-color: var(--color-bg, #faf6f0);
   min-height: 100vh;
-  padding-bottom: 7rem;
+  padding-bottom: 4rem;
 }
 
 /* ================================================
@@ -186,7 +186,7 @@
 
 
 /* ================================================
-   2. MAIN CONTENT AREA & CONTROLS
+   2. MAIN CONTENT AREA & CATEGORY FILTERS
    ================================================ */
 .bundle-main-content {
   margin-top: -3.5rem;
@@ -198,83 +198,31 @@
   max-width: 1320px;
 }
 
-/* Controls Card: Search + Category Selector */
-.bundle-controls-card {
+/* Category Filters Wrapper */
+.bundle-filters-wrapper {
   background: #ffffff;
   border-radius: 16px;
-  padding: 1.25rem 1.5rem;
+  padding: 0.85rem 1.25rem;
   box-shadow: 0 10px 30px rgba(26, 47, 34, 0.08);
   border: 1px solid rgba(212, 175, 55, 0.2);
   margin-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 
-/* Quick Search */
-.bundle-search-bar {
-  display: flex;
-  align-items: center;
-  background-color: #faf6f0;
-  border: 1px solid rgba(26, 47, 34, 0.12);
-  border-radius: 12px;
-  padding: 0.65rem 1rem;
-  gap: 10px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.bundle-search-bar:focus-within {
-  border-color: #d4af37;
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
-  background-color: #ffffff;
-}
-
-.bundle-search-icon {
-  color: #1a2f22;
-  flex-shrink: 0;
-}
-
-.bundle-search-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 0.94rem;
-  color: #1a2f22;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.bundle-search-input::placeholder {
-  color: #8c9b91;
-  font-style: italic;
-}
-
-.bundle-search-clear {
-  background: none;
-  border: none;
-  color: #888;
-  cursor: pointer;
-  padding: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.15s ease;
-}
-
-.bundle-search-clear:hover {
-  background-color: rgba(26, 47, 34, 0.08);
-  color: #1a2f22;
-}
-
-/* Category Filter Tabs */
 .bundle-filters-scroll {
   display: flex;
   gap: 0.6rem;
   overflow-x: auto;
-  padding: 0.25rem 0.15rem 0.5rem;
+  padding: 0.25rem 0.15rem;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  justify-content: flex-start;
+}
+
+@media (min-width: 900px) {
+  .bundle-filters-scroll {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }
 
 .bundle-filters-scroll::-webkit-scrollbar {
@@ -377,267 +325,6 @@
   gap: 1.75rem;
 }
 
-/* Empty State */
-.no-products-found-card {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 4rem 1.5rem;
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px dashed rgba(212, 175, 55, 0.35);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 520px;
-  margin: 0 auto;
-}
-
-.no-products-icon-circle {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(212, 175, 55, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.no-products-found-card h3 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.35rem;
-  color: #1a2f22;
-  margin-bottom: 0.5rem;
-}
-
-.no-products-found-card p {
-  font-size: 0.92rem;
-  color: #6d7d73;
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
-}
-
-.btn-royal-reset {
-  background-color: #1a2f22;
-  color: #d4af37;
-  border: 1px solid #d4af37;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.92rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-royal-reset:hover {
-  background-color: #243d2e;
-  transform: translateY(-1px);
-}
-
-
-/* ================================================
-   3. FLOATING ROYAL BUNDLE DOCK (BOTTOM TRAY)
-   ================================================ */
-.floating-bundle-dock-wrapper {
-  position: fixed;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  z-index: 990;
-  padding: 0 1rem;
-  animation: slideUpDock 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideUpDock {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.floating-bundle-dock {
-  background: #1a2f22;
-  border: 1.5px solid #d4af37;
-  border-radius: 18px;
-  padding: 0.85rem 1.5rem;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(212, 175, 55, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #ffffff;
-  max-width: 1080px;
-  margin: 0 auto;
-  gap: 1.5rem;
-}
-
-.dock-left-group {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.dock-box-icon {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(212, 175, 55, 0.15);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  color: #d4af37;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.dock-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #d4af37;
-  color: #1a2f22;
-  font-size: 0.7rem;
-  font-weight: 800;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #1a2f22;
-}
-
-.dock-text-col {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.dock-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.dock-sub {
-  font-size: 0.8rem;
-  color: #b0c0b6;
-}
-
-.dock-sub strong {
-  color: #d4af37;
-}
-
-.dock-free-ship {
-  color: #68d391;
-  font-weight: 600;
-}
-
-/* Thumbnails */
-.dock-thumbnails-group {
-  display: none;
-  align-items: center;
-  margin-left: 10px;
-}
-
-@media (min-width: 900px) {
-  .dock-thumbnails-group {
-    display: flex;
-  }
-}
-
-.dock-thumb {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 1.5px solid #d4af37;
-  margin-left: -10px;
-  background: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease;
-}
-
-.dock-thumb:first-child {
-  margin-left: 0;
-}
-
-.dock-thumb:hover {
-  transform: translateY(-4px) scale(1.1);
-  z-index: 10;
-}
-
-.dock-more-thumbs {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #d4af37;
-  color: #1a2f22;
-  font-size: 0.72rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: -6px;
-  border: 2px solid #1a2f22;
-}
-
-/* Right Group */
-.dock-right-group {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.dock-price-col {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
-}
-
-.dock-price-label {
-  font-size: 0.72rem;
-  color: #8ea195;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.dock-total-price {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #d4af37;
-}
-
-.btn-dock-checkout {
-  background: linear-gradient(135deg, #d4af37 0%, #ecd98e 100%);
-  color: #1a2f22;
-  border: none;
-  padding: 0.75rem 1.4rem;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 0.92rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.btn-dock-checkout:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.45);
-  background: linear-gradient(135deg, #dfbc45 0%, #f7e6a1 100%);
-}
-
 
 /* ================================================
    RESPONSIVE DESIGN (Tablets & Mobile)
@@ -660,7 +347,7 @@
 
 @media (max-width: 768px) {
   .build-bundle-page-wrapper {
-    padding-bottom: 9rem;
+    padding-bottom: 5rem;
   }
 
   .bundle-hero {
@@ -680,49 +367,14 @@
     margin-top: -2.5rem;
   }
 
-  .bundle-controls-card {
-    padding: 1rem;
+  .bundle-filters-wrapper {
+    padding: 0.75rem 0.5rem;
     border-radius: 14px;
-    gap: 0.75rem;
   }
 
   .premium-product-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
-  }
-
-  /* Dock adjustments on mobile */
-  .floating-bundle-dock-wrapper {
-    bottom: 72px; /* Above mobile bottom navigation */
-    padding: 0 0.5rem;
-  }
-
-  .floating-bundle-dock {
-    padding: 0.75rem 1rem;
-    border-radius: 14px;
-    gap: 0.75rem;
-  }
-
-  .dock-box-icon {
-    width: 38px;
-    height: 38px;
-  }
-
-  .dock-title {
-    font-size: 0.92rem;
-  }
-
-  .dock-sub {
-    font-size: 0.75rem;
-  }
-
-  .dock-price-col {
-    display: none;
-  }
-
-  .btn-dock-checkout {
-    padding: 0.65rem 1rem;
-    font-size: 0.84rem;
   }
 }
 
