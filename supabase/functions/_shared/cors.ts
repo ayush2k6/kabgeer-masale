@@ -5,11 +5,16 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://127.0.0.1:5173',
   'https://kabgeerji.com',
-  'https://kabgeer-masale.vercel.app'
+  'https://www.kabgeerji.com',
+  'https://kabgeermasale.vercel.app',
+  'https://kabgeer-masale.vercel.app',
+  'https://kabgeer-masale-v1.vercel.app',
+  'https://kabgeer-masalee.vercel.app'
 ];
 
 export const getCorsHeaders = (origin?: string | null) => {
-  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin)
+  const isVercelApp = origin && origin.endsWith('.vercel.app');
+  const allowedOrigin = (origin && (ALLOWED_ORIGINS.includes(origin) || isVercelApp))
     ? origin
     : ALLOWED_ORIGINS[0];
 
