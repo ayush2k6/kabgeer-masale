@@ -47,7 +47,7 @@ const AdminDashboardPage = () => {
   const [newOrderStatus, setNewOrderStatus] = useState('');
   const [statusUpdateMessage, setStatusUpdateMessage] = useState(null);
 
-  // Fetch all orders from Supabase (with direct RLS & Edge Function fallback)
+  // Fetch all orders from Supabase (with direct RLS & RPC fallback)
   const fetchAllOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -64,36 +64,24 @@ const AdminDashboardPage = () => {
         return;
       }
 
-      // 2. Fallback to admin-manage-orders Edge Function
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://cfvopnzcqbtqcupdomto.supabase.co';
-      const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY && !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith('YOUR_'))
-        ? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
-        : ((import.meta.env.VITE_SUPABASE_ANON_KEY && !import.meta.env.VITE_SUPABASE_ANON_KEY.startsWith('YOUR_'))
-          ? import.meta.env.VITE_SUPABASE_ANON_KEY
-          : 'sb_publishable_9Ry6OuD-80stD-4Cz8fMaQ_0EAHlUsU');
+      // 2. Try Supabase RPC get_all_orders_admin
+      const { data: rpcOrders, error: rpcErr } = await supabase.rpc('get_all_orders_admin');
+      if (!rpcErr && Array.isArray(rpcOrders) && rpcOrders.length > 0) {
+        const { data: allItems } = await supabase.from('order_items').select('*');
+        const itemsByOrderId = {};
+        (allItems || []).forEach(it => {
+          if (!itemsByOrderId[it.order_id]) itemsByOrderId[it.order_id] = [];
+          itemsByOrderId[it.order_id].push(it);
+        });
+        const fullOrders = rpcOrders.map(o => ({ ...o, order_items: itemsByOrderId[o.id] || [] }));
+        setOrders(fullOrders);
+        return;
+      }
 
-      const { data: sessionData } = await supabase.auth.getSession();
-      const authToken = sessionData?.session?.access_token || supabaseAnonKey;
-
-      const res = await fetch(`${supabaseUrl}/functions/v1/admin-manage-orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({
-          action: 'list',
-          adminEmail: user?.email || 'tanmayyadavbca@gmail.com'
-        })
-      });
-
-      const result = await res.json().catch(() => ({}));
-      if (res.ok && result.success && Array.isArray(result.orders)) {
-        setOrders(result.orders);
-      } else if (directOrders) {
+      if (directOrders) {
         setOrders(directOrders);
       } else {
-        throw new Error(result.error || directErr?.message || 'Failed to fetch customer orders.');
+        throw new Error(directErr?.message || rpcErr?.message || 'No orders found or permissions restricted.');
       }
     } catch (err) {
       console.error('Error fetching admin orders:', err);
@@ -101,7 +89,7 @@ const AdminDashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     fetchAllOrders();
