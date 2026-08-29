@@ -79,12 +79,44 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Build Your Bundle Banner */}
-      <section className="build-bundle-banner-section">
+      {/* Build Your Bundle Royal Showcase Section */}
+      <section className="home-bundle-royal-showcase">
         <div className="container">
-          <Link to="/bundle" className="bundle-banner-link">
-            <img src={buildBundleBannerImg} alt="Build Your Custom Spice Bundle Box" className="bundle-banner-img" />
-          </Link>
+          <div className="home-bundle-frame">
+            <Link to="/bundle" className="home-bundle-image-link" aria-label="Build Your Own Bundle Box">
+              <img src={buildBundleBannerImg} alt="Build Your Custom Spice Bundle Box" className="home-bundle-banner-img" />
+              <div className="home-bundle-banner-overlay">
+                <span className="bundle-floating-cta">
+                  <Sparkles size={16} /> Craft Your Box & Save 10% <ArrowRight size={16} />
+                </span>
+              </div>
+            </Link>
+
+            {/* 3-Step Royal Value Perks Strip */}
+            <div className="home-bundle-perks-strip">
+              <div className="bundle-perk-item">
+                <div className="bundle-perk-badge">1</div>
+                <div>
+                  <strong>Pick Any Blends</strong>
+                  <span>Mix non-veg, veg, or biryani</span>
+                </div>
+              </div>
+              <div className="bundle-perk-item">
+                <div className="bundle-perk-badge">2</div>
+                <div>
+                  <strong>Royal Gift Packaging</strong>
+                  <span>Hygienically triple-sealed box</span>
+                </div>
+              </div>
+              <div className="bundle-perk-item">
+                <div className="bundle-perk-badge">3</div>
+                <div>
+                  <strong>Flat 10% Discount</strong>
+                  <span>Auto-applied + Free Delivery</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
