@@ -57,11 +57,11 @@
 }
 
 .guest-title {
-  font-family: 'Playfair Display', Georgia, serif;
   color: #1a2f22;
-  font-size: 2.2rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 800;
   margin: 0 0 0.75rem 0;
+  letter-spacing: -0.5px;
 }
 
 .guest-desc {
@@ -148,6 +148,7 @@
   color: #d4af37;
   font-size: 0.95rem;
   display: block;
+  font-weight: 700;
 }
 
 .admin-ribbon-left span {
@@ -203,8 +204,8 @@
 }
 
 .patron-crest-avatar {
-  width: 76px;
-  height: 76px;
+  width: 74px;
+  height: 74px;
   border-radius: 50%;
   background: linear-gradient(135deg, #1a2f22, #2b4a36);
   border: 2.5px solid #d4af37;
@@ -217,10 +218,9 @@
 }
 
 .crest-letter {
-  font-family: 'Playfair Display', Georgia, serif;
   color: #d4af37;
-  font-size: 2.2rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -252,7 +252,7 @@
   gap: 5px;
   font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
   color: #d4af37;
   background-color: rgba(212, 175, 55, 0.15);
   padding: 3px 10px;
@@ -262,12 +262,12 @@
 }
 
 .patron-greeting {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 1.85rem;
+  font-weight: 700;
   color: #ffffff;
   margin: 0;
   line-height: 1.2;
+  letter-spacing: -0.3px;
 }
 
 .patron-meta-row {
@@ -283,14 +283,16 @@
   align-items: center;
   gap: 6px;
   font-size: 0.86rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
 }
 
 .patron-verified {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
+  font-weight: 600;
   color: #86efac;
   background: rgba(34, 197, 94, 0.12);
   padding: 2px 8px;
@@ -414,11 +416,10 @@
 }
 
 .sidebar-card-header h3 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: #1a2f22;
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .gold-accent {
@@ -436,6 +437,7 @@
   color: #1a2f22;
   font-size: 0.92rem;
   margin-bottom: 0.25rem;
+  font-weight: 700;
 }
 
 .saved-address-content p {
@@ -517,10 +519,10 @@
 }
 
 .bundle-promo-card h3 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: #d4af37;
   margin: 0 0 0.4rem 0;
+  font-weight: 700;
 }
 
 .bundle-promo-card p {
@@ -579,11 +581,11 @@
 }
 
 .orders-section-header h2 {
-  font-family: 'Playfair Display', Georgia, serif;
   color: #1a2f22;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   margin: 0;
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: -0.3px;
 }
 
 .orders-count-pill {
@@ -633,10 +635,10 @@
 }
 
 .empty-orders-experience h3 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.45rem;
+  font-size: 1.35rem;
   color: #1a2f22;
   margin: 0 0 0.5rem 0;
+  font-weight: 700;
 }
 
 .empty-orders-experience p {
@@ -735,10 +737,10 @@
 }
 
 .order-id-tag {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.05rem;
   color: #1a2f22;
+  letter-spacing: -0.2px;
 }
 
 .order-placed-timestamp {
@@ -755,15 +757,16 @@
 }
 
 .order-grand-total {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.3rem;
+  font-weight: 800;
   color: #1a2f22;
+  letter-spacing: -0.3px;
 }
 
 .order-items-count-text {
   font-size: 0.78rem;
   color: #777;
+  font-weight: 500;
 }
 
 /* Status Badges */
@@ -889,11 +892,10 @@
 }
 
 .drawer-subheading {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: #1a2f22;
   margin: 0 0 1rem 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .drawer-items-list {
@@ -954,9 +956,8 @@
 }
 
 .drawer-item-total {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 0.98rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 800;
   color: #1a2f22;
   flex-shrink: 0;
 }
@@ -976,6 +977,7 @@
   color: #1a2f22;
   font-size: 0.92rem;
   margin-bottom: 0.5rem;
+  font-weight: 700;
 }
 
 .recipient-name {
@@ -1061,7 +1063,7 @@
   }
 
   .patron-greeting {
-    font-size: 1.45rem;
+    font-size: 1.4rem;
   }
 
   .patron-email {
@@ -1117,7 +1119,7 @@
   }
 
   .orders-section-header h2 {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
 
   .order-casket-header {
