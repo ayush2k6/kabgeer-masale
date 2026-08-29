@@ -1,54 +1,71 @@
-/* Footer Component Styles */
+/* ================================================
+   KABGEER MASALE — ROYAL FOOTER
+   ================================================ */
+
 .footer-wrapper {
-  background-color: #12281a;
-  color: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, #122417 0%, #0c1810 100%);
+  color: rgba(255, 255, 255, 0.88);
   font-family: var(--font-body);
-  border-top: 2px solid #d4af37;
+  border-top: 1.5px solid rgba(212, 175, 55, 0.35);
+  position: relative;
 }
 
 .footer-inner {
   display: grid;
   grid-template-columns: 1fr;
   gap: 2.5rem;
-  padding-top: 4rem !important;
-  padding-bottom: 3rem !important;
+  padding-top: 3.5rem !important;
+  padding-bottom: 2.5rem !important;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 @media (min-width: 768px) {
   .footer-inner {
-    grid-template-columns: 1.2fr 0.9fr 0.9fr 1fr;
-    gap: 2rem;
+    grid-template-columns: 1.3fr 0.9fr 0.9fr 1fr;
+    gap: 2.25rem;
   }
 }
 
+/* Brand Column */
 .footer-brand {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.1rem;
 }
 
+.footer-logo-link {
+  display: inline-block;
+  max-width: fit-content;
+  transition: transform 0.2s ease;
+}
+
+.footer-logo-link:hover {
+  transform: scale(1.02);
+}
+
+/* Crisp logo with background removed via invert & screen blend */
 .footer-brand-logo {
-  height: 55px;
+  height: 54px;
   width: auto;
   object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.95;
+  filter: invert(1);
+  mix-blend-mode: screen;
   display: block;
 }
 
-
-
 .brand-desc {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.72);
   line-height: 1.6;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   margin: 0;
 }
 
+/* Social Links */
 .social-links {
   display: flex;
   gap: 0.75rem;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .social-links a {
@@ -58,9 +75,9 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.25);
   transition: all 0.25s ease;
 }
 
@@ -69,36 +86,38 @@
   border-color: #d4af37;
   color: #12281a;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
 }
 
+/* Headings */
 .footer-heading {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 600;
   color: #d4af37;
-  margin: 0 0 1.25rem 0;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  margin: 0 0 1.15rem 0;
+  letter-spacing: 0.5px;
 }
 
+/* Link Columns */
 .policy-links {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.55rem;
 }
 
 .policy-links a {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: rgba(255, 255, 255, 0.75);
+  gap: 9px;
+  color: rgba(255, 255, 255, 0.72);
   text-decoration: none;
-  font-size: 0.88rem;
-  transition: all 0.25s ease;
-  padding: 4px 0;
+  font-size: 0.86rem;
+  transition: all 0.2s ease;
+  padding: 3px 0;
 }
 
 .policy-links a:hover {
@@ -111,21 +130,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0.85;
 }
 
+/* Contact Info */
 .footer-contact-info {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.7rem;
   margin-bottom: 1.25rem;
 }
 
 .contact-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.88rem;
+  gap: 9px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.86rem;
   margin: 0;
 }
 
@@ -134,29 +155,31 @@
   flex-shrink: 0;
 }
 
+/* Trust Badge */
 .footer-trust-badge {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: rgba(255, 255, 255, 0.85);
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(212, 175, 55, 0.08);
   border: 1px solid rgba(212, 175, 55, 0.3);
   padding: 8px 12px;
   border-radius: 8px;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
+/* Footer Bottom Bar */
 .footer-bottom {
-  background-color: #0b1a10;
-  color: rgba(255, 255, 255, 0.6);
-  padding: 1.25rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #07120a;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 1.15rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .bottom-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.82rem;
+  gap: 0.4rem;
+  font-size: 0.8rem;
 }
 
 @media (min-width: 768px) {
@@ -167,15 +190,21 @@
 }
 
 .heart {
-  color: #e53e3e;
-  fill: #e53e3e;
+  color: #d4af37;
+  fill: #d4af37;
   display: inline-block;
   vertical-align: middle;
   margin: 0 2px;
 }
 
+/* Mobile Bottom Nav Clearance */
 @media (max-width: 767px) {
   .footer-wrapper {
-    padding-bottom: 60px;
+    padding-bottom: 4.5rem;
+  }
+
+  .footer-inner {
+    padding-top: 2.5rem !important;
+    gap: 2rem;
   }
 }
