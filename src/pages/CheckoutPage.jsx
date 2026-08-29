@@ -50,7 +50,9 @@ const CheckoutPage = () => {
 
   const subtotal = getCartTotal();
   const discount = getDiscountAmount();
-  const finalTotal = Math.max(0, subtotal - discount);
+  const [paymentMethod, setPaymentMethod] = useState('online'); // 'online' | 'cod'
+  const codFee = paymentMethod === 'cod' ? 40 : 0;
+  const finalTotal = Math.max(0, subtotal - discount + codFee);
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,6 +60,9 @@ const CheckoutPage = () => {
   const [pendingServerOrder, setPendingServerOrder] = useState(null);
   const [couponInput, setCouponInput] = useState('');
   const [couponError, setCouponError] = useState('');
+  const [isLookingUpPincode, setIsLookingUpPincode] = useState(false);
+  const [pincodeStatusMessage, setPincodeStatusMessage] = useState('');
+  const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -105,9 +110,37 @@ const CheckoutPage = () => {
     setFormData(prev => ({ ...prev, phone: digitsOnly }));
   };
 
-  const handlePinCodeChange = (e) => {
+  const handlePinCodeChange = async (e) => {
     const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 6);
     setFormData(prev => ({ ...prev, pinCode: digitsOnly }));
+
+    if (digitsOnly.length === 6) {
+      setIsLookingUpPincode(true);
+      setPincodeStatusMessage('Checking PIN code...');
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${digitsOnly}`);
+        const data = await res.json();
+        if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice?.length > 0) {
+          const postOffice = data[0].PostOffice[0];
+          const detectedCity = postOffice.District || postOffice.Block || postOffice.Name;
+          const detectedState = postOffice.State;
+          setFormData(prev => ({
+            ...prev,
+            city: detectedCity || prev.city,
+            state: detectedState || prev.state
+          }));
+          setPincodeStatusMessage(`✓ Auto-filled: ${detectedCity}, ${detectedState}`);
+        } else {
+          setPincodeStatusMessage('');
+        }
+      } catch {
+        setPincodeStatusMessage('');
+      } finally {
+        setIsLookingUpPincode(false);
+      }
+    } else {
+      setPincodeStatusMessage('');
+    }
   };
 
   const handleNameChange = (e) => {
@@ -125,6 +158,7 @@ const CheckoutPage = () => {
       setCouponInput('');
     }
   };
+
 
   // Submit form & call create-razorpay-order Edge Function
   const handleSubmit = async (e) => {
@@ -287,6 +321,60 @@ const CheckoutPage = () => {
             </div>
           </div>
 
+          {/* Mobile Collapsible Order Summary Accordion */}
+          <div className="checkout-mobile-summary-accordion">
+            <button
+              type="button"
+              className="mobile-summary-toggle"
+              onClick={() => setIsMobileSummaryOpen(prev => !prev)}
+            >
+              <div className="summary-toggle-left">
+                <ShoppingBag size={18} />
+                <span>{isMobileSummaryOpen ? 'Hide order summary' : 'Show order summary'}</span>
+                <span className="toggle-chevron">{isMobileSummaryOpen ? '▲' : '▼'}</span>
+              </div>
+              <span className="summary-toggle-amount">₹{finalTotal.toFixed(2)}</span>
+            </button>
+
+            {isMobileSummaryOpen && (
+              <div className="mobile-summary-dropdown">
+                {cartItems.map((item) => {
+                  const itemId = item.cartItemId || `${item.id}__${item.weight || '50g'}`;
+                  return (
+                    <div key={itemId} className="mobile-summary-item-row">
+                      <img src={item.image || item.images?.[0]} alt={item.name} className="mobile-summary-thumb" />
+                      <div className="mobile-summary-item-meta">
+                        <span className="mobile-item-title">{item.name} ({item.weight || '50g'})</span>
+                        <span className="mobile-item-qty">Qty: {item.quantity}</span>
+                      </div>
+                      <span className="mobile-item-price">₹{(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                  );
+                })}
+                <div className="mobile-summary-totals">
+                  <div className="mob-sum-row">
+                    <span>Subtotal</span>
+                    <span>₹{subtotal.toFixed(2)}</span>
+                  </div>
+                  {codFee > 0 && (
+                    <div className="mob-sum-row">
+                      <span>COD Handling Fee</span>
+                      <span>₹{codFee.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="mob-sum-row">
+                    <span>Shipping</span>
+                    <span style={{ color: '#16a34a', fontWeight: 600 }}>FREE</span>
+                  </div>
+                  <div className="mob-sum-row mob-sum-total">
+                    <strong>Total</strong>
+                    <strong>₹{finalTotal.toFixed(2)}</strong>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           {errorMessage && (
             <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid #fca5a5', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <AlertCircle size={18} />
@@ -401,7 +489,7 @@ const CheckoutPage = () => {
                   type="text" 
                   name="pinCode" 
                   className="form-input" 
-                  placeholder="6-digit PIN code (e.g. 226001)" 
+                  placeholder="6-digit PIN (e.g. 226001)" 
                   autoComplete="postal-code"
                   maxLength={6}
                   value={formData.pinCode} 
@@ -410,7 +498,13 @@ const CheckoutPage = () => {
                 />
               </div>
 
-              <div className="input-with-icon">
+              {pincodeStatusMessage && (
+                <p style={{ fontSize: '0.8rem', color: isLookingUpPincode ? '#d4af37' : '#16a34a', marginTop: '0.35rem', fontWeight: 600 }}>
+                  {pincodeStatusMessage}
+                </p>
+              )}
+
+              <div className="input-with-icon mt-2">
                 <input 
                   type="tel" 
                   name="phone" 
@@ -433,7 +527,7 @@ const CheckoutPage = () => {
 
             {/* Shipping Method */}
             <div className="checkout-section">
-              <h3>Shipping method</h3>
+              <h3>Shipping Method</h3>
               <div className="radio-group" style={{ marginTop: '0.75rem' }}>
                 <label className="radio-label active" style={{ justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -445,32 +539,55 @@ const CheckoutPage = () => {
               </div>
             </div>
 
-            {/* Payment Section */}
+            {/* Payment Method Section */}
             <div className="checkout-section">
-              <h3>Payment Gateway</h3>
-              <p className="text-sm text-text-light mb-2">All transactions are 100% secure and encrypted with Razorpay.</p>
+              <h3>Payment Method</h3>
+              <p className="text-sm text-text-light mb-2">Choose your preferred payment option:</p>
               
-              <div className="payment-box">
-                <div className="payment-header">
-                  <span style={{ fontWeight: 600, color: 'var(--color-primary)' }}>Razorpay Secure Gateway</span>
-                  <div className="payment-icons">
-                    <span className="cc-icon">UPI</span>
-                    <span className="cc-icon">Cards</span>
-                    <span className="cc-icon">NetBanking</span>
+              <div className="radio-group">
+                <label className={`radio-label ${paymentMethod === 'online' ? 'active' : ''}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <input 
+                      type="radio" 
+                      name="paymentMethod" 
+                      value="online" 
+                      checked={paymentMethod === 'online'} 
+                      onChange={() => setPaymentMethod('online')} 
+                    />
+                    <div>
+                      <strong>⚡ Instant Online Payment (Razorpay Secure)</strong>
+                      <div style={{ fontSize: '0.78rem', color: '#666' }}>UPI (GPay, PhonePe, Paytm), Cards, NetBanking</div>
+                    </div>
                   </div>
-                </div>
-                <div className="payment-body text-center text-sm text-text-light" style={{ padding: '2rem 1.5rem', backgroundColor: '#fafafa' }}>
-                  <CreditCard size={40} className="mb-2" style={{ margin: '0 auto', color: 'var(--color-primary)', opacity: 0.8 }} />
-                  <p style={{ margin: '0.5rem 0 0', color: '#555', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                    After clicking <strong>"Pay now"</strong>, you will be redirected to Razorpay Secure to complete your purchase safely using GPay, PhonePe, Paytm, Cards, or NetBanking.
-                  </p>
-                </div>
+                  <span style={{ fontSize: '0.75rem', backgroundColor: '#dcfce7', color: '#16a34a', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
+                    Fastest
+                  </span>
+                </label>
+
+                <label className={`radio-label ${paymentMethod === 'cod' ? 'active' : ''}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <input 
+                      type="radio" 
+                      name="paymentMethod" 
+                      value="cod" 
+                      checked={paymentMethod === 'cod'} 
+                      onChange={() => setPaymentMethod('cod')} 
+                    />
+                    <div>
+                      <strong>💵 Cash on Delivery (COD)</strong>
+                      <div style={{ fontSize: '0.78rem', color: '#666' }}>Pay with cash upon delivery</div>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '0.78rem', color: '#d97706', fontWeight: 600 }}>
+                    +₹40 Fee
+                  </span>
+                </label>
               </div>
             </div>
 
             {/* Billing Address */}
             <div className="checkout-section">
-              <h3>Billing address</h3>
+              <h3>Billing Address</h3>
               <div className="radio-group">
                 <label className={`radio-label ${formData.billingAddress === 'same' ? 'active' : ''}`}>
                   <input type="radio" name="billingAddress" value="same" checked={formData.billingAddress === 'same'} onChange={handleChange} />
@@ -489,12 +606,13 @@ const CheckoutPage = () => {
               className="btn btn-primary btn-large w-100 mt-2" 
               style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
             >
-              <Lock size={18} /> {isSubmitting ? 'Initializing Payment...' : `Pay ₹${finalTotal.toFixed(2)}`}
+              <Lock size={18} /> {isSubmitting ? 'Initializing Payment...' : (paymentMethod === 'cod' ? `Place Order (COD: ₹${finalTotal.toFixed(2)})` : `Pay ₹${finalTotal.toFixed(2)}`)}
             </button>
 
             <div className="trust-badge-container">
-              <div className="trust-badge"><ShieldCheck size={18} color="#16a34a" /> SSL Encrypted</div>
-              <div className="trust-badge"><Lock size={18} color="#16a34a" /> Secure Checkout</div>
+              <div className="trust-badge"><ShieldCheck size={16} color="#16a34a" /> 256-Bit SSL Encrypted</div>
+              <div className="trust-badge"><Lock size={16} color="#16a34a" /> FSSAI Certified Quality</div>
+              <div className="trust-badge"><Check size={16} color="#16a34a" /> 100% Pure Lucknavi Masala</div>
             </div>
 
             <div className="checkout-footer-links mt-4 text-sm text-accent">
@@ -535,55 +653,58 @@ const CheckoutPage = () => {
             </div>
 
             <div className="summary-items">
-              {cartItems.map((item) => (
-                <div key={item.id} className="summary-item">
-                  <div className="summary-item-img placeholder-img" style={{ position: 'relative' }}>
-                    <span className="item-badge">{item.quantity}</span>
-                    <img 
-                      src={item.image || item.images?.[0]} 
-                      alt={item.name} 
-                      style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px', borderRadius: '8px', backgroundColor: '#fff' }} 
-                    />
-                  </div>
-                  <div className="summary-item-details" style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, paddingRight: '10px' }}>
-                    <span className="item-name">{item.name}</span>
-                    <div className="quantity-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <button 
+              {cartItems.map((item) => {
+                const itemId = item.cartItemId || `${item.id}__${item.weight || '50g'}`;
+                return (
+                  <div key={itemId} className="summary-item">
+                    <div className="summary-item-img placeholder-img" style={{ position: 'relative' }}>
+                      <span className="item-badge">{item.quantity}</span>
+                      <img 
+                        src={item.image || item.images?.[0]} 
+                        alt={item.name} 
+                        style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px', borderRadius: '8px', backgroundColor: '#fff' }} 
+                      />
+                    </div>
+                    <div className="summary-item-details" style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, paddingRight: '10px' }}>
+                      <span className="item-name">{item.name} ({item.weight || '50g'})</span>
+                      <div className="quantity-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button 
+                          type="button"
+                          onClick={() => updateQuantity(itemId, item.quantity - 1)}
+                          aria-label="Decrease quantity"
+                          style={{ width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem' }}
+                        >
+                          -
+                        </button>
+                        <span style={{ fontSize: '0.9rem', minWidth: '16px', textAlign: 'center', fontWeight: 600 }}>{item.quantity}</span>
+                        <button 
+                          type="button"
+                          onClick={() => updateQuantity(itemId, item.quantity + 1)}
+                          aria-label="Increase quantity"
+                          style={{ width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem' }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                      <span className="summary-item-price" style={{ fontWeight: 700 }}>
+                        ₹{(item.price * item.quantity).toFixed(2)}
+                      </span>
+                      <button
                         type="button"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        aria-label="Decrease quantity"
-                        style={{ width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem' }}
+                        onClick={() => removeFromCart(itemId)}
+                        title="Remove item"
+                        style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', padding: '2px' }}
+                        onMouseOver={(e) => e.target.style.color = '#cc0c39'}
+                        onMouseOut={(e) => e.target.style.color = '#999'}
                       >
-                        -
-                      </button>
-                      <span style={{ fontSize: '0.9rem', minWidth: '16px', textAlign: 'center', fontWeight: 600 }}>{item.quantity}</span>
-                      <button 
-                        type="button"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        aria-label="Increase quantity"
-                        style={{ width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem' }}
-                      >
-                        +
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
-                    <span className="summary-item-price" style={{ fontWeight: 700 }}>
-                      ₹{(item.price * item.quantity).toFixed(2)}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeFromCart(item.id)}
-                      title="Remove item"
-                      style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', padding: '2px' }}
-                      onMouseOver={(e) => e.target.style.color = '#cc0c39'}
-                      onMouseOut={(e) => e.target.style.color = '#999'}
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
 
               {cartItems.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#666' }}>
@@ -602,7 +723,7 @@ const CheckoutPage = () => {
                 <form onSubmit={handleCouponSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
                   <input
                     type="text"
-                    placeholder="Coupon code (e.g. KABGEER10)"
+                    placeholder="Coupon code"
                     value={couponInput}
                     onChange={(e) => setCouponInput(e.target.value)}
                     style={{ flex: 1, padding: '8px 12px', border: '1px solid #ccc', borderRadius: '6px', fontSize: '0.85rem' }}
@@ -625,6 +746,12 @@ const CheckoutPage = () => {
                   <span>Subtotal</span>
                   <span>₹{subtotal.toFixed(2)}</span>
                 </div>
+                {codFee > 0 && (
+                  <div className="summary-row" style={{ color: '#d97706', fontWeight: 600 }}>
+                    <span>COD Handling Fee</span>
+                    <span>+₹{codFee.toFixed(2)}</span>
+                  </div>
+                )}
                 {discount > 0 && (
                   <div className="summary-row" style={{ color: '#16a34a', fontWeight: 600 }}>
                     <span>Discount ({appliedCoupon?.code})</span>
@@ -644,7 +771,6 @@ const CheckoutPage = () => {
                 <p className="tax-info text-sm text-text-light mt-1">Inclusive of all taxes. Verified securely by server during checkout.</p>
               </div>
             )}
-          </div>
         </div>
       </div>
 

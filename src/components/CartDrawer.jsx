@@ -105,41 +105,42 @@ const CartDrawer = () => {
             </div>
           ) : (
             <>
-              {/* Item Rows */}
-              <div className="drawer-item-list">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="drawer-item-card">
-                    <div className="drawer-item-img-wrapper">
-                      <img src={item.image || item.images?.[0]} alt={item.name} />
-                    </div>
-                    <div className="drawer-item-info">
-                      <h4 className="drawer-item-title">{item.name}</h4>
-                      <p className="drawer-item-weight">• {item.weight || (item.weightInGrams ? `${item.weightInGrams}g` : '50g')}</p>
-                      
-                      <div className="drawer-item-controls">
-                        <div className="qty-picker">
-                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)} aria-label="Decrease quantity">
-                            <Minus size={14} />
-                          </button>
-                          <span>{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)} aria-label="Increase quantity">
-                            <Plus size={14} />
+                {cartItems.map((item) => {
+                  const itemId = item.cartItemId || `${item.id}__${item.weight || '50g'}`;
+                  return (
+                    <div key={itemId} className="drawer-item-card">
+                      <div className="drawer-item-img-wrapper">
+                        <img src={item.image || item.images?.[0]} alt={item.name} />
+                      </div>
+                      <div className="drawer-item-info">
+                        <h4 className="drawer-item-title">{item.name}</h4>
+                        <p className="drawer-item-weight">• {item.weight || (item.weightInGrams ? `${item.weightInGrams}g` : '50g')}</p>
+                        
+                        <div className="drawer-item-controls">
+                          <div className="qty-picker">
+                            <button onClick={() => updateQuantity(itemId, item.quantity - 1)} aria-label="Decrease quantity">
+                              <Minus size={14} />
+                            </button>
+                            <span>{item.quantity}</span>
+                            <button onClick={() => updateQuantity(itemId, item.quantity + 1)} aria-label="Increase quantity">
+                              <Plus size={14} />
+                            </button>
+                          </div>
+
+                          <span className="drawer-item-total">₹{(item.price * item.quantity).toFixed(2)}</span>
+
+                          <button
+                            className="drawer-trash-btn"
+                            onClick={() => removeFromCart(itemId)}
+                            title="Remove item"
+                          >
+                            <Trash2 size={14} />
                           </button>
                         </div>
-
-                        <span className="drawer-item-total">₹{(item.price * item.quantity).toFixed(2)}</span>
-
-                        <button
-                          className="drawer-trash-btn"
-                          onClick={() => removeFromCart(item.id)}
-                          title="Remove item"
-                        >
-                          <Trash2 size={14} />
-                        </button>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Frequently Bought Together Add-ons */}
@@ -156,7 +157,7 @@ const CartDrawer = () => {
                         </div>
                         <button
                           className="btn-add-addon"
-                          onClick={() => addToCart(addon, 1)}
+                          onClick={() => addToCart({ ...addon, weight: '50g', price: addon.price }, 1)}
                         >
                           + Add
                         </button>
@@ -179,7 +180,7 @@ const CartDrawer = () => {
                 <Tag size={16} className="coupon-icon" />
                 <input
                   type="text"
-                  placeholder="Coupon code (e.g. KABGEER10)"
+                  placeholder="Coupon code"
                   value={couponInput}
                   onChange={(e) => setCouponInput(e.target.value)}
                   className="coupon-input"
@@ -196,6 +197,7 @@ const CartDrawer = () => {
             )}
 
             {couponError && <p className="coupon-error-text">{couponError}</p>}
+
 
             {/* Financial Summary */}
             <div className="drawer-summary-box">

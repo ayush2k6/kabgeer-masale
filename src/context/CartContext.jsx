@@ -4,16 +4,21 @@ const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
-const VALID_COUPONS = {
-  KABGEER10: { code: 'KABGEER10', type: 'percent', value: 10, description: '10% OFF on all masalas' },
-  FREESHIP: { code: 'FREESHIP', type: 'shipping', value: 0, description: 'Free Express Shipping' },
-  ROYAL15: { code: 'ROYAL15', type: 'percent', value: 15, description: '15% OFF Royal Lucknavi Collection' }
-};
+const VALID_COUPONS = {};
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     const saved = localStorage.getItem('kabgeer_cart');
-    return saved ? JSON.parse(saved) : [];
+    if (!saved) return [];
+    try {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed.map(item => ({
+        ...item,
+        cartItemId: item.cartItemId || `${item.id}__${item.weight || '50g'}`
+      })) : [];
+    } catch {
+      return [];
+    }
   });
 
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
@@ -46,31 +51,38 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToCart = (product, quantity = 1) => {
+    const weight = product.weight || '50g';
+    const targetCartItemId = product.cartItemId || `${product.id}__${weight}`;
+    const addQty = Math.max(1, quantity);
+
     setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      const addQty = Math.max(1, quantity);
+      const existing = prev.find(item => (item.cartItemId || `${item.id}__${item.weight || '50g'}`) === targetCartItemId);
       if (existing) {
         return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + addQty } : item
+          (item.cartItemId || `${item.id}__${item.weight || '50g'}`) === targetCartItemId
+            ? { ...item, quantity: item.quantity + addQty }
+            : item
         );
       }
-      return [...prev, { ...product, quantity: addQty }];
+      return [...prev, { ...product, cartItemId: targetCartItemId, quantity: addQty }];
     });
-    showToast(`${product.name} added to your cart!`);
+    showToast(`${product.name} (${weight}) added to your spice box!`);
     openCartDrawer();
   };
 
-  const removeFromCart = (productId) => {
-    setCartItems(prev => prev.filter(item => item.id !== productId));
+  const removeFromCart = (cartItemId) => {
+    setCartItems(prev => prev.filter(item => (item.cartItemId || item.id) !== cartItemId));
   };
 
-  const updateQuantity = (productId, newQuantity) => {
+  const updateQuantity = (cartItemId, newQuantity) => {
     if (newQuantity < 1) {
-      removeFromCart(productId);
+      removeFromCart(cartItemId);
       return;
     }
     setCartItems(prev => 
-      prev.map(item => item.id === productId ? { ...item, quantity: newQuantity } : item)
+      prev.map(item => 
+        (item.cartItemId || item.id) === cartItemId ? { ...item, quantity: newQuantity } : item
+      )
     );
   };
 
@@ -88,16 +100,9 @@ export const CartProvider = ({ children }) => {
   };
 
   const applyCoupon = (code) => {
-    const cleanCode = code ? code.trim().toUpperCase() : '';
+    const cleanCode = code ? code.trim() : '';
     if (!cleanCode) return { success: false, message: 'Please enter a coupon code.' };
-
-    const coupon = VALID_COUPONS[cleanCode];
-    if (coupon) {
-      setAppliedCoupon(coupon);
-      showToast(`Coupon ${coupon.code} applied successfully!`);
-      return { success: true, message: `Coupon ${coupon.code} applied!` };
-    }
-    return { success: false, message: 'Invalid coupon code. Try KABGEER10 or FREESHIP' };
+    return { success: false, message: 'No coupons are currently active at this time.' };
   };
 
   const removeCoupon = () => {
@@ -106,13 +111,9 @@ export const CartProvider = ({ children }) => {
   };
 
   const getDiscountAmount = () => {
-    if (!appliedCoupon) return 0;
-    const subtotal = getCartTotal();
-    if (appliedCoupon.type === 'percent') {
-      return Math.round((subtotal * appliedCoupon.value) / 100);
-    }
     return 0;
   };
+
 
   return (
     <CartContext.Provider value={{
