@@ -1,0 +1,312 @@
+/* OrderSuccessPage.css — Customer Order Confirmation & Success Page */
+
+.order-success-page-wrapper {
+  background-color: var(--color-bg, #FAF6F0);
+  min-height: 85vh;
+  padding: 3rem 1rem 6rem;
+  font-family: var(--font-body);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.order-success-container {
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.order-success-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 12px 40px rgba(26, 47, 34, 0.07);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  text-align: center;
+}
+
+/* Success Check Badge */
+.order-success-badge {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background-color: #f0fdf4;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  border: 2px solid #bbf7d0;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.15);
+}
+
+.order-success-tag {
+  display: inline-block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin-bottom: 0.4rem;
+}
+
+.order-success-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-primary, #1A2F22);
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+
+.order-success-subtitle {
+  color: var(--color-text-light, #6E6E6E);
+  font-size: 0.92rem;
+  margin: 0 0 1.75rem;
+  line-height: 1.5;
+}
+
+/* Quick Info Grid */
+.order-quick-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+  background-color: var(--color-bg, #FAF6F0);
+  padding: 1.1rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.75rem;
+  text-align: left;
+  border: 1px solid rgba(26, 47, 34, 0.08);
+}
+
+.order-quick-info-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.order-quick-info-label {
+  font-size: 0.7rem;
+  color: #888888;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.order-quick-info-val {
+  font-size: 0.88rem;
+  color: var(--color-primary, #1A2F22);
+}
+
+.order-quick-info-val.total {
+  font-size: 0.95rem;
+  color: #16a34a;
+  font-weight: 700;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.order-status-badge-confirmed {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background-color: #dcfce7;
+  color: #16a34a;
+  font-weight: 700;
+  margin-top: 2px;
+  width: fit-content;
+}
+
+/* Itemized Products Box */
+.order-items-preview-box {
+  text-align: left;
+  margin-bottom: 1.75rem;
+  border-top: 1px solid rgba(26, 47, 34, 0.08);
+  padding-top: 1.25rem;
+}
+
+.order-items-preview-title {
+  font-size: 0.85rem;
+  color: var(--color-primary, #1A2F22);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-items-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.order-item-preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px dashed rgba(26, 47, 34, 0.08);
+}
+
+.order-item-preview-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.order-item-preview-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.order-item-preview-price {
+  color: var(--color-primary, #1A2F22);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+/* Shipping Address Box */
+.order-shipping-preview-box {
+  text-align: left;
+  margin-bottom: 1.75rem;
+  background-color: #fdfbf7;
+  padding: 1.1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+.order-shipping-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.4rem;
+  color: var(--color-primary, #1A2F22);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.order-shipping-preview-text {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #4a5c51;
+  line-height: 1.5;
+}
+
+/* CTAs */
+.order-success-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-direction: column;
+}
+
+.btn-order-continue {
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  background-color: var(--color-primary, #1A2F22);
+  color: #d4af37;
+  border: 1px solid #d4af37;
+  transition: all 0.2s ease;
+}
+
+.btn-order-continue:hover {
+  background-color: #243d2e;
+}
+
+.btn-order-account {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--color-primary, #1A2F22);
+  background-color: transparent;
+  border: 1px solid rgba(26, 47, 34, 0.18);
+  transition: all 0.2s ease;
+}
+
+.btn-order-account:hover {
+  background-color: rgba(26, 47, 34, 0.05);
+}
+
+.order-guarantee-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 1.5rem;
+  font-size: 0.76rem;
+  color: #888888;
+}
+
+
+/* ================================================
+   MOBILE VIEWPORT (< 768px)
+   ================================================ */
+@media (max-width: 768px) {
+  .order-success-page-wrapper {
+    padding: 1.5rem 0.85rem 6rem;
+  }
+
+  .order-success-card {
+    padding: 1.75rem 1.15rem;
+    border-radius: 16px;
+  }
+
+  .order-success-badge {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 1rem;
+  }
+
+  .order-success-title {
+    font-size: 1.5rem;
+  }
+
+  .order-success-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .order-quick-info-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    padding: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .order-quick-info-val {
+    font-size: 0.82rem;
+  }
+
+  .order-shipping-preview-box {
+    padding: 0.85rem;
+  }
+
+  .btn-order-continue {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-order-account {
+    padding: 0.75rem;
+    font-size: 0.84rem;
+  }
+}

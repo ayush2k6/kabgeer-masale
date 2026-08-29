@@ -1,27 +1,28 @@
-/* ProfilePage.css — Customer Account Page V1 */
+/* ProfilePage.css — Customer Account & Profile Page */
 
 .account-page-wrapper {
   background-color: var(--color-bg, #FAF6F0);
-  min-height: 80vh;
-  padding: 3rem 1.5rem 5rem 1.5rem;
+  min-height: 85vh;
+  padding: 2.5rem 1.5rem 5rem 1.5rem;
   font-family: var(--font-body);
 }
 
 .account-container {
-  max-width: 1100px;
+  max-width: 1120px;
   margin: 0 auto;
 }
 
+/* Page Header */
 .account-page-header {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .account-page-header h1 {
-  font-family: var(--font-heading);
+  font-family: 'Playfair Display', Georgia, serif;
   color: var(--color-primary, #1A2F22);
-  font-size: 2.25rem;
-  margin: 0 0 0.5rem 0;
-  font-weight: 700;
+  font-size: 2.2rem;
+  margin: 0 0 0.4rem 0;
+  font-weight: 600;
 }
 
 .account-page-header p {
@@ -30,59 +31,66 @@
   margin: 0;
 }
 
+/* Grid Layout */
 .account-layout-grid {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 2.5rem;
+  grid-template-columns: 310px 1fr;
+  gap: 2rem;
   align-items: start;
 }
 
-@media (max-width: 900px) {
-  .account-layout-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-}
-
-/* 1. Account Sidebar Card */
+/* 1. Account Details Card */
 .account-card {
   background-color: #ffffff;
-  border-radius: 14px;
-  padding: 2rem;
-  border: 1px solid rgba(26, 47, 34, 0.08);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 16px;
+  padding: 1.75rem;
+  border: 1px solid rgba(26, 47, 34, 0.1);
+  box-shadow: 0 4px 20px rgba(26, 47, 34, 0.04);
+}
+
+.account-card-header-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .account-avatar-wrapper {
-  width: 72px;
-  height: 72px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background-color: var(--color-primary, #1A2F22);
-  color: #ffffff;
+  background: linear-gradient(135deg, #1A2F22, #2b4a36);
+  color: #d4af37;
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin-bottom: 1.25rem;
+  flex-shrink: 0;
   box-shadow: 0 4px 12px rgba(26, 47, 34, 0.15);
 }
 
 .account-info-group {
-  margin-bottom: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .account-customer-name {
-  font-family: var(--font-heading);
-  font-size: 1.35rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.25rem;
   color: var(--color-primary, #1A2F22);
-  margin: 0 0 0.35rem 0;
-  font-weight: 700;
+  margin: 0 0 0.2rem 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .account-customer-email {
   color: var(--color-text-light, #6E6E6E);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin: 0;
   word-break: break-all;
 }
@@ -90,7 +98,7 @@
 .account-card-divider {
   border: 0;
   border-top: 1px solid rgba(26, 47, 34, 0.08);
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
 }
 
 .btn-account-logout {
@@ -104,7 +112,7 @@
   color: #b91c1c;
   border: 1px solid #fecdd3;
   border-radius: 8px;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -118,43 +126,43 @@
 /* 2. My Orders Section */
 .orders-section {
   background-color: #ffffff;
-  border-radius: 14px;
-  padding: 2rem;
-  border: 1px solid rgba(26, 47, 34, 0.08);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 16px;
+  padding: 1.75rem;
+  border: 1px solid rgba(26, 47, 34, 0.1);
+  box-shadow: 0 4px 20px rgba(26, 47, 34, 0.04);
 }
 
 .orders-section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.75rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.85rem;
   border-bottom: 1px solid rgba(26, 47, 34, 0.08);
 }
 
 .orders-section-header h2 {
-  font-family: var(--font-heading);
+  font-family: 'Playfair Display', Georgia, serif;
   color: var(--color-primary, #1A2F22);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   margin: 0;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .orders-count-badge {
   background-color: #faf6f0;
   color: var(--color-primary, #1A2F22);
-  padding: 0.3rem 0.8rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border: 1px solid rgba(26, 47, 34, 0.1);
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 /* Empty Orders State */
 .empty-orders-card {
   text-align: center;
-  padding: 3.5rem 1.5rem;
+  padding: 3rem 1.5rem;
 }
 
 .empty-orders-icon {
@@ -163,16 +171,16 @@
 }
 
 .empty-orders-card h3 {
-  font-family: var(--font-heading);
+  font-family: 'Playfair Display', Georgia, serif;
   color: var(--color-primary, #1A2F22);
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   margin: 0 0 0.5rem 0;
 }
 
 .empty-orders-card p {
   color: var(--color-text-light, #6E6E6E);
-  font-size: 0.95rem;
-  margin: 0 0 1.75rem 0;
+  font-size: 0.92rem;
+  margin: 0 0 1.5rem 0;
 }
 
 .btn-start-shopping {
@@ -180,79 +188,81 @@
   align-items: center;
   gap: 0.5rem;
   background-color: var(--color-primary, #1A2F22);
-  color: #ffffff;
-  padding: 0.75rem 1.75rem;
+  color: #d4af37;
+  border: 1px solid #d4af37;
+  padding: 0.75rem 1.6rem;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.92rem;
   text-decoration: none;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .btn-start-shopping:hover {
-  background-color: #264230;
+  background-color: #243d2e;
 }
 
 /* Orders List */
 .orders-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .order-card {
   background-color: #ffffff;
-  border: 1px solid rgba(26, 47, 34, 0.1);
+  border: 1px solid rgba(26, 47, 34, 0.12);
   border-radius: 12px;
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .order-card:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 20px rgba(26, 47, 34, 0.06);
+  border-color: rgba(212, 175, 55, 0.35);
 }
 
 .order-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 1.25rem 1.5rem;
+  padding: 1.1rem 1.35rem;
   background-color: #faf6f0;
   border-bottom: 1px solid rgba(26, 47, 34, 0.08);
-  gap: 1rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
 .order-meta-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .order-display-id {
   font-weight: 700;
   color: var(--color-primary, #1A2F22);
-  font-size: 1.05rem;
+  font-size: 1rem;
   letter-spacing: 0.3px;
 }
 
 .order-date {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--color-text-light, #6E6E6E);
 }
 
 .order-badges-group {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
 /* Status Badges */
 .status-pill {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 0.3rem 0.75rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 20px;
   text-transform: capitalize;
 }
@@ -283,7 +293,7 @@
 
 /* Order Card Summary Body */
 .order-card-body {
-  padding: 1.25rem 1.5rem;
+  padding: 1.1rem 1.35rem;
 }
 
 .order-summary-row {
@@ -293,28 +303,29 @@
 }
 
 .order-items-summary-text {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--color-text, #2A2A2A);
   font-weight: 500;
 }
 
 .order-total-amount {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--color-primary, #1A2F22);
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
 .btn-toggle-order-details {
   background: none;
   border: none;
-  color: var(--color-accent-dark, #B5952F);
-  font-weight: 600;
-  font-size: 0.88rem;
+  color: #b5952f;
+  font-weight: 700;
+  font-size: 0.85rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.5rem 0 0 0;
+  padding: 0.6rem 0 0 0;
   transition: color 0.2s ease;
 }
 
@@ -326,74 +337,190 @@
 .order-expanded-details {
   border-top: 1px dashed rgba(26, 47, 34, 0.12);
   margin-top: 1rem;
-  padding-top: 1.25rem;
+  padding-top: 1.1rem;
 }
 
 .order-items-table {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
 }
 
 .order-item-detail-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 0;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(26, 47, 34, 0.04);
 }
 
 .order-item-left {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .order-item-thumb {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
   border-radius: 6px;
   background-color: #faf6f0;
   border: 1px solid rgba(0, 0, 0, 0.06);
   padding: 2px;
+  flex-shrink: 0;
 }
 
 .order-item-title-col {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .order-item-name {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--color-primary, #1A2F22);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .order-item-qty {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--color-text-light, #6E6E6E);
 }
 
 .order-item-price {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--color-text, #2A2A2A);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary, #1A2F22);
+  flex-shrink: 0;
 }
 
 /* Shipping Address Box */
 .order-shipping-box {
   background-color: #faf6f0;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 1rem;
-  font-size: 0.85rem;
-  color: #444;
+  font-size: 0.84rem;
+  color: #3b4e42;
   line-height: 1.5;
+  border: 1px solid rgba(212, 175, 55, 0.2);
 }
 
 .order-shipping-box strong {
   color: var(--color-primary, #1A2F22);
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.88rem;
+}
+
+
+/* ================================================
+   MOBILE VIEWPORT OPTIMIZATIONS (< 768px)
+   ================================================ */
+@media (max-width: 768px) {
+  .account-page-wrapper {
+    padding: 1.5rem 1rem 5.5rem 1rem;
+  }
+
+  .account-page-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .account-page-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .account-page-header p {
+    font-size: 0.86rem;
+  }
+
+  .account-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* Compact Account Sidebar Card on Mobile */
+  .account-card {
+    padding: 1.25rem;
+    border-radius: 14px;
+  }
+
+  .account-avatar-wrapper {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .account-customer-name {
+    font-size: 1.1rem;
+  }
+
+  .account-customer-email {
+    font-size: 0.8rem;
+  }
+
+  .account-card-divider {
+    margin: 1rem 0;
+  }
+
+  .btn-account-logout {
+    padding: 0.65rem;
+    font-size: 0.85rem;
+  }
+
+  /* Orders Section on Mobile */
+  .orders-section {
+    padding: 1.25rem;
+    border-radius: 14px;
+  }
+
+  .orders-section-header {
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .orders-section-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .order-card-header {
+    padding: 0.9rem 1rem;
+  }
+
+  .order-display-id {
+    font-size: 0.92rem;
+  }
+
+  .order-date {
+    font-size: 0.75rem;
+  }
+
+  .order-card-body {
+    padding: 0.9rem 1rem;
+  }
+
+  .order-total-amount {
+    font-size: 1.05rem;
+  }
+
+  .order-item-thumb {
+    width: 36px;
+    height: 36px;
+  }
+
+  .order-item-name {
+    font-size: 0.82rem;
+  }
+
+  .order-shipping-box {
+    padding: 0.85rem;
+    font-size: 0.8rem;
+  }
 }
