@@ -809,10 +809,11 @@
 @media (max-width: 768px) {
   .home-page {
     padding-bottom: 5.5rem;
+    overflow-x: hidden;
   }
 
   .home-category-tabs-wrapper {
-    padding: 0.6rem 0.4rem;
+    padding: 0.5rem 0.35rem;
     border-radius: 12px;
     margin-top: 0.5rem;
   }
@@ -829,19 +830,20 @@
   }
 
   .home-bundle-banner-overlay {
-    bottom: 0.75rem;
-    right: 0.75rem;
+    bottom: 0.65rem;
+    right: 0.65rem;
   }
 
   .bundle-floating-cta {
-    font-size: 0.8rem;
-    padding: 0.5rem 1rem;
+    font-size: 0.76rem;
+    padding: 0.45rem 0.85rem;
+    gap: 5px;
   }
 
   .home-bundle-perks-strip {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
-    padding: 0.85rem 1rem;
+    gap: 0.65rem;
+    padding: 0.8rem 1rem;
   }
 
   /* 4 Pillars in Even 2x2 Grid */
@@ -852,11 +854,16 @@
 
   /* Why Choose Us in Even 2x2 Grid */
   .why-choose-us-royal-section {
-    padding: 2.75rem 0;
+    padding: 2.5rem 0;
   }
 
   .why-choose-title {
-    font-size: 1.75rem;
+    font-size: 1.7rem;
+  }
+
+  .why-choose-desc {
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
   }
 
   .why-choose-royal-grid {
@@ -865,30 +872,35 @@
   }
 
   .why-choose-card {
-    padding: 1.25rem 0.75rem;
+    padding: 1.1rem 0.65rem;
     border-radius: 12px;
   }
 
   .why-choose-icon-wrap {
-    width: 44px;
-    height: 44px;
-    margin-bottom: 0.75rem;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 0.65rem;
   }
 
   .why-choose-card h4 {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
   }
 
   .why-choose-card p {
-    font-size: 0.76rem;
+    font-size: 0.74rem;
   }
 
   .section-title {
-    font-size: 1.75rem;
+    font-size: 1.7rem;
+  }
+
+  .section-desc {
+    font-size: 0.88rem;
+    margin-bottom: 1.25rem;
   }
 
   .quick-masala-section {
-    padding: 3rem 0;
+    padding: 2.75rem 0;
   }
 
   /* Clean 2-Card Row on Mobile */
@@ -897,38 +909,99 @@
     gap: 10px;
   }
 
+  .section-cta-row {
+    margin-top: 1.5rem;
+  }
+
+  .btn-explore-category {
+    font-size: 0.84rem;
+    padding: 0.6rem 1.25rem;
+  }
+
+  /* Slider */
   .home-catalogue-slider-section {
-    padding: 3rem 0;
+    padding: 2.75rem 0;
+  }
+
+  .slider-arrows-group {
+    display: none;
   }
 
   .home-slider-title {
-    font-size: 1.75rem;
+    font-size: 1.7rem;
+  }
+
+  .home-slider-desc {
+    font-size: 0.86rem;
+  }
+
+  .home-product-slider {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.75rem;
   }
 
   .home-slider-card-item {
-    min-width: 210px;
-    max-width: 210px;
+    scroll-snap-align: start;
+    min-width: 180px;
+    max-width: 180px;
   }
 
+  .btn-royal-catalogue {
+    font-size: 0.86rem;
+    padding: 0.7rem 1.5rem;
+  }
+
+  /* Story */
+  .middle-info-section {
+    padding: 2.75rem 0;
+  }
+
+  .image-decorator {
+    display: none;
+  }
+
+  .info-heading {
+    font-size: 1.7rem;
+  }
+
+  .info-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-order-combo {
+    font-size: 0.88rem;
+    padding: 0.75rem 1.4rem;
+  }
+
+  /* Reviews */
   .customer-reviews-section {
-    padding: 3rem 0;
+    padding: 2.75rem 0;
   }
 
   .reviews-title {
-    font-size: 1.75rem;
+    font-size: 1.7rem;
+  }
+
+  .reviews-desc {
+    font-size: 0.88rem;
   }
 
   .reviews-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 12px;
   }
 
-  .middle-info-section {
-    padding: 3rem 0;
+  .review-card {
+    padding: 1.25rem 1rem;
+    border-radius: 12px;
   }
 
-  .info-heading {
-    font-size: 1.75rem;
+  .review-product {
+    height: 75px;
+    margin-bottom: 0.75rem;
   }
 }
 
@@ -943,14 +1016,37 @@
     gap: 8px;
   }
 
+  .pillar-card {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 0.85rem 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .pillar-icon {
+    width: 38px;
+    height: 38px;
+    margin-bottom: 0.25rem;
+  }
+
+  .pillar-card h4 {
+    font-size: 0.82rem;
+  }
+
+  .pillar-card p {
+    font-size: 0.7rem;
+    line-height: 1.25;
+  }
+
   .why-choose-royal-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
 
   .home-slider-card-item {
-    min-width: 170px;
-    max-width: 170px;
+    min-width: 165px;
+    max-width: 165px;
   }
 
   .container {

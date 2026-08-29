@@ -153,18 +153,66 @@
 
 /* Mobile Adjustments */
 @media (max-width: 767px) {
+  .unified-product-card {
+    border-radius: 10px;
+  }
+
+  .unified-card-image-container {
+    padding: 0.65rem;
+  }
+
+  .unified-discount-badge {
+    top: 6px;
+    right: 6px;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 8px;
+  }
+
   .unified-card-info {
-    padding: 0.75rem;
+    padding: 0.65rem 0.55rem;
   }
+
   .unified-product-title {
-    font-size: 0.9rem;
-    height: 2.4em;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.25;
+    height: 2.5em;
+    margin-bottom: 2px;
   }
+
+  .unified-product-meta {
+    font-size: 0.72rem;
+    margin-bottom: 4px;
+  }
+
+  .unified-product-rating {
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .rating-text {
+    font-size: 0.68rem;
+  }
+
+  .unified-price-row {
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
   .unified-sale-price {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
+
+  .unified-mrp-price {
+    font-size: 0.75rem;
+  }
+
   .unified-card-btn {
-    padding: 8px;
-    font-size: 0.85rem;
+    padding: 6px 4px;
+    font-size: 0.78rem;
+    border-radius: 6px;
+    gap: 4px;
   }
 }
