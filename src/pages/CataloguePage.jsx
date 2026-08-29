@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { SlidersHorizontal, X, Sparkles, Search } from 'lucide-react';
+import { SlidersHorizontal, X, Search, Tag, ArrowUpDown } from 'lucide-react';
 import { PRODUCTS, CATEGORIES } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import './CataloguePage.css';
@@ -83,24 +83,22 @@ const CataloguePage = () => {
 
       <div className="container catalogue-container">
         
-        {/* Category Pill Tabs Scroll */}
-        <div className="catalogue-category-tabs-wrapper">
-          <div className="catalogue-category-tabs">
-            {CATEGORIES.map(category => {
-              const count = categoryCounts[category] || 0;
-              const isActive = activeCategory === category;
-              return (
-                <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`catalogue-cat-pill ${isActive ? 'active' : ''}`}
-                >
-                  <span>{category}</span>
-                  <span className="cat-count-badge">{count}</span>
-                </button>
-              );
-            })}
-          </div>
+        {/* Seamless Category Pill Tabs (Direct on background) */}
+        <div className="catalogue-category-tabs-scroll">
+          {CATEGORIES.map(category => {
+            const count = categoryCounts[category] || 0;
+            const isActive = activeCategory === category;
+            return (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`catalogue-cat-pill ${isActive ? 'active' : ''}`}
+              >
+                <span>{category}</span>
+                <span className="cat-count-badge">{count}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Secondary Filter & Sort Bar */}
@@ -109,15 +107,16 @@ const CataloguePage = () => {
           <div className="catalogue-summary-text">
             {searchQuery ? (
               <div className="active-search-chip">
-                <Search size={14} />
+                <Search size={13} />
                 <span>Search: "<strong>{searchQuery}</strong>"</span>
                 <button type="button" onClick={clearSearch} aria-label="Clear search">
-                  <X size={14} />
+                  <X size={13} />
                 </button>
               </div>
             ) : (
               <span className="masala-count-text">
                 Showing <strong>{sortedProducts.length}</strong> {sortedProducts.length === 1 ? 'masala' : 'authentic masalas'}
+                {activeCategory !== 'All Masalas' && <span className="active-cat-name"> in {activeCategory}</span>}
               </span>
             )}
           </div>
@@ -132,7 +131,7 @@ const CataloguePage = () => {
                 value={priceFilter}
                 onChange={(e) => setPriceFilter(e.target.value)}
               >
-                <option value="all">All Prices</option>
+                <option value="all">🏷️ All Prices</option>
                 <option value="under-60">Under ₹60</option>
                 <option value="60-80">₹60 – ₹80</option>
                 <option value="over-80">Above ₹80</option>
@@ -148,7 +147,7 @@ const CataloguePage = () => {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
-                <option value="featured">Featured</option>
+                <option value="featured">✨ Featured</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="alpha-asc">Name: A to Z</option>

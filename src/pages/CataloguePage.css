@@ -17,6 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  border-bottom: 1.5px solid rgba(212, 175, 55, 0.2);
 }
 
 .catalogue-banner-image {
@@ -31,38 +32,31 @@
 /* Main Container */
 .catalogue-container {
   max-width: 1320px;
-  padding: 1.75rem 1.5rem 0;
+  padding: 1.5rem 1.5rem 0;
   margin: 0 auto;
 }
 
-/* Category Pill Tabs Scroll */
-.catalogue-category-tabs-wrapper {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 0.75rem 1rem;
-  box-shadow: 0 4px 20px rgba(26, 47, 34, 0.05);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  margin-bottom: 1.5rem;
-}
-
-.catalogue-category-tabs {
+/* Seamless Category Pill Tabs (Direct on background) */
+.catalogue-category-tabs-scroll {
   display: flex;
-  gap: 0.55rem;
+  gap: 0.6rem;
   overflow-x: auto;
-  padding: 0.2rem 0.1rem;
+  padding: 0.5rem 0.25rem 1rem;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   justify-content: flex-start;
+  margin-bottom: 0.75rem;
 }
 
 @media (min-width: 900px) {
-  .catalogue-category-tabs {
+  .catalogue-category-tabs-scroll {
     justify-content: center;
     flex-wrap: wrap;
+    padding-bottom: 0.5rem;
   }
 }
 
-.catalogue-category-tabs::-webkit-scrollbar {
+.catalogue-category-tabs-scroll::-webkit-scrollbar {
   display: none;
 }
 
@@ -70,19 +64,19 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 0.5rem 1.1rem;
+  padding: 0.55rem 1.15rem;
   border-radius: 24px;
   border: 1px solid rgba(26, 47, 34, 0.12);
   background-color: #ffffff;
   color: #3b4e42;
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 600;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   white-space: nowrap;
   flex-shrink: 0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .catalogue-cat-pill:hover {
@@ -95,7 +89,7 @@
   background-color: #1a2f22;
   color: #d4af37;
   border-color: #d4af37;
-  box-shadow: 0 4px 12px rgba(26, 47, 34, 0.18);
+  box-shadow: 0 4px 14px rgba(26, 47, 34, 0.2);
 }
 
 .cat-count-badge {
@@ -140,6 +134,11 @@
   font-weight: 700;
 }
 
+.active-cat-name {
+  color: #d4af37;
+  font-weight: 700;
+}
+
 /* Active Search Chip */
 .active-search-chip {
   display: inline-flex;
@@ -178,7 +177,7 @@
 .catalogue-dropdowns-group {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .catalogue-select-wrapper {
@@ -198,21 +197,21 @@
 
 .catalogue-select {
   background-color: #ffffff;
-  border: 1px solid rgba(26, 47, 34, 0.15);
-  border-radius: 10px;
-  padding: 0.55rem 2rem 0.55rem 0.85rem;
-  font-size: 0.85rem;
+  border: 1px solid rgba(26, 47, 34, 0.14);
+  border-radius: 20px;
+  padding: 0.45rem 2rem 0.45rem 0.95rem;
+  font-size: 0.84rem;
   font-weight: 600;
   color: #1a2f22;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%231a2f22' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%231a2f22' height='14' viewBox='0 0 24 24' width='14' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 8px center;
+  background-position: right 10px center;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
@@ -295,13 +294,12 @@
   }
 
   .catalogue-container {
-    padding: 1rem 0.85rem 0;
+    padding: 0.75rem 0.85rem 0;
   }
 
-  .catalogue-category-tabs-wrapper {
-    padding: 0.6rem 0.4rem;
-    border-radius: 12px;
-    margin-bottom: 1rem;
+  .catalogue-category-tabs-scroll {
+    padding: 0.4rem 0.15rem 0.85rem;
+    gap: 0.5rem;
   }
 
   .catalogue-cat-pill {
@@ -319,7 +317,7 @@
   .catalogue-secondary-bar {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.75rem;
+    gap: 0.65rem;
     margin-bottom: 1rem;
   }
 
@@ -328,7 +326,7 @@
   }
 
   .masala-count-text {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
   }
 
   .catalogue-dropdowns-group {
@@ -340,9 +338,9 @@
 
   .catalogue-select {
     width: 100%;
-    padding: 0.5rem 1.75rem 0.5rem 0.65rem;
-    font-size: 0.8rem;
-    border-radius: 8px;
+    padding: 0.45rem 1.75rem 0.45rem 0.75rem;
+    font-size: 0.78rem;
+    border-radius: 18px;
   }
 
   /* Clean 2-column mobile grid */
