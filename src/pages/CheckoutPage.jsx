@@ -202,22 +202,34 @@ const CheckoutPage = () => {
         couponCode: appliedCoupon?.code || null
       };
 
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://cfvopnzcqbtqcupdomto.supabase.co';
+      const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY && !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith('YOUR_'))
+        ? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+        : ((import.meta.env.VITE_SUPABASE_ANON_KEY && !import.meta.env.VITE_SUPABASE_ANON_KEY.startsWith('YOUR_'))
+          ? import.meta.env.VITE_SUPABASE_ANON_KEY
+          : 'sb_publishable_9Ry6OuD-80stD-4Cz8fMaQ_0EAHlUsU');
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const authToken = sessionData?.session?.access_token || supabaseAnonKey;
 
       const response = await fetch(`${supabaseUrl}/functions/v1/create-razorpay-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseAnonKey}`
+          'Authorization': `Bearer ${authToken}`
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          ...payload,
+          pricingConfig: {
+            shippingFee: paymentMethod === 'cod' ? 40 : 0
+          }
+        })
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Failed to create order on server.');
+        throw new Error(data.error || data.details || `Failed to create order on server (Status ${response.status}).`);
       }
 
       const { razorpayOrderId, orderId, displayOrderId, totalAmount, keyId } = data;
@@ -278,8 +290,12 @@ const CheckoutPage = () => {
 
   const handleServerPaymentVerification = async (verifyPayload) => {
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://cfvopnzcqbtqcupdomto.supabase.co';
+      const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY && !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith('YOUR_'))
+        ? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+        : ((import.meta.env.VITE_SUPABASE_ANON_KEY && !import.meta.env.VITE_SUPABASE_ANON_KEY.startsWith('YOUR_'))
+          ? import.meta.env.VITE_SUPABASE_ANON_KEY
+          : 'sb_publishable_9Ry6OuD-80stD-4Cz8fMaQ_0EAHlUsU');
 
       const response = await fetch(`${supabaseUrl}/functions/v1/verify-razorpay-payment`, {
         method: 'POST',
@@ -290,10 +306,10 @@ const CheckoutPage = () => {
         body: JSON.stringify(verifyPayload)
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Server-side payment verification failed.');
+        throw new Error(data.error || data.details || 'Server-side payment verification failed.');
       }
 
       clearCart();
