@@ -15,16 +15,24 @@ export const AuthProvider = ({ children }) => {
   const [isFading, setIsFading] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
-  // Helper to fetch core user auth data (Profile details editing is deferred)
+  // Helper to fetch core user auth data & role (Profile details editing is deferred)
   const fetchUserProfile = async (sessionUser) => {
     if (!sessionUser) return null;
     const userId = sessionUser.id;
 
-    // Core user object for Auth and Orders (Profile details editing deferred)
+    // Fetch user profile to check admin role
+    const { data: profileRow } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .maybeSingle();
+
+    // Core user object for Auth, Admin verification, and Orders
     return {
       id: userId,
       email: sessionUser.email,
-      name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email?.split('@')[0] || 'Customer'
+      name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email?.split('@')[0] || 'Customer',
+      role: profileRow?.role || 'customer'
     };
   };
 
@@ -173,7 +181,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ 
-      user, orders, loading, login, register, logout, addOrder, updateProfileDetails
+      user, orders, loading, isAdmin: user?.role === 'admin', login, register, logout, addOrder, updateProfileDetails
     }}>
       {!showContent && <PageLoader isFading={isFading} />}
       {showContent && children}

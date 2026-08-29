@@ -3,6 +3,42 @@
 ## 2026-08-29
 
 ### Task
+Part 3.6 — Admin Dashboard V1 Implementation.
+
+### Implemented Features & Architecture
+- **Admin Authorization & Security Guard**:
+  - Added `supabase/migrations/20260829000000_admin_role_and_rls.sql` with `role` on `public.profiles` (`customer` / `admin`) and `public.is_admin()` helper function.
+  - Implemented [AdminRoute.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/components/AdminRoute.jsx) and [AdminLoginPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/AdminLoginPage.jsx) for protected administrative access without exposing private credentials.
+- **Dashboard Overview (KPIs)**:
+  - Created [AdminDashboardPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/AdminDashboardPage.jsx) featuring Total Orders, Pending/Processing Orders, Paid Orders, Delivered Orders, and Total Revenue calculations.
+- **Orders List & Live Filtering**:
+  - Implemented responsive orders table displaying Order ID, Date, Customer (Name, Email, Guest/Registered pill), Amount, Payment Status, and Order Status.
+  - Added real-time text search (Order ID, Name, Email, Phone) and dropdown status filters (Order Status, Payment Status).
+- **Order Details Drawer**:
+  - Shows complete shipping/delivery address, customer metadata, and ordered line items with images, quantities, unit prices, and financials breakdown.
+- **Order Fulfillment Status Update**:
+  - Integrated direct order status updater supporting all valid database statuses (`Pending`, `Confirmed`, `Processing`, `Shipped`, `Delivered`, `Cancelled`). Payment status remains strictly immutable and controlled by payment verification.
+- **Verification & Testing**:
+  - Created automated test suite (`test_admin_dashboard.mjs`) passing 5/5 checks.
+  - Executed `npm run lint` (0 errors) and `npm run build` (0 errors).
+
+---
+
+### Task
+Part 3.5.4 — Comprehensive E-Commerce & Payment System Security Audit.
+
+### Audit Summary
+- **Security Rating**: 🟢 **LOW RISK** (Solid architecture with strict server-side authority).
+- **Code Changes**: 0 (Audit only mode).
+- **Checks Verified**: Price tampering protection, RLS cross-customer isolation, HMAC signature verification, quantity boundary clamping, JWT auth resolution, inventory constraint protection, secret containment.
+- **Identified Hardening Opportunities**:
+  1. Restrict CORS `Access-Control-Allow-Origin` from `*` to production domain in production.
+  2. Implement database-level row locking / stock reservation for extreme high-concurrency flash-sales.
+- **Blocked Items**: Real Razorpay live transaction capture blocked until client provides live Razorpay credentials.
+
+---
+
+### Task
 Customer Account Page V1 Implementation & Wishlist Feature Removal.
 
 ### Implemented Upgrades & Changes

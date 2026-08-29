@@ -21,6 +21,7 @@ Current Branch: tanmay-development
 | Part 4 | Security Hardening, RLS Audit & Env Validation | ✅ COMPLETE |
 | Part 5 | Final E2E QA, UI Redesign, Cart Drawer & Form Validations | ✅ COMPLETE & VERIFIED |
 | Customer Page V1 | Account, Order History, Order Details, Wishlist Removal | ✅ COMPLETE |
+| Part 3.6 | Admin Dashboard V1 (Overview, Orders, Details, Status Update) | ✅ COMPLETE |
 
 
 ---

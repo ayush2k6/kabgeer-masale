@@ -25,6 +25,9 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
+const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
+import AdminRoute from './components/AdminRoute';
 
 function App() {
   return (
@@ -43,6 +46,9 @@ function App() {
                     <Route path="/signup" element={<SignupPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/account" element={<ProfilePage />} />
+                    <Route path="/admin/login" element={<AdminLoginPage />} />
+                    <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+                    <Route path="/admin/orders" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
                     <Route path="/recipes" element={<RecipesPage />} />
                     <Route path="/products" element={<CataloguePage />} />
                     <Route path="/product/:id" element={<ProductPage />} />

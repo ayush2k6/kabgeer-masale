@@ -69,14 +69,23 @@
 ## 📌 Phase 3 Breakdown (Supabase Migration & Razorpay Payments)
 
 ```
+PART 3.6 (Admin Dashboard V1)
+├── Admin authorization       ✅ COMPLETE (AdminRoute.jsx + AdminLoginPage.jsx + public.profiles.role)
+├── Dashboard overview        ✅ COMPLETE (KPIs: Total Orders, Pending, Paid, Delivered, Sales)
+├── Orders list               ✅ COMPLETE (Search + Status Filters + Badges)
+├── Order details             ✅ COMPLETE (Customer info, address, line items, breakdown)
+├── Order status update       ✅ COMPLETE (Fulfillment status update with immutable payment status)
+├── Security/RLS testing      ✅ COMPLETE (Zero-trust RLS + isolated customer access)
+└── Final verification        ✅ COMPLETE (5/5 tests passed, 0 lint errors, 0 build errors)
+
 PART 3.5, 3.6, 3.7 & 3.8
 ├── 3.5.1 Audit / Blueprint        ✅ COMPLETED
 ├── 3.5.2 Edge Functions            ✅ COMPLETED (create-razorpay-order, verify-razorpay-payment, razorpay-webhook)
 ├── 3.5.3 Frontend Checkout         ✅ COMPLETED (CheckoutPage.jsx & MockPaymentModal.jsx connected to Edge Functions)
-├── 3.5.4 E2E Verification          ✅ COMPLETED (Live Order Creation, Payment Verification, Order Items & Inventory Deduction Verified)
+├── 3.5.4 Security Audit            ✅ COMPLETED (0 Code Changes, Razorpay E2E Blocked — credentials unavailable, 2 hardening suggestions)
 ├── 3.6.1 Email Edge Function       ✅ COMPLETED (send-order-email with HTML templates & independent idempotency)
 ├── 3.6.2 Payment Integration       ✅ COMPLETED (Wired into verify-razorpay-payment & razorpay-webhook)
-├── 3.6.3 Live Email Verification   ✅ COMPLETED (Customer confirmation & Admin alert emails live verified — PART 3.6 IS 100% COMPLETE!)
-├── 3.7.1 Sheets Order Sync         ✅ COMPLETED (sync-google-sheets with Google Apps Script Code.gs & sheets_synced_at idempotency — PART 3.7 IS 100% COMPLETE!)
+├── 3.6.3 Live Email Verification   ✅ COMPLETED (Customer confirmation & Admin alert emails live verified)
+├── 3.7.1 Sheets Order Sync         ✅ COMPLETED (sync-google-sheets with Google Apps Script Code.gs & sheets_synced_at idempotency)
 └── 3.8.1 Trackon Courier Sync      ✅ COMPLETED (create-shipment Edge Function with Trackon adapter, public.shipments audit table, and non-blocking retry idempotency — DEV-COMPLETE / SIMULATION MODE)
 ```
