@@ -185,12 +185,14 @@
   line-height: 1.35;
 }
 
-/* Why Choose Us Section — Minimal & Royal */
+/* Why Choose Us Section — Royal Green & Gold */
 .why-choose-us-royal-section {
-  padding: 4rem 0;
-  background: linear-gradient(180deg, #ffffff 0%, #faf6f0 100%);
-  border-top: 1px solid #f0e6d6;
-  border-bottom: 1px solid #f0e6d6;
+  padding: 4.5rem 0;
+  background: linear-gradient(180deg, #102115 0%, #173220 50%, #0e1d13 100%);
+  border-top: 1.5px solid rgba(212, 175, 55, 0.4);
+  border-bottom: 1.5px solid rgba(212, 175, 55, 0.4);
+  color: #ffffff;
+  position: relative;
 }
 
 .why-choose-header {
@@ -198,16 +200,17 @@
 }
 
 .why-choose-title {
-  font-size: 2.3rem;
+  font-size: 2.4rem;
   font-family: 'Playfair Display', Georgia, serif;
   font-weight: 600;
-  color: #1A2F22;
+  color: #ffffff;
   margin: 0.35rem 0 0.75rem 0;
+  letter-spacing: 0.3px;
 }
 
 .why-choose-desc {
-  font-size: 0.98rem;
-  color: #666;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
   max-width: 620px;
   margin: 0 auto;
   line-height: 1.6;
@@ -220,12 +223,13 @@
 }
 
 .why-choose-card {
-  background: #ffffff;
-  border: 1px solid rgba(212, 175, 55, 0.22);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.25);
   border-radius: 14px;
   padding: 1.75rem 1.1rem;
   text-align: center;
-  box-shadow: 0 4px 15px rgba(26, 47, 34, 0.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
   transition: all 0.25s ease;
   display: flex;
   flex-direction: column;
@@ -233,42 +237,44 @@
 }
 
 .why-choose-card:hover {
+  background: rgba(255, 255, 255, 0.09);
   transform: translateY(-4px);
   border-color: #d4af37;
-  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 0 15px rgba(212, 175, 55, 0.2);
 }
 
 .why-choose-icon-wrap {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background-color: rgba(212, 175, 55, 0.12);
+  background-color: rgba(212, 175, 55, 0.15);
   color: #d4af37;
-  border: 1.5px solid rgba(212, 175, 55, 0.35);
+  border: 1.5px solid #d4af37;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
   transition: all 0.25s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .why-choose-card:hover .why-choose-icon-wrap {
-  background-color: #1a2f22;
-  color: #d4af37;
-  border-color: #1a2f22;
+  background-color: #d4af37;
+  color: #102115;
+  transform: scale(1.08);
 }
 
 .why-choose-card h4 {
-  font-size: 0.98rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: #1a2f22;
+  color: #ffffff;
   margin: 0 0 0.4rem 0;
   font-family: 'Playfair Display', Georgia, serif;
 }
 
 .why-choose-card p {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
   line-height: 1.45;
   margin: 0;
 }
