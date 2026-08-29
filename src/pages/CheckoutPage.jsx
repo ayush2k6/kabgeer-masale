@@ -232,13 +232,18 @@ const CheckoutPage = () => {
         throw new Error(data.error || data.details || `Failed to create order on server (Status ${response.status}).`);
       }
 
-      const { razorpayOrderId, orderId, displayOrderId, totalAmount, keyId } = data;
+      const orderId = data.orderId;
+      const displayOrderId = data.displayOrderId;
+      const razorpayOrderId = data.razorpayOrderId;
+      const keyId = data.key || data.keyId;
+      const totalAmount = Number(data.summary?.total ?? (data.amount ? data.amount / 100 : (data.totalAmount ?? finalTotal)));
 
       const orderDataForVerification = {
         razorpayOrderId,
         orderId,
         displayOrderId,
-        totalAmount
+        totalAmount,
+        keyId
       };
 
       setPendingServerOrder(orderDataForVerification);
