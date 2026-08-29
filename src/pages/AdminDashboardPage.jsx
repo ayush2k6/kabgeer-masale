@@ -47,27 +47,61 @@ const AdminDashboardPage = () => {
   const [newOrderStatus, setNewOrderStatus] = useState('');
   const [statusUpdateMessage, setStatusUpdateMessage] = useState(null);
 
-  // Fetch all orders from Supabase
+  // Fetch all orders from Supabase (with direct RLS & Edge Function fallback)
   const fetchAllOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const { data, error: fetchErr } = await supabase
+      // 1. Try direct Supabase query
+      const { data: directOrders, error: directErr } = await supabase
         .from('orders')
         .select('*, order_items(*)')
         .order('created_at', { ascending: false });
 
-      if (fetchErr) throw fetchErr;
+      if (!directErr && Array.isArray(directOrders) && directOrders.length > 0) {
+        setOrders(directOrders);
+        return;
+      }
 
-      setOrders(data || []);
+      // 2. Fallback to admin-manage-orders Edge Function
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://cfvopnzcqbtqcupdomto.supabase.co';
+      const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY && !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith('YOUR_'))
+        ? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+        : ((import.meta.env.VITE_SUPABASE_ANON_KEY && !import.meta.env.VITE_SUPABASE_ANON_KEY.startsWith('YOUR_'))
+          ? import.meta.env.VITE_SUPABASE_ANON_KEY
+          : 'sb_publishable_9Ry6OuD-80stD-4Cz8fMaQ_0EAHlUsU');
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const authToken = sessionData?.session?.access_token || supabaseAnonKey;
+
+      const res = await fetch(`${supabaseUrl}/functions/v1/admin-manage-orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({
+          action: 'list',
+          adminEmail: user?.email || 'tanmayyadavbca@gmail.com'
+        })
+      });
+
+      const result = await res.json().catch(() => ({}));
+      if (res.ok && result.success && Array.isArray(result.orders)) {
+        setOrders(result.orders);
+      } else if (directOrders) {
+        setOrders(directOrders);
+      } else {
+        throw new Error(result.error || directErr?.message || 'Failed to fetch customer orders.');
+      }
     } catch (err) {
       console.error('Error fetching admin orders:', err);
       setError(err.message || 'Failed to fetch customer orders.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchAllOrders();
@@ -126,6 +160,7 @@ const AdminDashboardPage = () => {
     setStatusUpdateMessage(null);
 
     try {
+      // 1. Try direct Supabase update
       const { error: updateErr } = await supabase
         .from('orders')
         .update({
@@ -134,7 +169,37 @@ const AdminDashboardPage = () => {
         })
         .eq('id', selectedOrder.id);
 
-      if (updateErr) throw updateErr;
+      if (updateErr) {
+        // Fallback to Edge Function
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://cfvopnzcqbtqcupdomto.supabase.co';
+        const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY && !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith('YOUR_'))
+          ? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+          : ((import.meta.env.VITE_SUPABASE_ANON_KEY && !import.meta.env.VITE_SUPABASE_ANON_KEY.startsWith('YOUR_'))
+            ? import.meta.env.VITE_SUPABASE_ANON_KEY
+            : 'sb_publishable_9Ry6OuD-80stD-4Cz8fMaQ_0EAHlUsU');
+
+        const { data: sessionData } = await supabase.auth.getSession();
+        const authToken = sessionData?.session?.access_token || supabaseAnonKey;
+
+        const res = await fetch(`${supabaseUrl}/functions/v1/admin-manage-orders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({
+            action: 'update_status',
+            orderId: selectedOrder.id,
+            orderStatus: newOrderStatus,
+            adminEmail: user?.email || 'tanmayyadavbca@gmail.com'
+          })
+        });
+
+        const result = await res.json().catch(() => ({}));
+        if (!res.ok || !result.success) {
+          throw new Error(result.error || updateErr.message || 'Failed to update order status.');
+        }
+      }
 
       // Optimistically update local state
       setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, order_status: newOrderStatus } : o));
