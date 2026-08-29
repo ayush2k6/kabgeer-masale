@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -9,16 +9,39 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { user, login, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // If already logged in, smart-route immediately
+  useEffect(() => {
+    if (user) {
+      if (isAdmin) {
+        navigate('/admin', { replace: true });
+      } else {
+        const from = location.state?.from?.pathname || '/account';
+        navigate(from, { replace: true });
+      }
+    }
+  }, [user, isAdmin, navigate, location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
     try {
-      await login(email, password);
-      navigate('/profile');
+      await login(email.trim(), password);
+      
+      // Smart role-based routing
+      const trimmedEmail = email.trim().toLowerCase();
+      const isAdminEmail = trimmedEmail === 'tanmayyadavbca@gmail.com' || trimmedEmail === 'admin@kabgeerji.com' || trimmedEmail.startsWith('admin');
+
+      if (isAdminEmail) {
+        navigate('/admin');
+      } else {
+        const from = location.state?.from?.pathname || '/account';
+        navigate(from);
+      }
     } catch (err) {
       let errorMessage = 'Failed to login. Please check your credentials.';
       const msg = err?.message || '';
