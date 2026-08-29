@@ -93,10 +93,19 @@ const ProfilePage = () => {
                   const orderId = order.display_order_id || order.id;
                   const isExpanded = expandedOrderId === orderId;
                   const items = order.items || order.order_items || [];
-                  const orderDate = order.date || order.created_at;
-                  const formattedDate = orderDate 
-                    ? new Date(orderDate).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })
-                    : 'Recent';
+                  const formatISTDateTime = (isoString) => {
+                    if (!isoString) return 'Recent';
+                    try {
+                      const d = new Date(isoString);
+                      const dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
+                      const timeStr = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' });
+                      return `${dateStr} at ${timeStr}`;
+                    } catch {
+                      return 'Recent';
+                    }
+                  };
+
+                  const formattedDate = formatISTDateTime(orderDate);
 
                   const paymentStatus = order.payment_status || 'Paid';
                   const orderStatus = order.order_status || order.status || 'Confirmed';

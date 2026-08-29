@@ -311,7 +311,7 @@ const RecipesPage = () => {
             <div style={{ padding: '3rem 4rem', backgroundColor: '#fff', color: '#333' }}>
               <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
                 <hr style={{ border: 'none', borderTop: '1px solid #000', margin: '0 0 1rem 0' }} />
-                <h2 style={{ fontFamily: 'var(--font-heading), serif', fontSize: '2.8rem', color: '#000', margin: 0, fontWeight: 'normal' }}>
+                <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.8rem', color: '#000', margin: 0, fontWeight: 'normal' }}>
                   {selectedRecipe.title}
                 </h2>
                 <hr style={{ border: 'none', borderTop: '1px solid #000', margin: '1rem 0 0 0' }} />
@@ -349,7 +349,7 @@ const RecipesPage = () => {
               <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
                 {/* Ingredients */}
                 <div style={{ flex: '1 1 300px' }}>
-                  <h3 style={{ fontFamily: 'var(--font-heading), serif', fontSize: '1.8rem', marginBottom: '1.5rem', color: '#000', fontWeight: 'normal' }}>Ingredients</h3>
+                  <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', marginBottom: '1.5rem', color: '#000', fontWeight: 'normal' }}>Ingredients</h3>
                   <ul style={{ listStyleType: 'disc', paddingLeft: '1.5rem', margin: 0, color: '#000' }}>
                     {selectedRecipe.ingredients.map((item, idx) => (
                       <li key={idx} style={{ marginBottom: '0.5rem', fontSize: '1.05rem', lineHeight: '1.6' }}>
@@ -361,7 +361,7 @@ const RecipesPage = () => {
 
                 {/* Instructions */}
                 <div style={{ flex: '1 1 300px' }}>
-                  <h3 style={{ fontFamily: 'var(--font-heading), serif', fontSize: '1.8rem', marginBottom: '1.5rem', color: '#000', fontWeight: 'normal' }}>Instructions</h3>
+                  <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', marginBottom: '1.5rem', color: '#000', fontWeight: 'normal' }}>Instructions</h3>
                   <ol style={{ paddingLeft: '1.5rem', margin: 0, color: '#000' }}>
                     {selectedRecipe.instructions.map((step, idx) => (
                       <li key={idx} style={{ marginBottom: '0.75rem', fontSize: '1.05rem', lineHeight: '1.6' }}>

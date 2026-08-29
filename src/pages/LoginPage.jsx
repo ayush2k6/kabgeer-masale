@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Package } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -71,10 +71,10 @@ const LoginPage = () => {
         justifyContent: 'center',
         color: 'white'
       }} className="desktop-only-flex">
-        <h1 style={{ fontSize: '3.5rem', marginBottom: '1.5rem', lineHeight: '1.1', color: 'white' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '3.2rem', marginBottom: '1.5rem', lineHeight: '1.15', color: 'white', fontWeight: '700' }}>
           Welcome back to <span style={{ color: 'var(--color-accent-light)' }}>Kabgeer</span>.
         </h1>
-        <p style={{ fontSize: '1.2rem', opacity: 0.9, maxWidth: '80%', lineHeight: '1.6' }}>
+        <p style={{ fontSize: '1.15rem', opacity: 0.9, maxWidth: '80%', lineHeight: '1.6', fontFamily: 'var(--font-body)' }}>
           Experience the authentic taste of tradition. Sign in to track your orders, manage your profile, and explore our premium selection of aromatic spices.
         </p>
       </div>
@@ -90,8 +90,8 @@ const LoginPage = () => {
         backgroundColor: 'var(--color-white)'
       }}>
         <div style={{ width: '100%', maxWidth: '420px' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--color-primary)' }}>Sign In</h2>
-          <p style={{ color: 'var(--color-text-light)', marginBottom: '2.5rem' }}>Please enter your details to continue.</p>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--color-primary)', fontWeight: '700' }}>Sign In</h2>
+          <p style={{ color: 'var(--color-text-light)', marginBottom: '2.5rem', fontFamily: 'var(--font-body)' }}>Please enter your details to continue.</p>
 
           {error && (
             <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid #fca5a5' }}>
@@ -101,7 +101,7 @@ const LoginPage = () => {
           
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>Email Address</label>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: 'var(--color-primary)' }}>Email Address</label>
               <div style={{ position: 'relative' }}>
                 <Mail size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-light)' }} />
                 <input 
@@ -124,8 +124,8 @@ const LoginPage = () => {
             
             <div style={{ marginBottom: '2rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '500' }}>Password</label>
-                <a href="#" onClick={(e) => { e.preventDefault(); alert('Reset link sent!'); }} style={{ fontSize: '0.85rem', color: 'var(--color-accent)', fontWeight: '500' }}>Forgot password?</a>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', color: 'var(--color-primary)' }}>Password</label>
+                <a href="#" onClick={(e) => { e.preventDefault(); alert('Reset link sent to your email.'); }} style={{ fontSize: '0.85rem', color: 'var(--color-accent)', fontWeight: '600', textDecoration: 'none' }}>Forgot password?</a>
               </div>
               <div style={{ position: 'relative' }}>
                 <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-light)' }} />
@@ -150,17 +150,42 @@ const LoginPage = () => {
             <button 
               type="submit" 
               className="btn btn-primary" 
-              style={{ width: '100%', padding: '1rem', borderRadius: '8px', fontSize: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+              style={{ width: '100%', padding: '0.95rem', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
               disabled={isLoading}
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
               {!isLoading && <ArrowRight size={18} />}
             </button>
           </form>
-          
 
+          {/* Secondary Action: Browse Products */}
+          <div style={{ marginTop: '1rem' }}>
+            <Link 
+              to="/products" 
+              style={{ 
+                width: '100%', 
+                padding: '0.85rem', 
+                borderRadius: '8px', 
+                fontSize: '0.92rem', 
+                fontWeight: '600', 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                gap: '0.5rem', 
+                textDecoration: 'none',
+                color: 'var(--color-primary)',
+                backgroundColor: 'rgba(26, 47, 34, 0.04)',
+                border: '1px solid rgba(26, 47, 34, 0.12)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(26, 47, 34, 0.08)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(26, 47, 34, 0.04)'}
+            >
+              <Package size={17} /> Browse Products
+            </Link>
+          </div>
           
-          <p style={{ textAlign: 'center', marginTop: '2.5rem', color: 'var(--color-text-light)', fontSize: '0.95rem' }}>
+          <p style={{ textAlign: 'center', marginTop: '2.25rem', color: 'var(--color-text-light)', fontSize: '0.95rem', fontFamily: 'var(--font-body)' }}>
             Don't have an account? <Link to="/signup" style={{ color: 'var(--color-primary)', fontWeight: '600', textDecoration: 'underline', textUnderlineOffset: '4px' }}>Create one</Link>
           </p>
         </div>

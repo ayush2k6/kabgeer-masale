@@ -7,57 +7,95 @@ interface EmailPayload {
   forceResend?: boolean;
 }
 
+// Helper to format ISO timestamp to IST
+function formatToIST(isoDate?: string): string {
+  if (!isoDate) return new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
+  try {
+    const d = new Date(isoDate);
+    return `${d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })} at ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' })} IST`;
+  } catch (_) {
+    return 'Recent';
+  }
+}
+
 // 1. Customer Email HTML Renderer
 function renderCustomerEmailHtml(order: any, items: any[]): string {
   const itemsRows = (items || []).map((item) => `
     <tr>
-      <td style="padding: 10px; border-bottom: 1px solid #eee;">
-        <strong>${item.product_name}</strong>
+      <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+        <strong style="color: #1a2f22; font-size: 14px;">${item.product_name || 'Authentic Masala'}</strong>
+        ${item.weight_pack ? `<div style="font-size: 12px; color: #64748b;">Pack: ${item.weight_pack}</div>` : ''}
       </td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">
+      <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: center; color: #334155; font-size: 14px;">
         ${item.quantity}
       </td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">
-        ₹${Number(item.unit_price).toFixed(2)}
+      <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: right; color: #334155; font-size: 14px;">
+        ₹${Number(item.unit_price || 0).toFixed(2)}
       </td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">
-        ₹${Number(item.total_price || item.unit_price * item.quantity).toFixed(2)}
+      <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 700; color: #1a2f22; font-size: 14px;">
+        ₹${Number(item.total_price || (item.unit_price * item.quantity) || 0).toFixed(2)}
       </td>
     </tr>
   `).join('');
 
   const shipping = order.shipping_address || {};
+  const orderTimeStr = formatToIST(order.created_at);
 
   return `
     <!DOCTYPE html>
-    <html>
-    <head><meta charset="utf-8"/></head>
-    <body style="font-family: sans-serif; color: #333; background-color: #f7f7f7; margin: 0; padding: 20px;">
-      <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">
-        <div style="background-color: #0f2818; padding: 24px; text-align: center; color: #ffffff;">
-          <h1 style="margin: 0; font-size: 24px; letter-spacing: 1px;">KABGEER MASALE</h1>
-          <p style="margin: 4px 0 0 0; font-size: 14px; color: #cbd5e1;">Authentic Lucknowi Spices & Blends</p>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Order Confirmation #${order.display_order_id}</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #faf6f0; margin: 0; padding: 24px 12px;">
+      <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26, 47, 34, 0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+        
+        <!-- Header Banner -->
+        <div style="background-color: #1a2f22; padding: 28px 24px; text-align: center; color: #ffffff;">
+          <h1 style="margin: 0; font-size: 22px; letter-spacing: 2px; font-weight: 700; color: #d4af37;">KABGEER MASALE</h1>
+          <p style="margin: 6px 0 0 0; font-size: 13px; color: #e2e8f0; letter-spacing: 0.5px;">Authentic Lucknowi Spices & Traditional Blends</p>
         </div>
         
-        <div style="padding: 24px;">
-          <h2 style="color: #16a34a; margin-top: 0;">Order Confirmed!</h2>
-          <p>Dear <strong>${order.customer_name}</strong>,</p>
-          <p>Thank you for shopping with Kabgeer Masale! Your payment has been received and your order is currently being processed for dispatch.</p>
+        <div style="padding: 28px 24px;">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <span style="display: inline-block; background-color: #dcfce7; color: #16a34a; font-weight: 700; font-size: 13px; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
+              ✓ Order Confirmed & Paid
+            </span>
+            <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Thank you for your order, ${order.customer_name}!</h2>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">Your aromatic spices are freshly prepared and being packed for dispatch.</p>
+          </div>
           
-          <div style="background: #f8fafc; border-radius: 6px; padding: 16px; margin: 20px 0;">
-            <p style="margin: 0 0 6px 0;"><strong>Display Order ID:</strong> ${order.display_order_id}</p>
-            <p style="margin: 0 0 6px 0;"><strong>Order Status:</strong> Confirmed</p>
-            <p style="margin: 0;"><strong>Payment Status:</strong> Paid (Razorpay)</p>
+          <!-- Key Order Meta -->
+          <div style="background: #faf6f0; border: 1px solid rgba(26, 47, 34, 0.08); border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 13px;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;"><strong>Order ID:</strong></td>
+                <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #1a2f22; font-family: monospace;">${order.display_order_id}</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;"><strong>Placed On:</strong></td>
+                <td style="padding: 4px 0; text-align: right; color: #1a2f22;">${orderTimeStr}</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;"><strong>Payment Method:</strong></td>
+                <td style="padding: 4px 0; text-align: right; color: #16a34a; font-weight: 600;">Instant Online (Razorpay)</td>
+              </tr>
+            </table>
           </div>
 
-          <h3 style="border-bottom: 2px solid #0f2818; padding-bottom: 6px;">Order Summary</h3>
+          <!-- Items Table -->
+          <h3 style="color: #1a2f22; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px 0; border-bottom: 2px solid #1a2f22; padding-bottom: 6px;">
+            Ordered Items
+          </h3>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead>
-              <tr style="background: #f1f5f9; text-align: left;">
-                <th style="padding: 8px;">Product</th>
-                <th style="padding: 8px; text-align: center;">Qty</th>
-                <th style="padding: 8px; text-align: right;">Price</th>
-                <th style="padding: 8px; text-align: right;">Total</th>
+              <tr style="background: #f8fafc; text-align: left; font-size: 12px; color: #64748b; text-transform: uppercase;">
+                <th style="padding: 8px 12px;">Masala</th>
+                <th style="padding: 8px 12px; text-align: center;">Qty</th>
+                <th style="padding: 8px 12px; text-align: right;">Unit Price</th>
+                <th style="padding: 8px 12px; text-align: right;">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -65,24 +103,44 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
             </tbody>
           </table>
 
-          <div style="text-align: right; margin-bottom: 20px; font-size: 15px;">
-            <p style="margin: 4px 0;">Subtotal: <strong>₹${Number(order.subtotal || 0).toFixed(2)}</strong></p>
-            <p style="margin: 4px 0;">Discount: <strong>-₹${Number(order.discount || 0).toFixed(2)}</strong></p>
-            <p style="margin: 4px 0;">Shipping Fee: <strong>₹${Number(order.shipping_fee || 0).toFixed(2)}</strong></p>
-            <p style="margin: 8px 0 0 0; font-size: 18px; color: #0f2818;"><strong>Total Paid: ₹${Number(order.total_amount || 0).toFixed(2)}</strong></p>
+          <!-- Financial Breakdown -->
+          <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-bottom: 24px; font-size: 14px;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;">Subtotal</td>
+                <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #1a2f22;">₹${Number(order.subtotal || 0).toFixed(2)}</td>
+              </tr>
+              ${Number(order.discount || 0) > 0 ? `
+              <tr>
+                <td style="padding: 4px 0; color: #16a34a;">Discount</td>
+                <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #16a34a;">-₹${Number(order.discount).toFixed(2)}</td>
+              </tr>` : ''}
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;">Standard Express Shipping</td>
+                <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #16a34a;">FREE</td>
+              </tr>
+              <tr style="border-top: 2px solid #1a2f22;">
+                <td style="padding: 10px 0 4px 0; font-size: 16px; font-weight: 700; color: #1a2f22;">Total Paid</td>
+                <td style="padding: 10px 0 4px 0; text-align: right; font-size: 18px; font-weight: 700; color: #1a2f22;">₹${Number(order.total_amount || 0).toFixed(2)}</td>
+              </tr>
+            </table>
           </div>
 
-          <h3 style="border-bottom: 2px solid #0f2818; padding-bottom: 6px;">Shipping Address</h3>
-          <p style="margin: 0; line-height: 1.5; color: #475569;">
-            ${order.customer_name}<br/>
-            ${shipping.address || ''} ${shipping.apartment ? ', ' + shipping.apartment : ''}<br/>
+          <!-- Shipping Address -->
+          <h3 style="color: #1a2f22; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px 0; border-bottom: 2px solid #1a2f22; padding-bottom: 6px;">
+            Delivery Address
+          </h3>
+          <div style="background: #f8fafc; border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.6; color: #334155; border: 1px solid #e2e8f0;">
+            <strong>${order.customer_name}</strong><br/>
+            ${shipping.address || ''}${shipping.apartment ? ', ' + shipping.apartment : ''}<br/>
             ${shipping.city || ''}, ${shipping.state || 'Uttar Pradesh'} - ${shipping.pinCode || ''}<br/>
-            Phone: ${order.customer_phone || ''}
-          </p>
+            <strong>Mobile:</strong> ${order.customer_phone || ''}
+          </div>
 
-          <div style="margin-top: 30px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 13px; color: #94a3b8;">
-            <p>If you have any questions, feel free to reply to this email.</p>
-            <p>&copy; ${new Date().getFullYear()} Kabgeer Masale. All rights reserved.</p>
+          <!-- Footer Note -->
+          <div style="margin-top: 32px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            <p style="margin: 0 0 6px 0;">Need assistance? Reply directly to this email or reach us at <a href="mailto:kabgeermasale@gmail.com" style="color: #1a2f22; font-weight: 600; text-decoration: underline;">kabgeermasale@gmail.com</a></p>
+            <p style="margin: 0;">&copy; ${new Date().getFullYear()} Kabgeer Masale. 100% Pure Lucknavi Heritage.</p>
           </div>
         </div>
       </div>
@@ -95,39 +153,73 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
 function renderAdminEmailHtml(order: any, items: any[]): string {
   const itemsRows = (items || []).map((item) => `
     <tr>
-      <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.product_name} (${item.product_id})</td>
-      <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-weight: bold;">${item.quantity}</td>
-      <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">₹${Number(item.total_price || item.unit_price * item.quantity).toFixed(2)}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px;">
+        <strong>${item.product_name}</strong> (${item.product_id})
+        ${item.weight_pack ? `<div style="font-size: 11px; color: #64748b;">${item.weight_pack}</div>` : ''}
+      </td>
+      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: 700; font-size: 14px; color: #1a2f22;">
+        ${item.quantity}
+      </td>
+      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 13px;">
+        ₹${Number(item.total_price || item.unit_price * item.quantity || 0).toFixed(2)}
+      </td>
     </tr>
   `).join('');
 
   const shipping = order.shipping_address || {};
+  const orderTimeStr = formatToIST(order.created_at);
 
   return `
     <!DOCTYPE html>
-    <html>
-    <head><meta charset="utf-8"/></head>
-    <body style="font-family: sans-serif; color: #333; background-color: #f7f7f7; margin: 0; padding: 20px;">
-      <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 24px; border: 1px solid #e2e8f0;">
-        <div style="background-color: #dc2626; color: white; padding: 12px 16px; border-radius: 6px; font-weight: bold; font-size: 18px; margin-bottom: 20px;">
-          🚨 NEW PAID ORDER RECEIVED: #${order.display_order_id}
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>New Order Alert #${order.display_order_id}</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #f1f5f9; margin: 0; padding: 20px 10px;">
+      <div style="max-width: 620px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 24px; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        
+        <div style="background-color: #16a34a; color: white; padding: 14px 18px; border-radius: 6px; font-weight: 700; font-size: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+          <span>📦 NEW PAID ORDER: #${order.display_order_id}</span>
+          <span style="font-size: 14px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px;">₹${Number(order.total_amount).toFixed(2)}</span>
         </div>
 
-        <h3>Order Details</h3>
-        <p><strong>Display Order ID:</strong> ${order.display_order_id}</p>
-        <p><strong>Total Amount:</strong> ₹${Number(order.total_amount).toFixed(2)}</p>
-        <p><strong>Customer Name:</strong> ${order.customer_name} (${order.customer_type})</p>
-        <p><strong>Customer Email:</strong> ${order.customer_email}</p>
-        <p><strong>Customer Phone:</strong> ${order.customer_phone}</p>
-        <p><strong>Razorpay Order ID:</strong> ${order.razorpay_order_id || 'N/A'}</p>
+        <h3 style="margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Customer & Order Info</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; background: #f8fafc; border-radius: 6px; padding: 12px; border: 1px solid #e2e8f0;">
+          <tr>
+            <td style="padding: 6px 12px; color: #64748b;"><strong>Order ID:</strong></td>
+            <td style="padding: 6px 12px; font-weight: 700; font-family: monospace;">${order.display_order_id}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; color: #64748b;"><strong>Received At:</strong></td>
+            <td style="padding: 6px 12px;">${orderTimeStr}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; color: #64748b;"><strong>Customer:</strong></td>
+            <td style="padding: 6px 12px; font-weight: 600;">${order.customer_name} (${order.customer_type || 'Customer'})</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; color: #64748b;"><strong>Email:</strong></td>
+            <td style="padding: 6px 12px;">${order.customer_email}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; color: #64748b;"><strong>Phone:</strong></td>
+            <td style="padding: 6px 12px; font-weight: 700; color: #0284c7;">${order.customer_phone}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; color: #64748b;"><strong>Payment Status:</strong></td>
+            <td style="padding: 6px 12px; color: #16a34a; font-weight: 700;">Paid (Razorpay)</td>
+          </tr>
+        </table>
 
-        <h3 style="margin-top: 20px;">Packing List</h3>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <h3 style="margin: 20px 0 8px 0; font-size: 14px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Packing List</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; border: 1px solid #e2e8f0; border-radius: 6px;">
           <thead>
-            <tr style="background: #f1f5f9; text-align: left;">
-              <th style="padding: 8px;">Product</th>
-              <th style="padding: 8px; text-align: center;">Qty</th>
-              <th style="padding: 8px; text-align: right;">Subtotal</th>
+            <tr style="background: #f1f5f9; text-align: left; font-size: 12px; color: #475569;">
+              <th style="padding: 8px 10px;">Item / SKU</th>
+              <th style="padding: 8px 10px; text-align: center;">Qty</th>
+              <th style="padding: 8px 10px; text-align: right;">Subtotal</th>
             </tr>
           </thead>
           <tbody>
@@ -135,12 +227,12 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
           </tbody>
         </table>
 
-        <h3>Shipping Address for Courier Dispatch</h3>
-        <div style="background: #f8fafc; padding: 12px; border-radius: 6px; font-family: monospace;">
-          ${order.customer_name}<br/>
-          ${shipping.address || ''} ${shipping.apartment ? ', ' + shipping.apartment : ''}<br/>
-          ${shipping.city || ''}, ${shipping.state || 'Uttar Pradesh'} - ${shipping.pinCode || ''}<br/>
-          Phone: ${order.customer_phone || ''}
+        <h3 style="margin: 20px 0 8px 0; font-size: 14px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Courier Dispatch Address</h3>
+        <div style="background: #f8fafc; padding: 14px; border-radius: 6px; font-size: 13px; line-height: 1.6; border: 1px solid #e2e8f0;">
+          <strong>${order.customer_name}</strong><br/>
+          ${shipping.address || ''}${shipping.apartment ? ', ' + shipping.apartment : ''}<br/>
+          ${shipping.city || ''}, ${shipping.state || 'Uttar Pradesh'} - <strong>${shipping.pinCode || ''}</strong><br/>
+          <strong>Phone:</strong> ${order.customer_phone || ''}
         </div>
       </div>
     </body>

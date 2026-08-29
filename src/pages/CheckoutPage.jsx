@@ -50,13 +50,13 @@ const CheckoutPage = () => {
 
   const subtotal = getCartTotal();
   const discount = getDiscountAmount();
-  const [paymentMethod, setPaymentMethod] = useState('online'); // 'online' | 'cod'
-  const codFee = paymentMethod === 'cod' ? 40 : 0;
-  const finalTotal = Math.max(0, subtotal - discount + codFee);
+  const paymentMethod = 'online'; // COD disabled for V1
+  const finalTotal = Math.max(0, subtotal - discount);
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [formErrors, setFormErrors] = useState({});
   const [pendingServerOrder, setPendingServerOrder] = useState(null);
   const [couponInput, setCouponInput] = useState('');
   const [couponError, setCouponError] = useState('');
@@ -77,8 +77,7 @@ const CheckoutPage = () => {
     state: 'Uttar Pradesh',
     pinCode: '',
     phone: '',
-    saveInfo: false,
-    billingAddress: 'same'
+    saveInfo: false
   });
 
   useEffect(() => {
@@ -99,24 +98,35 @@ const CheckoutPage = () => {
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    setFormData({
-      ...formData,
-      [e.target.name]: value
-    });
+    const name = e.target.name;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (formErrors[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handlePhoneChange = (e) => {
     const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
     setFormData(prev => ({ ...prev, phone: digitsOnly }));
+    if (formErrors.phone) {
+      setFormErrors(prev => ({ ...prev, phone: '' }));
+    }
   };
 
   const handlePinCodeChange = async (e) => {
     const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 6);
     setFormData(prev => ({ ...prev, pinCode: digitsOnly }));
+    if (formErrors.pinCode) {
+      setFormErrors(prev => ({ ...prev, pinCode: '' }));
+    }
 
     if (digitsOnly.length === 6) {
+      if (!/^[1-9]\d{5}$/.test(digitsOnly)) {
+        setPincodeStatusMessage('⚠️ Please enter a valid 6-digit Indian PIN code.');
+        return;
+      }
       setIsLookingUpPincode(true);
-      setPincodeStatusMessage('Checking PIN code...');
+      setPincodeStatusMessage('Looking up PIN code...');
       try {
         const res = await fetch(`https://api.postalpincode.in/pincode/${digitsOnly}`);
         const data = await res.json();
@@ -129,7 +139,7 @@ const CheckoutPage = () => {
             city: detectedCity || prev.city,
             state: detectedState || prev.state
           }));
-          setPincodeStatusMessage(`✓ Auto-filled: ${detectedCity}, ${detectedState}`);
+          setPincodeStatusMessage(`✓ Location: ${detectedCity}, ${detectedState}`);
         } else {
           setPincodeStatusMessage('');
         }
@@ -145,7 +155,11 @@ const CheckoutPage = () => {
 
   const handleNameChange = (e) => {
     const alphaOnly = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-    setFormData(prev => ({ ...prev, [e.target.name]: alphaOnly }));
+    const name = e.target.name;
+    setFormData(prev => ({ ...prev, [name]: alphaOnly }));
+    if (formErrors[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleCouponSubmit = (e) => {
@@ -159,6 +173,36 @@ const CheckoutPage = () => {
     }
   };
 
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.firstName.trim()) errors.firstName = 'First name is required.';
+    if (!formData.lastName.trim()) errors.lastName = 'Last name is required.';
+    
+    if (!formData.email.trim()) {
+      errors.email = 'Email address is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      errors.email = 'Please enter a valid email address.';
+    }
+
+    if (!formData.phone.trim()) {
+      errors.phone = '10-digit mobile number is required.';
+    } else if (!/^[6-9]\d{9}$/.test(formData.phone.trim())) {
+      errors.phone = 'Please enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, 9).';
+    }
+
+    if (!formData.address.trim()) errors.address = 'Street / delivery address is required.';
+    if (!formData.city.trim()) errors.city = 'City / Town is required.';
+    if (!formData.state.trim()) errors.state = 'State is required.';
+
+    if (!formData.pinCode.trim()) {
+      errors.pinCode = '6-digit PIN code is required.';
+    } else if (!/^[1-9]\d{5}$/.test(formData.pinCode.trim())) {
+      errors.pinCode = 'Please enter a valid 6-digit Indian PIN code (cannot start with 0).';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   // Submit form & call create-razorpay-order Edge Function
   const handleSubmit = async (e) => {
@@ -168,13 +212,8 @@ const CheckoutPage = () => {
       return;
     }
 
-    if (formData.phone.length !== 10) {
-      setErrorMessage("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-
-    if (formData.pinCode.length !== 6 || !/^[1-9]\d{5}$/.test(formData.pinCode)) {
-      setErrorMessage("Please enter a valid 6-digit Indian PIN code.");
+    if (!validateForm()) {
+      setErrorMessage("Please complete all required fields correctly before proceeding to payment.");
       return;
     }
 
@@ -221,7 +260,7 @@ const CheckoutPage = () => {
         body: JSON.stringify({
           ...payload,
           pricingConfig: {
-            shippingFee: paymentMethod === 'cod' ? 40 : 0
+            shippingFee: 0
           }
         })
       });
@@ -407,19 +446,22 @@ const CheckoutPage = () => {
             {/* Contact Section */}
             <div className="checkout-section">
               <div className="section-header">
-                <h3>Contact Details</h3>
+                <h3>Contact Details <span style={{ color: '#dc2626', fontSize: '0.9rem' }}>*</span></h3>
                 {!user && <Link to="/login" className="login-link">Sign in</Link>}
               </div>
               <input 
                 type="email" 
                 name="email" 
-                className="form-input" 
-                placeholder="Email address (e.g. rahul@example.com)" 
+                className={`form-input ${formErrors.email ? 'input-error' : ''}`} 
+                placeholder="Email address (e.g. rahul@example.com) *" 
                 autoComplete="email"
                 value={formData.email} 
                 onChange={handleChange} 
                 required 
               />
+              {formErrors.email && (
+                <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.email}</span>
+              )}
               <label className="checkbox-label mt-1">
                 <input 
                   type="checkbox" 
@@ -433,32 +475,42 @@ const CheckoutPage = () => {
 
             {/* Delivery Section */}
             <div className="checkout-section">
-              <h3>Shipping Address</h3>
+              <h3>Shipping & Delivery Address <span style={{ color: '#dc2626', fontSize: '0.9rem' }}>*</span></h3>
               <select name="country" className="form-input" value={formData.country} onChange={handleChange}>
                 <option value="India">India</option>
               </select>
 
               <div className="form-row">
-                <input 
-                  type="text" 
-                  name="firstName" 
-                  className="form-input" 
-                  placeholder="First name (e.g. Rahul)" 
-                  autoComplete="given-name"
-                  value={formData.firstName} 
-                  onChange={handleNameChange} 
-                  required 
-                />
-                <input 
-                  type="text" 
-                  name="lastName" 
-                  className="form-input" 
-                  placeholder="Last name (e.g. Sharma)" 
-                  autoComplete="family-name"
-                  value={formData.lastName} 
-                  onChange={handleNameChange} 
-                  required 
-                />
+                <div>
+                  <input 
+                    type="text" 
+                    name="firstName" 
+                    className={`form-input ${formErrors.firstName ? 'input-error' : ''}`} 
+                    placeholder="First name (e.g. Rahul) *" 
+                    autoComplete="given-name"
+                    value={formData.firstName} 
+                    onChange={handleNameChange} 
+                    required 
+                  />
+                  {formErrors.firstName && (
+                    <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.firstName}</span>
+                  )}
+                </div>
+                <div>
+                  <input 
+                    type="text" 
+                    name="lastName" 
+                    className={`form-input ${formErrors.lastName ? 'input-error' : ''}`} 
+                    placeholder="Last name (e.g. Sharma) *" 
+                    autoComplete="family-name"
+                    value={formData.lastName} 
+                    onChange={handleNameChange} 
+                    required 
+                  />
+                  {formErrors.lastName && (
+                    <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.lastName}</span>
+                  )}
+                </div>
               </div>
 
               <input 
@@ -470,16 +522,23 @@ const CheckoutPage = () => {
                 value={formData.company} 
                 onChange={handleChange} 
               />
-              <input 
-                type="text" 
-                name="address" 
-                className="form-input" 
-                placeholder="Street address, house number, area" 
-                autoComplete="address-line1"
-                value={formData.address} 
-                onChange={handleChange} 
-                required 
-              />
+
+              <div style={{ marginTop: '0.75rem' }}>
+                <input 
+                  type="text" 
+                  name="address" 
+                  className={`form-input ${formErrors.address ? 'input-error' : ''}`} 
+                  placeholder="Street address, house number, area *" 
+                  autoComplete="address-line1"
+                  value={formData.address} 
+                  onChange={handleChange} 
+                  required 
+                />
+                {formErrors.address && (
+                  <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.address}</span>
+                )}
+              </div>
+
               <input 
                 type="text" 
                 name="apartment" 
@@ -488,35 +547,48 @@ const CheckoutPage = () => {
                 autoComplete="address-line2"
                 value={formData.apartment} 
                 onChange={handleChange} 
+                style={{ marginTop: '0.75rem' }}
               />
 
-              <div className="form-row three-cols">
-                <input 
-                  type="text" 
-                  name="city" 
-                  className="form-input" 
-                  placeholder="City / Town (e.g. Lucknow)" 
-                  autoComplete="address-level2"
-                  value={formData.city} 
-                  onChange={handleChange} 
-                  required 
-                />
-                <select name="state" className="form-input" value={formData.state} onChange={handleChange}>
-                  {INDIAN_STATES.map(st => (
-                    <option key={st} value={st}>{st}</option>
-                  ))}
-                </select>
-                <input 
-                  type="text" 
-                  name="pinCode" 
-                  className="form-input" 
-                  placeholder="6-digit PIN (e.g. 226001)" 
-                  autoComplete="postal-code"
-                  maxLength={6}
-                  value={formData.pinCode} 
-                  onChange={handlePinCodeChange} 
-                  required 
-                />
+              <div className="form-row three-cols" style={{ marginTop: '0.75rem' }}>
+                <div>
+                  <input 
+                    type="text" 
+                    name="city" 
+                    className={`form-input ${formErrors.city ? 'input-error' : ''}`} 
+                    placeholder="City / Town *" 
+                    autoComplete="address-level2"
+                    value={formData.city} 
+                    onChange={handleChange} 
+                    required 
+                  />
+                  {formErrors.city && (
+                    <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.city}</span>
+                  )}
+                </div>
+                <div>
+                  <select name="state" className="form-input" value={formData.state} onChange={handleChange}>
+                    {INDIAN_STATES.map(st => (
+                      <option key={st} value={st}>{st}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <input 
+                    type="text" 
+                    name="pinCode" 
+                    className={`form-input ${formErrors.pinCode ? 'input-error' : ''}`} 
+                    placeholder="6-digit PIN *" 
+                    autoComplete="postal-code"
+                    maxLength={6}
+                    value={formData.pinCode} 
+                    onChange={handlePinCodeChange} 
+                    required 
+                  />
+                  {formErrors.pinCode && (
+                    <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.pinCode}</span>
+                  )}
+                </div>
               </div>
 
               {pincodeStatusMessage && (
@@ -529,8 +601,8 @@ const CheckoutPage = () => {
                 <input 
                   type="tel" 
                   name="phone" 
-                  className="form-input" 
-                  placeholder="10-digit mobile number (e.g. 9876543210)" 
+                  className={`form-input ${formErrors.phone ? 'input-error' : ''}`} 
+                  placeholder="10-digit mobile number (e.g. 9876543210) *" 
                   autoComplete="tel"
                   maxLength={10}
                   value={formData.phone} 
@@ -539,6 +611,9 @@ const CheckoutPage = () => {
                 />
                 <Info size={16} className="input-icon text-text-light" />
               </div>
+              {formErrors.phone && (
+                <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.phone}</span>
+              )}
 
               <label className="checkbox-label mt-1">
                 <input type="checkbox" name="saveInfo" checked={formData.saveInfo} onChange={handleChange} />
@@ -560,64 +635,22 @@ const CheckoutPage = () => {
               </div>
             </div>
 
-            {/* Payment Method Section */}
+            {/* Payment Method Section - Online Only */}
             <div className="checkout-section">
               <h3>Payment Method</h3>
-              <p className="text-sm text-text-light mb-2">Choose your preferred payment option:</p>
-              
-              <div className="radio-group">
-                <label className={`radio-label ${paymentMethod === 'online' ? 'active' : ''}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+              <div className="radio-group" style={{ marginTop: '0.75rem' }}>
+                <div className="radio-label active" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <input 
-                      type="radio" 
-                      name="paymentMethod" 
-                      value="online" 
-                      checked={paymentMethod === 'online'} 
-                      onChange={() => setPaymentMethod('online')} 
-                    />
+                    <CreditCard size={22} color="var(--color-primary)" />
                     <div>
-                      <strong>⚡ Instant Online Payment (Razorpay Secure)</strong>
-                      <div style={{ fontSize: '0.78rem', color: '#666' }}>UPI (GPay, PhonePe, Paytm), Cards, NetBanking</div>
+                      <strong style={{ color: 'var(--color-primary)', fontSize: '0.95rem' }}>⚡ Razorpay Secure Checkout</strong>
+                      <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '2px' }}>UPI (GPay, PhonePe, Paytm), Credit/Debit Cards, NetBanking</div>
                     </div>
                   </div>
-                  <span style={{ fontSize: '0.75rem', backgroundColor: '#dcfce7', color: '#16a34a', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
-                    Fastest
+                  <span style={{ fontSize: '0.75rem', backgroundColor: '#dcfce7', color: '#16a34a', padding: '3px 10px', borderRadius: '12px', fontWeight: 700 }}>
+                    100% Secure
                   </span>
-                </label>
-
-                <label className={`radio-label ${paymentMethod === 'cod' ? 'active' : ''}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <input 
-                      type="radio" 
-                      name="paymentMethod" 
-                      value="cod" 
-                      checked={paymentMethod === 'cod'} 
-                      onChange={() => setPaymentMethod('cod')} 
-                    />
-                    <div>
-                      <strong>💵 Cash on Delivery (COD)</strong>
-                      <div style={{ fontSize: '0.78rem', color: '#666' }}>Pay with cash upon delivery</div>
-                    </div>
-                  </div>
-                  <span style={{ fontSize: '0.78rem', color: '#d97706', fontWeight: 600 }}>
-                    +₹40 Fee
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            {/* Billing Address */}
-            <div className="checkout-section">
-              <h3>Billing Address</h3>
-              <div className="radio-group">
-                <label className={`radio-label ${formData.billingAddress === 'same' ? 'active' : ''}`}>
-                  <input type="radio" name="billingAddress" value="same" checked={formData.billingAddress === 'same'} onChange={handleChange} />
-                  <span>Same as shipping address</span>
-                </label>
-                <label className={`radio-label ${formData.billingAddress === 'different' ? 'active' : ''}`}>
-                  <input type="radio" name="billingAddress" value="different" checked={formData.billingAddress === 'different'} onChange={handleChange} />
-                  <span>Use a different billing address</span>
-                </label>
+                </div>
               </div>
             </div>
 
@@ -625,9 +658,9 @@ const CheckoutPage = () => {
               type="submit" 
               disabled={isSubmitting || cartItems.length === 0} 
               className="btn btn-primary btn-large w-100 mt-2" 
-              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
             >
-              <Lock size={18} /> {isSubmitting ? 'Initializing Payment...' : (paymentMethod === 'cod' ? `Place Order (COD: ₹${finalTotal.toFixed(2)})` : `Pay ₹${finalTotal.toFixed(2)}`)}
+              <Lock size={18} /> {isSubmitting ? 'Initializing Payment...' : `Pay ₹${finalTotal.toFixed(2)}`}
             </button>
 
             <div className="trust-badge-container">
@@ -767,12 +800,6 @@ const CheckoutPage = () => {
                   <span>Subtotal</span>
                   <span>₹{subtotal.toFixed(2)}</span>
                 </div>
-                {codFee > 0 && (
-                  <div className="summary-row" style={{ color: '#d97706', fontWeight: 600 }}>
-                    <span>COD Handling Fee</span>
-                    <span>+₹{codFee.toFixed(2)}</span>
-                  </div>
-                )}
                 {discount > 0 && (
                   <div className="summary-row" style={{ color: '#16a34a', fontWeight: 600 }}>
                     <span>Discount ({appliedCoupon?.code})</span>

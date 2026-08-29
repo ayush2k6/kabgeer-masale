@@ -13,7 +13,7 @@
   --color-white: #FFFFFF;
   --color-border: rgba(26, 47, 34, 0.08);
   --color-danger: #C94C4C;
-  --font-heading: 'Playfair Display', serif;
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   
   /* Luxurious Soft Shadows */

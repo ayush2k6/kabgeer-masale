@@ -8,9 +8,9 @@
 /* Hero Section */
 .bundle-hero {
   position: relative;
-  background-color: #12281a;
+  background-color: var(--color-primary, #1a2f22);
   color: #fff;
-  padding: 6rem 1.5rem 10rem 1.5rem;
+  padding: 4.5rem 1.5rem 7.5rem 1.5rem;
   text-align: center;
   overflow: hidden;
 }
@@ -33,51 +33,36 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 780px;
+  margin: 0 auto;
 }
 
 .hero-title {
-  font-size: 3.5rem;
+  font-size: 2.8rem;
   font-family: var(--font-heading);
-  color: #f6eda0;
-  margin-bottom: 1rem;
+  color: #ffffff;
+  margin-bottom: 0.85rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .hero-subtitle {
-  font-size: 1.2rem;
-  color: #e0e0e0;
-  margin-bottom: 3rem;
-  max-width: 600px;
-}
-
-/* Exclusive Card */
-.bundle-exclusive-card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  padding: 2rem 3rem;
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  margin-bottom: 3rem;
-  max-width: 700px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 2rem;
+  max-width: 580px;
+  line-height: 1.6;
+  font-family: var(--font-body);
 }
 
 .exclusive-badge {
-  color: #d4af37;
+  color: var(--color-accent, #d4af37);
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 2px;
-  margin-bottom: 1rem;
-}
-
-.exclusive-text {
-  font-size: 1.2rem;
-  line-height: 1.6;
-}
-
-.exclusive-text .highlight {
-  color: #f6eda0;
-  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-body);
 }
 
 /* How It Works Steps */
@@ -85,9 +70,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
-  color: #e0e0e0;
-  font-size: 1.1rem;
+  gap: 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  flex-wrap: wrap;
 }
 
 .hiw-step {
@@ -97,66 +85,84 @@
 }
 
 .hiw-step-num {
-  background-color: #d4af37;
+  background-color: var(--color-accent, #d4af37);
   color: #12281a;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
 }
 
 .hiw-arrow {
-  color: #d4af37;
-  opacity: 0.7;
+  color: var(--color-accent, #d4af37);
+  opacity: 0.8;
 }
 
 /* Main Content Area */
 .bundle-main-content {
-  margin-top: -6rem;
+  margin-top: -4.5rem;
   position: relative;
   z-index: 2;
-  padding-bottom: 6rem;
+  padding-bottom: 5rem;
 }
 
 .bundle-shop-container {
   background-color: transparent;
-  padding: 3rem 0;
+  padding: 1.5rem 0 3rem;
 }
 
-/* Filters */
+/* Filters with clean touch scrolling */
 .bundle-filters {
   display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 3rem;
-  justify-content: center;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.25rem 1.75rem;
+  justify-content: flex-start;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+  .bundle-filters {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+.bundle-filters::-webkit-scrollbar {
+  display: none;
 }
 
 .category-pill {
-  padding: 0.75rem 1.5rem;
-  border-radius: 30px;
-  border: 1px solid #e0e0e0;
-  background-color: #f9f9f9;
-  color: #555;
-  font-size: 1rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 24px;
+  border: 1px solid rgba(26, 47, 34, 0.12);
+  background-color: #ffffff;
+  color: #4a4a4a;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .category-pill:hover {
-  background-color: #e9e9e9;
+  border-color: var(--color-accent, #d4af37);
+  color: var(--color-primary, #1a2f22);
 }
 
 .category-pill.active {
-  background-color: #12281a;
-  color: #fff;
-  border-color: #12281a;
-  box-shadow: 0 4px 15px rgba(18, 40, 26, 0.2);
+  background-color: var(--color-primary, #1a2f22);
+  color: #ffffff;
+  border-color: var(--color-primary, #1a2f22);
+  box-shadow: 0 4px 12px rgba(26, 47, 34, 0.15);
 }
 
 /* Premium Product Grid */

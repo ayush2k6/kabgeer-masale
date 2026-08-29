@@ -3,6 +3,45 @@
 ## 2026-08-29
 
 ### Task
+Kabgeer Masale — V1 UI/UX Polish & Checkout Corrections.
+
+### Implemented Improvements & Fixes
+- **1. Order Confirmation Pop-Up / Modal & Status Page**:
+  - Enhanced [OrderSuccessPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/OrderSuccessPage.jsx) with rich confirmation details, formatted IST timestamps, live order/payment status badges, itemized spice packing list, delivery summary, and clear CTAs.
+- **2. Profile / Account Confirmation Message**:
+  - Polished [ProfilePage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/ProfilePage.jsx) with IST timestamps on past orders, clean status indicators, expandable order line items, and sans-serif typography.
+- **3. Order Confirmation Emails (Customer & Admin)**:
+  - Upgraded [supabase/functions/send-order-email/index.ts](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/send-order-email/index.ts) with responsive HTML emails, exact financial breakdowns, IST timestamps, delivery details, and admin courier dispatch info without exposing secrets.
+- **4. Build Your Bundle Header**:
+  - Refined [BuildBundlePage.css](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/BuildBundlePage.css) with balanced vertical spacing, sans-serif typography hierarchy, and subtle gold accents.
+- **5. Navigation Bar**:
+  - Standardized [Header.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/components/Header.jsx) and [Header.css](file:///c:/Users/Acer/Documents/kabgeer-ji/src/components/Header.css) with clean spacing, icon sizing, and active state indicators.
+- **6. Sign In & Sign Up Pages**:
+  - Modernized [LoginPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/LoginPage.jsx) and [SignupPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/SignupPage.jsx) with sans-serif headings, improved input states, and clear error banners.
+- **7. Customer Login Page — Secondary Action**:
+  - Added clear secondary "Browse Products" action linking directly to `/products`.
+- **8. Checkout / Cart — COD Removed for V1**:
+  - Removed/disabled Cash on Delivery (COD) in customer-facing checkout UI in [CheckoutPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/CheckoutPage.jsx). Online payments are handled via Razorpay.
+- **9. Removed "Same as billing address"**:
+  - Removed "Same as billing address" checkbox and redundant billing inputs from [CheckoutPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/CheckoutPage.jsx).
+- **10. Mandatory Details & PIN / Phone Validation**:
+  - Added strict regex validation for Indian 6-digit PIN code (`/^[1-9][0-9]{5}$/`) and 10-digit mobile number (`/^[6-9]\d{9}$/`).
+  - Added field-level required indicators (`*`) and inline validation errors before payment initialization.
+- **11. Search Functionality**:
+  - Connected header search bar navigation to [CataloguePage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/CataloguePage.jsx) with whitespace-trimmed, case-insensitive matching across product names, categories, descriptions, and about fields.
+- **12. "What Our Customers Say" Testimonials**:
+  - Centered testimonials grid in [HomePage.css](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/HomePage.css) with clean tablet/mobile responsive stacking and sans-serif typography.
+- **13. Build Your Bundle Category Slider**:
+  - Enhanced category pills with smooth touch horizontal scrolling on mobile devices.
+- **14. Typography Consistency (No Serif)**:
+  - Eliminated serif declarations across [src/index.css](file:///c:/Users/Acer/Documents/kabgeer-ji/src/index.css), [HomePage.css](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/HomePage.css), and [RecipesPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/RecipesPage.jsx) in favor of the unified sans-serif system (`Plus Jakarta Sans` / system-ui).
+- **15. Automated Verification**:
+  - Executed `scratch/test_v1_polish_and_checkout.mjs` (**6/6 checks passed**).
+  - Executed `npm run lint` (**0 errors**) and `npm run build` (**0 errors**).
+
+---
+
+### Task
 Part 3.6.3 — Remote Security Migration Verification (Live Re-Audit).
 
 ### Audit & Verification Results

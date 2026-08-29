@@ -25,10 +25,12 @@ const CataloguePage = () => {
 
   const filteredProducts = PRODUCTS.filter(product => {
     const matchesCategory = activeCategory === 'All Masalas' || product.category === activeCategory;
-    const matchesSearch = searchQuery === '' ||
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.about?.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch = !q ||
+      product.name?.toLowerCase().includes(q) ||
+      product.category?.toLowerCase().includes(q) ||
+      product.description?.toLowerCase().includes(q) ||
+      product.about?.toLowerCase().includes(q);
       
     let matchesPrice = true;
     if (priceFilter === 'under-60') matchesPrice = product.price < 60;

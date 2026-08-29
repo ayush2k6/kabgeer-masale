@@ -51,11 +51,11 @@ const SignupPage = () => {
         justifyContent: 'center',
         color: 'white'
       }} className="desktop-only-flex">
-        <h1 style={{ fontSize: '3.5rem', marginBottom: '1.5rem', lineHeight: '1.1', color: 'white' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '3.2rem', marginBottom: '1.5rem', lineHeight: '1.15', color: 'white', fontWeight: '700' }}>
           Join the <span style={{ color: 'var(--color-accent-light)' }}>Kabgeer</span> Family.
         </h1>
-        <p style={{ fontSize: '1.2rem', opacity: 0.9, maxWidth: '80%', lineHeight: '1.6' }}>
-          Create an account to build your custom spice bundles, earn rewards, and discover the true essence of Indian culinary traditions.
+        <p style={{ fontSize: '1.15rem', opacity: 0.9, maxWidth: '80%', lineHeight: '1.6', fontFamily: 'var(--font-body)' }}>
+          Create an account to build your custom spice bundles, manage orders, and discover the true essence of Indian culinary traditions.
         </p>
       </div>
 
@@ -70,8 +70,8 @@ const SignupPage = () => {
         backgroundColor: 'var(--color-white)'
       }}>
         <div style={{ width: '100%', maxWidth: '420px' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--color-primary)' }}>Create Account</h2>
-          <p style={{ color: 'var(--color-text-light)', marginBottom: '2.5rem' }}>Start your flavorful journey with us.</p>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--color-primary)', fontWeight: '700' }}>Create Account</h2>
+          <p style={{ color: 'var(--color-text-light)', marginBottom: '2.25rem', fontFamily: 'var(--font-body)' }}>Start your flavorful journey with us.</p>
           
           {error && (
             <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid #fca5a5' }}>
@@ -81,7 +81,7 @@ const SignupPage = () => {
           
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>Full Name</label>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: 'var(--color-primary)' }}>Full Name</label>
               <div style={{ position: 'relative' }}>
                 <User size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-light)' }} />
                 <input 
@@ -103,7 +103,7 @@ const SignupPage = () => {
             </div>
 
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>Email Address</label>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: 'var(--color-primary)' }}>Email Address</label>
               <div style={{ position: 'relative' }}>
                 <Mail size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-light)' }} />
                 <input 
@@ -125,7 +125,7 @@ const SignupPage = () => {
             </div>
             
             <div style={{ marginBottom: '2rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>Password</label>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: 'var(--color-primary)' }}>Password</label>
               <div style={{ position: 'relative' }}>
                 <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-light)' }} />
                 <input 
@@ -149,7 +149,7 @@ const SignupPage = () => {
             <button 
               type="submit" 
               className="btn btn-primary" 
-              style={{ width: '100%', padding: '1rem', borderRadius: '8px', fontSize: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+              style={{ width: '100%', padding: '0.95rem', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
               disabled={isLoading}
             >
               {isLoading ? 'Creating Account...' : 'Create Account'}
@@ -157,9 +157,7 @@ const SignupPage = () => {
             </button>
           </form>
           
-
-          
-          <p style={{ textAlign: 'center', marginTop: '2.5rem', color: 'var(--color-text-light)', fontSize: '0.95rem' }}>
+          <p style={{ textAlign: 'center', marginTop: '2.25rem', color: 'var(--color-text-light)', fontSize: '0.95rem', fontFamily: 'var(--font-body)' }}>
             Already have an account? <Link to="/login" style={{ color: 'var(--color-primary)', fontWeight: '600', textDecoration: 'underline', textUnderlineOffset: '4px' }}>Sign in</Link>
           </p>
         </div>
