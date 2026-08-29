@@ -181,12 +181,13 @@
 }
 
 .pdp-title {
-  font-family: var(--font-body);
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 2.2rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #1a2f22;
   margin-bottom: 0.5rem;
   line-height: 1.2;
+  letter-spacing: 0.2px;
 }
 
 /* Rating Row */
@@ -968,16 +969,17 @@
 .mobile-sticky-action-bar {
   display: none;
   position: fixed;
-  bottom: 60px;
+  bottom: 62px;
   left: 0;
   right: 0;
-  background-color: #ffffff;
-  border-top: 1px solid rgba(26, 47, 34, 0.12);
-  padding: 8px 14px;
+  background-color: #1a2f22;
+  border-top: 1.5px solid #d4af37;
+  padding: 10px 16px;
   z-index: 995;
-  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.25);
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
 
 @media (max-width: 767px) {
@@ -989,36 +991,46 @@
 .mobile-bar-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
 }
 
 .bar-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #1a2f22;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 160px;
 }
 
 .bar-price {
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: #1a2f22;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #d4af37;
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
 .mobile-bar-btn {
-  background-color: #1a2f22;
-  color: #ffffff;
+  background: linear-gradient(135deg, #d4af37, #f3e5ab);
+  color: #1a2f22;
   border: none;
-  padding: 7px 12px;
+  padding: 8px 16px;
   border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.86rem;
+  font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.mobile-bar-btn:active {
+  transform: scale(0.96);
 }
 
 

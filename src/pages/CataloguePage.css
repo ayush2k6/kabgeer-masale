@@ -228,7 +228,7 @@
 
 @media (max-width: 767px) {
   .catalogue-page {
-    padding-bottom: 80px;
+    padding-bottom: 5.5rem;
   }
 
   .catalogue-filters-bar {
@@ -252,7 +252,7 @@
 
   .ref-catalogue-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 10px;
   }
 
   .ref-product-info {
@@ -271,7 +271,7 @@
 
 @media (max-width: 480px) {
   .ref-catalogue-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 }
