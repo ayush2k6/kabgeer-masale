@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { SlidersHorizontal, X, Search, Tag, ArrowUpDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { PRODUCTS, CATEGORIES } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import './CataloguePage.css';
@@ -8,7 +7,6 @@ import catalogueBannerImg from '../assets/catalogue banner.png';
 
 const CataloguePage = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const initialSearch = searchParams.get('search') || '';
 
@@ -22,165 +20,118 @@ const CataloguePage = () => {
   }, []);
 
   useEffect(() => {
-    const q = searchParams.get('search') || '';
-    setSearchQuery(q);
+    setSearchQuery(searchParams.get('search') || '');
   }, [location.search]);
 
-  const categoryCounts = useMemo(() => {
-    const counts = { 'All Masalas': PRODUCTS.length };
-    CATEGORIES.forEach(cat => {
-      if (cat !== 'All Masalas') {
-        counts[cat] = PRODUCTS.filter(p => p.category === cat).length;
-      }
-    });
-    return counts;
-  }, []);
+  const filteredProducts = PRODUCTS.filter(product => {
+    const matchesCategory = activeCategory === 'All Masalas' || product.category === activeCategory;
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch = !q ||
+      product.name?.toLowerCase().includes(q) ||
+      product.category?.toLowerCase().includes(q) ||
+      product.description?.toLowerCase().includes(q) ||
+      product.about?.toLowerCase().includes(q);
+      
+    let matchesPrice = true;
+    if (priceFilter === 'under-60') matchesPrice = product.price < 60;
+    else if (priceFilter === '60-80') matchesPrice = product.price >= 60 && product.price <= 80;
+    else if (priceFilter === 'over-80') matchesPrice = product.price > 80;
+      
+    return matchesCategory && matchesSearch && matchesPrice;
+  });
 
-  const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter(product => {
-      const matchesCategory = activeCategory === 'All Masalas' || product.category === activeCategory;
-      const q = searchQuery.trim().toLowerCase();
-      const matchesSearch = !q ||
-        product.name?.toLowerCase().includes(q) ||
-        product.category?.toLowerCase().includes(q) ||
-        product.description?.toLowerCase().includes(q) ||
-        product.about?.toLowerCase().includes(q);
-        
-      let matchesPrice = true;
-      if (priceFilter === 'under-60') matchesPrice = product.price < 60;
-      else if (priceFilter === '60-80') matchesPrice = product.price >= 60 && product.price <= 80;
-      else if (priceFilter === 'over-80') matchesPrice = product.price > 80;
-        
-      return matchesCategory && matchesSearch && matchesPrice;
-    });
-  }, [activeCategory, searchQuery, priceFilter]);
-
-  const sortedProducts = useMemo(() => {
-    return [...filteredProducts].sort((a, b) => {
-      if (sortBy === 'price-low') return a.price - b.price;
-      if (sortBy === 'price-high') return b.price - a.price;
-      if (sortBy === 'alpha-asc') return a.name.localeCompare(b.name);
-      if (sortBy === 'alpha-desc') return b.name.localeCompare(a.name);
-      return 0;
-    });
-  }, [filteredProducts, sortBy]);
-
-  const clearSearch = () => {
-    setSearchQuery('');
-    navigate('/products', { replace: true });
-  };
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortBy === 'price-low') return a.price - b.price;
+    if (sortBy === 'price-high') return b.price - a.price;
+    if (sortBy === 'alpha-asc') return a.name.localeCompare(b.name);
+    if (sortBy === 'alpha-desc') return b.name.localeCompare(a.name);
+    return 0;
+  });
 
   return (
     <div className="catalogue-page">
       {/* Banner Section */}
-      <section className="catalogue-hero-banner">
-        <img
-          src={catalogueBannerImg}
-          alt="Explore Our Authentic Masala Catalogue"
-          className="catalogue-banner-image"
-        />
+      <section className="hero-section" style={{ padding: 0, margin: 0, width: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img src={catalogueBannerImg} alt="Products Banner" style={{ width: '100%', height: 'auto', display: 'block', minHeight: '220px', objectFit: 'cover' }} />
       </section>
 
-      <div className="container catalogue-container">
+      <div className="container" style={{ maxWidth: '1400px', padding: '2rem 1.5rem 0' }}>
         
-        {/* Seamless Category Pill Tabs (Direct on background) */}
-        <div className="catalogue-category-tabs-scroll">
-          {CATEGORIES.map(category => {
-            const count = categoryCounts[category] || 0;
-            const isActive = activeCategory === category;
-            return (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`catalogue-cat-pill ${isActive ? 'active' : ''}`}
+        {/* Responsive Filters Bar */}
+        <div className="catalogue-filters-bar">
+          <div className="filters-left">
+            <div className="filter-item">
+              <label htmlFor="category-select">Category:</label>
+              <select 
+                id="category-select"
+                className="ref-dropdown" 
+                value={activeCategory}
+                onChange={(e) => setActiveCategory(e.target.value)}
               >
-                <span>{category}</span>
-                <span className="cat-count-badge">{count}</span>
-              </button>
-            );
-          })}
-        </div>
+                {CATEGORIES.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
 
-        {/* Secondary Filter & Sort Bar */}
-        <div className="catalogue-secondary-bar">
-          
-          <div className="catalogue-summary-text">
-            {searchQuery ? (
-              <div className="active-search-chip">
-                <Search size={13} />
-                <span>Search: "<strong>{searchQuery}</strong>"</span>
-                <button type="button" onClick={clearSearch} aria-label="Clear search">
-                  <X size={13} />
-                </button>
-              </div>
-            ) : (
-              <span className="masala-count-text">
-                Showing <strong>{sortedProducts.length}</strong> {sortedProducts.length === 1 ? 'masala' : 'authentic masalas'}
-                {activeCategory !== 'All Masalas' && <span className="active-cat-name"> in {activeCategory}</span>}
-              </span>
-            )}
-          </div>
-
-          <div className="catalogue-dropdowns-group">
-            {/* Price Filter */}
-            <div className="catalogue-select-wrapper">
-              <label htmlFor="price-select" className="visually-hidden">Filter by Price</label>
-              <select
+            <div className="filter-item">
+              <label htmlFor="price-select">Price:</label>
+              <select 
                 id="price-select"
-                className="catalogue-select"
+                className="ref-dropdown" 
                 value={priceFilter}
                 onChange={(e) => setPriceFilter(e.target.value)}
               >
-                <option value="all">🏷️ All Prices</option>
+                <option value="all">All Prices</option>
                 <option value="under-60">Under ₹60</option>
-                <option value="60-80">₹60 – ₹80</option>
-                <option value="over-80">Above ₹80</option>
-              </select>
-            </div>
-
-            {/* Sort Filter */}
-            <div className="catalogue-select-wrapper">
-              <label htmlFor="sort-select" className="visually-hidden">Sort by</label>
-              <select
-                id="sort-select"
-                className="catalogue-select"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="featured">✨ Featured</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="alpha-asc">Name: A to Z</option>
-                <option value="alpha-desc">Name: Z to A</option>
+                <option value="60-80">₹60 - ₹80</option>
+                <option value="over-80">Over ₹80</option>
               </select>
             </div>
           </div>
 
+          <div className="filters-right">
+            <div className="filter-item">
+              <label htmlFor="sort-select">Sort by:</label>
+              <select 
+                id="sort-select"
+                className="ref-dropdown" 
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="featured">Featured</option>
+                <option value="alpha-asc">Alphabetically, A-Z</option>
+                <option value="alpha-desc">Alphabetically, Z-A</option>
+                <option value="price-low">Price, low to high</option>
+                <option value="price-high">Price, high to low</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="product-count-summary">
+          Showing {sortedProducts.length} of {PRODUCTS.length} authentic masalas
         </div>
 
         {/* Product Cards Grid */}
         {sortedProducts.length === 0 ? (
-          <div className="catalogue-empty-state">
-            <div className="empty-icon-wrapper">
-              <SlidersHorizontal size={32} color="#d4af37" />
-            </div>
-            <h3>No masalas match your selected filters</h3>
-            <p>Try resetting the price filter or selecting another category.</p>
+          <div className="no-results text-center mt-4" style={{ marginBottom: '5rem', padding: '4rem 1rem' }}>
+            <h3>No products match your selected filters</h3>
             <button 
-              className="btn-royal-reset" 
-              onClick={() => { setActiveCategory('All Masalas'); setPriceFilter('all'); clearSearch(); }}
+              className="btn-primary" 
+              style={{ marginTop: '1rem', padding: '0.6rem 1.5rem', cursor: 'pointer' }}
+              onClick={() => { setActiveCategory('All Masalas'); setPriceFilter('all'); setSearchQuery(''); }}
             >
-              Show All Masalas
+              Reset Filters
             </button>
           </div>
         ) : (
-          <div className="catalogue-product-grid">
+          <div className="ref-catalogue-grid" style={{ marginBottom: '6rem' }}>
             {sortedProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
-
       </div>
     </div>
   );
