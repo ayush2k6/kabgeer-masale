@@ -211,10 +211,10 @@ const Header = () => {
                 )}
               </div>
 
-              {/* User */}
+              {/* User (Desktop Header) */}
               <Link
                 to={user ? (isAdmin ? "/admin" : "/account") : "/login"}
-                className={`icon-btn user-btn${isOnAuthPage ? ' user-btn-active' : ''}`}
+                className={`icon-btn user-btn header-user-btn${isOnAuthPage ? ' user-btn-active' : ''}`}
                 aria-label={isAdmin ? "Admin Portal" : "Account"}
               >
                 <User size={20} />
@@ -235,7 +235,7 @@ const Header = () => {
 
       <CartDrawer />
 
-      {/* Mobile Bottom Nav */}
+      {/* Mobile Bottom Nav — Pure Discovery */}
       <nav className="mobile-bottom-nav">
         <NavLink to="/" end className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
           <Home size={20} />
@@ -249,22 +249,14 @@ const Header = () => {
           <Sparkles size={20} />
           <span>Bundle</span>
         </NavLink>
+        <NavLink to="/recipes" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+          <ChefHat size={20} />
+          <span>Recipes</span>
+        </NavLink>
         <NavLink to="/account" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
           <User size={20} />
           <span>Account</span>
         </NavLink>
-        <button
-          type="button"
-          onClick={openCartDrawer}
-          className="mobile-nav-item cart-item"
-          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-        >
-          <div className="mobile-cart-wrapper">
-            <ShoppingBag size={20} />
-            {getCartCount() > 0 && <span className="mobile-cart-badge">{getCartCount()}</span>}
-          </div>
-          <span>Cart</span>
-        </button>
       </nav>
 
       {/* Scroll to Top */}

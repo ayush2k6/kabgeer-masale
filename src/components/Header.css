@@ -491,6 +491,10 @@
     display: flex;
   }
 
+  .header-user-btn {
+    display: none;
+  }
+
   .search-panel {
     position: fixed;
     top: 16px;
