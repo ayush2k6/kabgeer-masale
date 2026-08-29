@@ -42,6 +42,7 @@
   padding: 0.75rem 1rem;
   box-shadow: 0 4px 20px rgba(26, 47, 34, 0.05);
   border: 1px solid rgba(212, 175, 55, 0.2);
+  margin-top: 1.25rem;
   margin-bottom: 1.5rem;
 }
 
@@ -301,6 +302,7 @@
   .catalogue-category-tabs-wrapper {
     padding: 0.6rem 0.4rem;
     border-radius: 12px;
+    margin-top: 0.85rem;
     margin-bottom: 1rem;
   }
 
