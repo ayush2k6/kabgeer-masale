@@ -771,6 +771,7 @@ const CheckoutPage = () => {
                 <p className="tax-info text-sm text-text-light mt-1">Inclusive of all taxes. Verified securely by server during checkout.</p>
               </div>
             )}
+          </div>
         </div>
       </div>
 
