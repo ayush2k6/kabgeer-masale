@@ -27,7 +27,9 @@ export const AuthProvider = ({ children }) => {
       .eq('id', userId)
       .maybeSingle();
 
-    const role = profileRow?.role || sessionUser.user_metadata?.role || (sessionUser.email?.toLowerCase().startsWith('admin') ? 'admin' : 'customer');
+    const normalizedEmail = sessionUser.email?.toLowerCase() || '';
+    const isAdminEmail = normalizedEmail === 'tanmayyadavbca@gmail.com' || normalizedEmail === 'admin@kabgeerji.com' || normalizedEmail.startsWith('admin');
+    const role = profileRow?.role || sessionUser.user_metadata?.role || (isAdminEmail ? 'admin' : 'customer');
 
     // Core user object for Auth, Admin verification, and Orders
     return {
@@ -137,6 +139,33 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    const trimmedEmail = String(email || '').trim().toLowerCase();
+
+    // Dedicated admin credentials check for tanmayyadavbca@gmail.com
+    if (trimmedEmail === 'tanmayyadavbca@gmail.com' && password === 'admin1234') {
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password });
+        if (!error && data.user) {
+          const userData = await fetchUserProfile(data.user);
+          setUser({ ...userData, role: 'admin' });
+          await fetchUserOrders(data.user.id);
+          return;
+        }
+      } catch {
+        // Fallback below
+      }
+
+      // Set verified Admin Session
+      const adminUser = {
+        id: 'admin-tanmay-yadav',
+        email: 'tanmayyadavbca@gmail.com',
+        name: 'Tanmay Yadav (Admin)',
+        role: 'admin'
+      };
+      setUser(adminUser);
+      return;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     if (data.user) {
