@@ -9,7 +9,7 @@ import logo from '../assets/logo.png';
 
 const Header = () => {
   const { getCartCount, openCartDrawer } = useCart();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showTopBtn, setShowTopBtn] = useState(false);
@@ -109,7 +109,7 @@ const Header = () => {
                 </button>
               )}
 
-              <Link to={user ? "/account" : "/login"} className="icon-btn user-btn" aria-label="Account">
+              <Link to={user ? (isAdmin ? "/admin" : "/account") : "/login"} className="icon-btn user-btn" aria-label={isAdmin ? "Admin Portal" : "Account"}>
                 <User size={20} />
               </Link>
 

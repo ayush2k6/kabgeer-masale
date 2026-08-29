@@ -22,7 +22,7 @@ import {
   Phone,
   Mail
 } from 'lucide-react';
-import logo from '../assets/logo-header.png';
+import logo from '../assets/logo.png';
 import './AdminDashboardPage.css';
 
 const ORDER_STATUS_OPTIONS = [

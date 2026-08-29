@@ -5,11 +5,16 @@ import { Package, LogOut, ChevronDown, ChevronUp, ShoppingBag, ArrowRight } from
 import './ProfilePage.css';
 
 const ProfilePage = () => {
-  const { user, orders, logout } = useAuth();
+  const { user, orders, logout, isAdmin } = useAuth();
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Admins are redirected directly to the Admin Dashboard
+  if (isAdmin) {
+    return <Navigate to="/admin" replace />;
   }
 
   const toggleOrderDetails = (orderId) => {
