@@ -102,7 +102,7 @@ PART 3.6.3 (Remote Security Migration Verification)
 ├── Direct Table RLS         ✅ VERIFIED ON REMOTE DB (Unauthenticated access blocked)
 ├── Frontend Credentials     ✅ VERIFIED CLEAN (0 hardcoded test credentials in src/)
 ├── Local CORS Config        ✅ VERIFIED HARDENED (No wildcard origin)
-└── Remote RPC Hardening     ⚠️ NOT APPLIED ON REMOTE DB (Migration SQL execution required via Supabase SQL Editor)
+└── Remote RPC Hardening     ✅ APPLIED & LIVE VERIFIED (All RPC superuser guards enforced)
 
 PART 3.5, 3.6, 3.7 & 3.8
 ├── 3.5.1 Audit / Blueprint        ✅ COMPLETED
