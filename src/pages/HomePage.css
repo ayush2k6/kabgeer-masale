@@ -271,7 +271,7 @@
   line-height: 1.35;
 }
 
-/* Why Choose Us Section — Royal Green & Gold */
+/* Why Choose Us Section — Royal Green & Gold 4 Cards */
 .why-choose-us-royal-section {
   padding: 4.5rem 0;
   background: linear-gradient(180deg, #102115 0%, #173220 50%, #0e1d13 100%);
@@ -304,7 +304,9 @@
 
 .why-choose-royal-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 1100px;
+  margin: 0 auto;
   gap: 1.25rem;
 }
 
@@ -425,10 +427,13 @@
   text-align: center;
 }
 
+/* Balanced 2-Card Product Grid */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.75rem;
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 780px;
+  margin: 0 auto;
+  gap: 2rem;
 }
 
 .section-cta-row {
@@ -659,7 +664,7 @@
   transform: translateY(-2px);
 }
 
-/* Customer Reviews Section */
+/* Customer Reviews Section (2 Balanced Cards) */
 .customer-reviews-section {
   padding: 5rem 0;
   background-color: #ffffff;
@@ -698,8 +703,10 @@
 
 .reviews-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.75rem;
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 860px;
+  margin: 0 auto;
+  gap: 2rem;
 }
 
 .review-card {
@@ -787,11 +794,8 @@
     grid-template-columns: repeat(2, 1fr);
   }
   .why-choose-royal-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-  }
-  .product-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
   .middle-info-grid {
     grid-template-columns: 1fr;
@@ -840,11 +844,13 @@
     padding: 0.85rem 1rem;
   }
 
+  /* 4 Pillars in Even 2x2 Grid */
   .pillars-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 
+  /* Why Choose Us in Even 2x2 Grid */
   .why-choose-us-royal-section {
     padding: 2.75rem 0;
   }
@@ -885,6 +891,7 @@
     padding: 3rem 0;
   }
 
+  /* Clean 2-Card Row on Mobile */
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
@@ -911,6 +918,11 @@
     font-size: 1.75rem;
   }
 
+  .reviews-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
   .middle-info-section {
     padding: 3rem 0;
   }
@@ -922,6 +934,11 @@
 
 @media (max-width: 480px) {
   .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .pillars-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }

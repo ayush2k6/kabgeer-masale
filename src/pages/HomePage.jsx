@@ -1,14 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ShieldCheck, Leaf, BookOpen, Award, ArrowRight, Star, ChevronLeft, ChevronRight, Package, Flame, Heart } from 'lucide-react';
-import { PRODUCTS, CATEGORIES } from '../data/products';
+import { PRODUCTS } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import './HomePage.css';
 
 import newBannerImg from '../assets/banner.png';
 import rawIngredientsImg from '../assets/raw-ingredients.png';
 import buildBundleBannerImg from '../assets/build your bundle banner.png';
-import whyChooseUsImg from '../assets/why choose us.png';
 
 const HomePage = () => {
   const sliderRef = useRef(null);
@@ -19,16 +18,15 @@ const HomePage = () => {
 
   const getProduct = (id) => PRODUCTS.find(p => p.id === id);
 
+  // Exactly 2 featured cards for balanced, symmetrical mobile & desktop layout
   const quickNonVegProducts = [
     getProduct('mutton-stew'),
-    getProduct('chicken-korma'),
-    getProduct('non-veg-tandoori')
+    getProduct('chicken-korma')
   ].filter(Boolean);
 
   const quickVegProducts = [
     getProduct('garam-masala'),
-    getProduct('veg-biryani'),
-    getProduct('chole')
+    getProduct('veg-biryani')
   ].filter(Boolean);
 
   // Signature catalogue selection for horizontal showcase
@@ -120,7 +118,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Trust & Quality Pillars */}
+      {/* Trust & Quality Pillars (4 Cards = 2x2 on Mobile) */}
       <section className="home-trust-pillars">
         <div className="container">
           <div className="pillars-grid">
@@ -156,7 +154,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Why Choose Us Section — Minimal & Royal */}
+      {/* Why Choose Us Section — Royal Green & 4 Even Cards (2x2 on Mobile) */}
       <section className="why-choose-us-royal-section">
         <div className="container">
           <div className="why-choose-header text-center">
@@ -194,14 +192,6 @@ const HomePage = () => {
 
             <div className="why-choose-card">
               <div className="why-choose-icon-wrap">
-                <ShieldCheck size={24} />
-              </div>
-              <h4>No Added Salt</h4>
-              <p>100% pure potent spices with no cheap salt fillers.</p>
-            </div>
-
-            <div className="why-choose-card">
-              <div className="why-choose-icon-wrap">
                 <Flame size={24} />
               </div>
               <h4>Freshly Ground</h4>
@@ -211,7 +201,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Our Quick Non-Veg Masala */}
+      {/* Our Quick Non-Veg Masala (2 Even Cards) */}
       <section className="quick-masala-section non-veg-bg">
         <div className="container">
           <div className="section-header-row text-center mb-4">
@@ -254,7 +244,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Our Quick Veg Masala */}
+      {/* Our Quick Veg Masala (2 Even Cards) */}
       <section className="quick-masala-section veg-bg">
         <div className="container">
           <div className="section-header-row text-center mb-4">
@@ -310,7 +300,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Customer Reviews Section */}
+      {/* Customer Reviews Section (2 Even Reviews) */}
       <section className="customer-reviews-section">
         <div className="container">
           <div className="reviews-header text-center">
@@ -361,35 +351,11 @@ const HomePage = () => {
               <div className="review-content">
                 <div className="quote-mark">”</div>
                 <p className="review-text">
-                  "Mutton Stew was always tricky for me until I tried Kabgeer. The spice ratio is spot on. My family and dinner guests loved every bite!"
+                  "Mutton Stew was always tricky for me until I tried Kabgeer. The spice ratio is spot on. My family and dinner guests loved every single bite!"
                 </p>
                 <div className="reviewer-info">
                   <span className="reviewer-name">Rohan Gupta</span>
                   <span className="reviewer-role">Verified Buyer • Lucknow</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Review 3 */}
-            <div className="review-card">
-              <div className="review-rating">
-                <Star size={14} fill="#d99026" color="#d99026" />
-                <Star size={14} fill="#d99026" color="#d99026" />
-                <Star size={14} fill="#d99026" color="#d99026" />
-                <Star size={14} fill="#d99026" color="#d99026" />
-                <Star size={14} fill="#d99026" color="#d99026" />
-              </div>
-              <div className="review-product">
-                <img src="/assets/products/veg biryani masala cover.png" alt="Veg Biryani Masala" />
-              </div>
-              <div className="review-content">
-                <div className="quote-mark">”</div>
-                <p className="review-text">
-                  "Super convenient and packed with royal aroma. Elevates simple home-cooked meals into rich restaurant quality Lucknowi cuisine."
-                </p>
-                <div className="reviewer-info">
-                  <span className="reviewer-name">Priya Patel</span>
-                  <span className="reviewer-role">Verified Buyer • Mumbai</span>
                 </div>
               </div>
             </div>
