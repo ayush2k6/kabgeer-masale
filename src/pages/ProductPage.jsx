@@ -323,17 +323,6 @@ const ProductPage = () => {
         </div>
 
       </div>
-
-      {/* Mobile Sticky Bottom Add To Cart Bar */}
-      <div className="mobile-sticky-action-bar">
-        <div className="mobile-bar-info">
-          <span className="bar-title">{product.name}</span>
-          <span className="bar-price">₹{basePrice}.00</span>
-        </div>
-        <button className="mobile-bar-btn" onClick={handleAddToCart}>
-          <ShoppingBag size={18} /> Add to Cart
-        </button>
-      </div>
     </div>
   );
 };

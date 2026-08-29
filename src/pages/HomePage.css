@@ -116,11 +116,11 @@
 }
 
 .section-title {
-  font-size: 3rem;
-  margin-bottom: 3rem;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 2.4rem;
+  margin-bottom: 2rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .text-white {
@@ -284,10 +284,11 @@
 }
 
 .info-heading {
-  font-size: 3rem;
-  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
   color: #1A2F22;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   line-height: 1.2;
 }
 
@@ -350,10 +351,11 @@
 }
 
 .reviews-title {
-  font-size: 3.5rem;
-  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
   color: #1A2F22;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .reviews-desc {
@@ -916,7 +918,7 @@
     font-size: 0.95rem;
   }
   .home-page {
-    padding-bottom: 70px;
+    padding-bottom: 5.5rem;
   }
 }
 
