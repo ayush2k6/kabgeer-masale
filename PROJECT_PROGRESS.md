@@ -70,13 +70,31 @@
 
 ```
 PART 3.6 (Admin Dashboard V1)
-├── Admin authorization       ✅ COMPLETE (AdminRoute.jsx + AdminLoginPage.jsx + public.profiles.role)
+├── Admin authorization       ✅ COMPLETE (AdminRoute.jsx + Unified Login + public.profiles.role)
 ├── Dashboard overview        ✅ COMPLETE (KPIs: Total Orders, Pending, Paid, Delivered, Sales)
 ├── Orders list               ✅ COMPLETE (Search + Status Filters + Badges)
 ├── Order details             ✅ COMPLETE (Customer info, address, line items, breakdown)
 ├── Order status update       ✅ COMPLETE (Fulfillment status update with immutable payment status)
 ├── Security/RLS testing      ✅ COMPLETE (Zero-trust RLS + isolated customer access)
 └── Final verification        ✅ COMPLETE (5/5 tests passed, 0 lint errors, 0 build errors)
+
+PART 3.6.1 (Admin Security Hardening — Audit Only)
+├── Audit                    ✅ COMPLETE
+├── Admin authorization      ✅ AUDITED (P1 Recommendation)
+├── RLS                      ✅ AUDITED (P0 Recommendation)
+├── Route protection         ✅ SECURE (<AdminRoute> + Unified Smart Login)
+├── Secret security          ✅ AUDITED (P1 Recommendation)
+├── Payment security         ✅ SECURE (Serverless HMAC SHA-256 + immutable client status)
+├── Admin activity logging   ⏳ OPTIONAL / P2 (Add admin_audit_logs table)
+└── Hardening implementation ✅ PROPOSED & AUDITED
+
+PART 3.6.2 (Admin Security Hardening Implementation)
+├── Hardcoded Bypasses Pruned ✅ COMPLETE (0 hardcoded credentials / test bypasses in src/)
+├── Database-Backed Auth      ✅ COMPLETE (Role derived strictly from public.profiles.role in DB)
+├── Superuser RPC Hardening   ✅ COMPLETE (is_admin() guard added to get_all_orders_admin & admin_update_order_status)
+├── CORS Allowlist Hardening  ✅ COMPLETE (_shared/cors.ts restricted to allowed origins)
+├── RLS Policy Enforcement    ✅ COMPLETE (Orders & items isolated by customer_id and is_admin())
+└── Security Suite & Build    ✅ COMPLETE (5/5 security tests passed, 0 lint errors, 0 build errors)
 
 PART 3.5, 3.6, 3.7 & 3.8
 ├── 3.5.1 Audit / Blueprint        ✅ COMPLETED

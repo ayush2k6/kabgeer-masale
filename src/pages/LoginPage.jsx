@@ -30,13 +30,10 @@ const LoginPage = () => {
     setError('');
     setIsLoading(true);
     try {
-      await login(email.trim(), password);
+      const loggedInUser = await login(email.trim(), password);
       
-      // Smart role-based routing
-      const trimmedEmail = email.trim().toLowerCase();
-      const isAdminEmail = trimmedEmail === 'tanmayyadavbca@gmail.com' || trimmedEmail === 'admin@kabgeerji.com' || trimmedEmail.startsWith('admin');
-
-      if (isAdminEmail) {
+      // Database-backed role routing
+      if (loggedInUser?.role === 'admin') {
         navigate('/admin');
       } else {
         const from = location.state?.from?.pathname || '/account';

@@ -3,7 +3,27 @@
 ## 2026-08-29
 
 ### Task
-Part 3.6 — Admin Dashboard V1 Implementation.
+Part 3.6.2 — Admin Security Hardening Implementation.
+
+### Implemented Security Hardening
+- **Pruned Hardcoded Test Credentials**:
+  - Removed all development bypasses, plaintext passwords, and hardcoded email checks from [AuthContext.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/context/AuthContext.jsx) and [LoginPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/LoginPage.jsx).
+  - Admin identity is now derived purely from authenticated Supabase users (`auth.users`) combined with database-backed role verification (`public.profiles.role = 'admin'`).
+- **Superuser RPC Hardening**:
+  - Created `supabase/migrations/20260829010000_part_3_6_2_admin_security_hardening.sql`.
+  - Added strict `IF NOT public.is_admin() THEN RAISE EXCEPTION ... END IF;` guards inside `public.get_all_orders_admin()` and `public.admin_update_order_status()`.
+  - Restricted `admin_update_order_status()` to fulfillment status transitions only (`Pending`, `Confirmed`, `Processing`, `Shipped`, `Delivered`, `Cancelled`), protecting payment and financial columns from unauthorized modification.
+  - Revoked public/anon execution privileges on admin functions.
+- **CORS Allowlist Hardening**:
+  - Replaced wildcard CORS origin in [supabase/functions/_shared/cors.ts](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/_shared/cors.ts) with strict allowlist (`localhost:5173`, `localhost:3000`, `kabgeerji.com`, `kabgeer-masale.vercel.app`).
+- **Verification & Tests**:
+  - Created and executed automated security test suite `scratch/test_admin_security_hardening.mjs` (**5/5 checks passed**).
+  - Executed `npm run lint` (**0 errors**) and `npm run build` (**0 errors**).
+
+---
+
+### Task
+Part 3.6.1 — Admin Security Hardening — Audit Only.
 
 ### Implemented Features & Architecture
 - **Admin Authorization & Security Guard**:
