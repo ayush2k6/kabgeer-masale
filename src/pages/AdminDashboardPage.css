@@ -1,4 +1,4 @@
-/* AdminDashboardPage.css — Admin Dashboard V1 */
+/* AdminDashboardPage.css — Admin Dashboard V1 Polished */
 
 .admin-layout {
   min-height: 100vh;
@@ -167,6 +167,22 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  user-select: none;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  border-color: #cbd5e1;
+}
+
+.kpi-card-active {
+  border-color: #1a2f22 !important;
+  box-shadow: 0 0 0 2px rgba(26, 47, 34, 0.2) !important;
+  background-color: #fafaf9;
 }
 
 .kpi-icon-wrapper {
@@ -191,7 +207,7 @@
 }
 
 .kpi-label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #64748b;
   text-transform: uppercase;
@@ -203,6 +219,12 @@
   font-weight: 700;
   color: #0f172a;
   margin-top: 0.2rem;
+}
+
+.kpi-hint {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-top: 0.15rem;
 }
 
 /* 4. Orders Section Card */
@@ -228,7 +250,7 @@
   position: relative;
   flex: 1;
   min-width: 260px;
-  max-width: 400px;
+  max-width: 380px;
 }
 
 .admin-search-icon {
@@ -258,15 +280,15 @@
 .admin-filters-row {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   flex-wrap: wrap;
 }
 
 .admin-select-filter {
-  padding: 0.6rem 1rem;
+  padding: 0.6rem 0.85rem;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-family: inherit;
   background-color: #ffffff;
   color: #334155;
@@ -276,6 +298,23 @@
 .admin-select-filter:focus {
   outline: none;
   border-color: #1a2f22;
+}
+
+.btn-reset-filters {
+  padding: 0.6rem 0.85rem;
+  border: 1px dashed #cbd5e1;
+  background: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-reset-filters:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
 }
 
 /* 5. Orders Table */
@@ -314,6 +353,8 @@
   font-weight: 700;
   color: #1a2f22;
   white-space: nowrap;
+  font-family: monospace, sans-serif;
+  font-size: 0.92rem;
 }
 
 .order-customer-meta {
@@ -333,7 +374,7 @@
 }
 
 .btn-view-order {
-  padding: 0.4rem 0.85rem;
+  padding: 0.45rem 0.9rem;
   background-color: #f1f5f9;
   color: #1e293b;
   border: 1px solid #cbd5e1;
@@ -377,7 +418,7 @@
 .admin-drawer-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.45);
+  background-color: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(2px);
   z-index: 100;
   display: flex;
@@ -386,11 +427,11 @@
 
 .admin-drawer-panel {
   width: 100%;
-  max-width: 580px;
+  max-width: 600px;
   background-color: #ffffff;
   height: 100%;
   overflow-y: auto;
-  box-shadow: -4px 0 25px rgba(0, 0, 0, 0.15);
+  box-shadow: -6px 0 30px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
 }
@@ -413,6 +454,9 @@
   font-size: 1.25rem;
   margin: 0;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .btn-drawer-close {
@@ -420,7 +464,7 @@
   border: none;
   color: #64748b;
   cursor: pointer;
-  padding: 0.35rem;
+  padding: 0.4rem;
   border-radius: 6px;
 }
 
@@ -433,7 +477,7 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .drawer-section {
@@ -444,12 +488,64 @@
 }
 
 .drawer-section-title {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #475569;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   margin-bottom: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-copy-small {
+  background: none;
+  border: 1px solid #cbd5e1;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  color: #475569;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn-copy-small:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Quick Status Chips */
+.quick-status-chips {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.chip-status-btn {
+  padding: 0.35rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chip-status-btn:hover:not(:disabled) {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.chip-status-btn.active {
+  background-color: #1a2f22;
+  color: #ffffff;
+  border-color: #1a2f22;
 }
 
 /* Status Update Box */
@@ -457,7 +553,6 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0.5rem;
 }
 
 .status-select-input {
@@ -480,6 +575,7 @@
   font-size: 0.88rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-save-status:hover:not(:disabled) {
@@ -513,8 +609,8 @@
 }
 
 .drawer-item-img {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   border-radius: 6px;
   background-color: #faf6f0;
@@ -563,7 +659,7 @@
   border-top: 1px solid #e2e8f0;
   padding-top: 0.65rem;
   margin-top: 0.35rem;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #1a2f22;
 }
@@ -571,7 +667,7 @@
 /* Empty / Loading States */
 .admin-empty-state {
   text-align: center;
-  padding: 3rem 1.5rem;
+  padding: 3.5rem 1.5rem;
   color: #64748b;
 }
 
