@@ -105,6 +105,8 @@ const CartDrawer = () => {
             </div>
           ) : (
             <>
+              {/* Item Rows */}
+              <div className="drawer-item-list">
                 {cartItems.map((item) => {
                   const itemId = item.cartItemId || `${item.id}__${item.weight || '50g'}`;
                   return (
