@@ -185,18 +185,92 @@
   line-height: 1.35;
 }
 
-/* Why Choose Us Section */
-.why-choose-us-section {
-  padding: 2.5rem 0;
-  background-color: var(--color-bg, #faf6f0);
+/* Why Choose Us Section — Minimal & Royal */
+.why-choose-us-royal-section {
+  padding: 4rem 0;
+  background: linear-gradient(180deg, #ffffff 0%, #faf6f0 100%);
+  border-top: 1px solid #f0e6d6;
+  border-bottom: 1px solid #f0e6d6;
 }
 
-.why-choose-us-img {
-  width: 100%;
-  height: auto;
-  display: block;
+.why-choose-header {
+  margin-bottom: 2.75rem;
+}
+
+.why-choose-title {
+  font-size: 2.3rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
+  color: #1A2F22;
+  margin: 0.35rem 0 0.75rem 0;
+}
+
+.why-choose-desc {
+  font-size: 0.98rem;
+  color: #666;
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.why-choose-royal-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem;
+}
+
+.why-choose-card {
+  background: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.22);
   border-radius: 14px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  padding: 1.75rem 1.1rem;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(26, 47, 34, 0.03);
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.why-choose-card:hover {
+  transform: translateY(-4px);
+  border-color: #d4af37;
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15);
+}
+
+.why-choose-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: rgba(212, 175, 55, 0.12);
+  color: #d4af37;
+  border: 1.5px solid rgba(212, 175, 55, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  transition: all 0.25s ease;
+}
+
+.why-choose-card:hover .why-choose-icon-wrap {
+  background-color: #1a2f22;
+  color: #d4af37;
+  border-color: #1a2f22;
+}
+
+.why-choose-card h4 {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #1a2f22;
+  margin: 0 0 0.4rem 0;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.why-choose-card p {
+  font-size: 0.8rem;
+  color: #666;
+  line-height: 1.45;
+  margin: 0;
 }
 
 /* Quick Masala Sections */
@@ -620,6 +694,10 @@
   .pillars-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  .why-choose-royal-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -657,6 +735,38 @@
   .pillars-grid {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+
+  .why-choose-us-royal-section {
+    padding: 2.75rem 0;
+  }
+
+  .why-choose-title {
+    font-size: 1.75rem;
+  }
+
+  .why-choose-royal-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .why-choose-card {
+    padding: 1.25rem 0.75rem;
+    border-radius: 12px;
+  }
+
+  .why-choose-icon-wrap {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0.75rem;
+  }
+
+  .why-choose-card h4 {
+    font-size: 0.9rem;
+  }
+
+  .why-choose-card p {
+    font-size: 0.76rem;
   }
 
   .section-title {
@@ -704,6 +814,11 @@
 
 @media (max-width: 480px) {
   .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .why-choose-royal-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }

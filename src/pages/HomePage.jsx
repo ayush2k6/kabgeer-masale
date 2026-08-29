@@ -124,10 +124,58 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
-      <section className="why-choose-us-section">
+      {/* Why Choose Us Section — Minimal & Royal */}
+      <section className="why-choose-us-royal-section">
         <div className="container">
-          <img src={whyChooseUsImg} alt="Why Choose Us — Kabgeer Masale" className="why-choose-us-img" />
+          <div className="why-choose-header text-center">
+            <span className="section-subtitle-badge">THE KABGEER HERITAGE</span>
+            <h2 className="why-choose-title">Why Choose Kabgeer Masale?</h2>
+            <p className="why-choose-desc">
+              Rooted in 65 years of Lucknavi culinary mastery, our spice blends are crafted with uncompromised purity, royal ratios, and authentic taste.
+            </p>
+          </div>
+
+          <div className="why-choose-royal-grid">
+            <div className="why-choose-card">
+              <div className="why-choose-icon-wrap">
+                <Leaf size={24} />
+              </div>
+              <h4>100% Pure & Natural</h4>
+              <p>Zero artificial colors, preservatives, or chemical fillers.</p>
+            </div>
+
+            <div className="why-choose-card">
+              <div className="why-choose-icon-wrap">
+                <BookOpen size={24} />
+              </div>
+              <h4>Ancestral Recipe</h4>
+              <p>Authentic 65-year-old Lucknowi family secret formulations.</p>
+            </div>
+
+            <div className="why-choose-card">
+              <div className="why-choose-icon-wrap">
+                <Sparkles size={24} />
+              </div>
+              <h4>Gourmet Blends</h4>
+              <p>Balanced spice ratios designed for rich aroma & authentic dining.</p>
+            </div>
+
+            <div className="why-choose-card">
+              <div className="why-choose-icon-wrap">
+                <ShieldCheck size={24} />
+              </div>
+              <h4>No Added Salt</h4>
+              <p>100% pure potent spices with no cheap salt fillers.</p>
+            </div>
+
+            <div className="why-choose-card">
+              <div className="why-choose-icon-wrap">
+                <Flame size={24} />
+              </div>
+              <h4>Freshly Ground</h4>
+              <p>Slow roasted & hygienically packed to lock in essential oils.</p>
+            </div>
+          </div>
         </div>
       </section>
 
