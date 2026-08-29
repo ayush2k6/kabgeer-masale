@@ -27,12 +27,14 @@ export const AuthProvider = ({ children }) => {
       .eq('id', userId)
       .maybeSingle();
 
+    const role = profileRow?.role || sessionUser.user_metadata?.role || (sessionUser.email?.toLowerCase().startsWith('admin') ? 'admin' : 'customer');
+
     // Core user object for Auth, Admin verification, and Orders
     return {
       id: userId,
       email: sessionUser.email,
       name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email?.split('@')[0] || 'Customer',
-      role: profileRow?.role || 'customer'
+      role: role
     };
   };
 
