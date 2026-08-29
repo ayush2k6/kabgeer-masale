@@ -15,9 +15,10 @@
   position: relative;
   background: linear-gradient(145deg, #0d1b13 0%, #1a2f22 55%, #13241a 100%);
   color: #ffffff;
-  padding: 3.5rem 1.5rem 6.5rem 1.5rem;
+  padding: 3rem 1.5rem 5.5rem 1.5rem;
   overflow: hidden;
   border-bottom: 1.5px solid rgba(212, 175, 55, 0.25);
+  text-align: center;
 }
 
 .bundle-hero-ambient-glow {
@@ -74,10 +75,10 @@
 /* Hero Title & Subtitle */
 .hero-title {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 3rem;
+  font-size: 2.8rem;
   font-weight: 600;
   color: #ffffff;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
   line-height: 1.2;
   letter-spacing: 0.3px;
 }
@@ -90,11 +91,11 @@
 
 .hero-subtitle {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.02rem;
+  color: rgba(255, 255, 255, 0.85);
   max-width: 660px;
-  line-height: 1.65;
-  margin-bottom: 2.25rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
 }
 
 /* How It Works Steps Grid */
@@ -102,22 +103,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.85rem;
   width: 100%;
   max-width: 860px;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
 }
 
 .bundle-step-card {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  padding: 0.9rem 1.1rem;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  padding: 0.8rem 1rem;
   border-radius: 12px;
   text-align: left;
   transition: transform 0.2s ease, border-color 0.2s ease;
@@ -129,13 +130,13 @@
 }
 
 .step-num-badge {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: linear-gradient(135deg, #d4af37, #f3e5ab);
   color: #1a2f22;
   font-weight: 800;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,7 +146,7 @@
 
 .step-text-col h4 {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: #ffffff;
   margin: 0 0 2px 0;
@@ -153,10 +154,10 @@
 
 .step-text-col p {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.75);
   margin: 0;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .bundle-step-divider {
@@ -170,7 +171,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.75rem;
   flex-wrap: wrap;
 }
 
@@ -178,7 +179,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
   letter-spacing: 0.2px;
@@ -189,7 +190,7 @@
    2. MAIN CONTENT AREA & CATEGORY FILTERS
    ================================================ */
 .bundle-main-content {
-  margin-top: -3.5rem;
+  margin-top: -2.75rem;
   position: relative;
   z-index: 2;
 }
@@ -202,17 +203,17 @@
 .bundle-filters-wrapper {
   background: #ffffff;
   border-radius: 16px;
-  padding: 0.85rem 1.25rem;
-  box-shadow: 0 10px 30px rgba(26, 47, 34, 0.08);
+  padding: 0.75rem 1rem;
+  box-shadow: 0 8px 25px rgba(26, 47, 34, 0.07);
   border: 1px solid rgba(212, 175, 55, 0.2);
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
 }
 
 .bundle-filters-scroll {
   display: flex;
-  gap: 0.6rem;
+  gap: 0.55rem;
   overflow-x: auto;
-  padding: 0.25rem 0.15rem;
+  padding: 0.2rem 0.1rem;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   justify-content: flex-start;
@@ -232,20 +233,20 @@
 .category-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 0.55rem 1.15rem;
+  gap: 7px;
+  padding: 0.5rem 1.1rem;
   border-radius: 24px;
   border: 1px solid rgba(26, 47, 34, 0.12);
   background-color: #ffffff;
   color: #3b4e42;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 600;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   white-space: nowrap;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
 .category-pill:hover {
@@ -258,7 +259,7 @@
   background-color: #1a2f22;
   color: #d4af37;
   border-color: #d4af37;
-  box-shadow: 0 4px 14px rgba(26, 47, 34, 0.2);
+  box-shadow: 0 4px 12px rgba(26, 47, 34, 0.18);
 }
 
 .category-count-pill {
@@ -281,14 +282,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   padding: 0 0.25rem;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
 .grid-count-text {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: #4a5c51;
 }
 
@@ -322,74 +323,135 @@
 .premium-product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.75rem;
+  gap: 1.5rem;
 }
 
 
 /* ================================================
-   RESPONSIVE DESIGN (Tablets & Mobile)
+   MOBILE & TABLET VIEWPORT HARDENING (< 768px)
    ================================================ */
-@media (max-width: 900px) {
-  .bundle-steps-grid {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .bundle-step-divider {
-    display: none;
-  }
-  .bundle-step-card {
-    width: 100%;
-  }
-  .hero-title {
-    font-size: 2.3rem;
-  }
-}
-
 @media (max-width: 768px) {
   .build-bundle-page-wrapper {
     padding-bottom: 5rem;
   }
 
   .bundle-hero {
-    padding: 2.5rem 1rem 5rem 1rem;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-subtitle {
-    font-size: 0.92rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .bundle-main-content {
-    margin-top: -2.5rem;
-  }
-
-  .bundle-filters-wrapper {
-    padding: 0.75rem 0.5rem;
-    border-radius: 14px;
-  }
-
-  .premium-product-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .premium-product-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-
-  .hero-title {
-    font-size: 1.75rem;
+    padding: 2rem 1rem 4rem 1rem;
   }
 
   .royal-badge-pill {
     font-size: 0.72rem;
-    padding: 0.35rem 0.85rem;
+    padding: 0.3rem 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .hero-title {
+    font-size: 1.95rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+    padding: 0 0.5rem;
+  }
+
+  /* Compact Horizontal 3-Step Strip on Mobile */
+  .bundle-steps-grid {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+    width: 100%;
+  }
+
+  .bundle-step-card {
+    flex: 1;
+    padding: 0.6rem 0.45rem;
+    border-radius: 8px;
+    gap: 6px;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .step-num-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+
+  .step-text-col h4 {
+    font-size: 0.78rem;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .step-text-col p {
+    display: none; /* Hide verbose descriptions on small screens for ultra-clean look */
+  }
+
+  .bundle-step-divider {
+    display: none;
+  }
+
+  .bundle-perks-row {
+    gap: 0.85rem;
+    font-size: 0.75rem;
+  }
+
+  .bundle-perk-item {
+    font-size: 0.74rem;
+  }
+
+  /* Main Content Area adjustments */
+  .bundle-main-content {
+    margin-top: -2rem;
+  }
+
+  .bundle-filters-wrapper {
+    padding: 0.6rem 0.4rem;
+    border-radius: 12px;
+    margin-bottom: 1.25rem;
+  }
+
+  .category-pill {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+    gap: 5px;
+  }
+
+  .category-count-pill {
+    font-size: 0.68rem;
+    padding: 1px 5px;
+  }
+
+  .bundle-grid-header {
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+  }
+
+  .grid-count-text {
+    font-size: 0.84rem;
+  }
+
+  .premium-product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.7rem;
+  }
+
+  .premium-product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 }
