@@ -3,7 +3,24 @@
 ## 2026-08-29
 
 ### Task
-Kabgeer Masale — V1 UI/UX Polish & Checkout Corrections.
+Product Detail Page (PDP) & Cart Drawer V1 Final Polish & Mobile Responsiveness.
+
+### Implemented Improvements & Fixes
+- **1. Product Detail Page (`ProductPage.css`, `ProductPage.jsx`)**:
+  - **Image Autocrop & Perfect Centering**: Autocropped excess whitespace on packaging images across all 25 masala product directories, set pure white container background (`#ffffff`), and centered cover images with `object-fit: contain; object-position: center; margin: 0 auto;`.
+  - **Flex/Grid Hierarchy Min-Content Overflow Fix**: Replaced `1fr` with `minmax(0, 1fr)` across all mobile grids (`.pdp-features-grid`, `.pdp-action-btns`, `.pdp-brand-features`, `.related-grid`), added `min-width: 0` and `max-width: 100%` throughout the container tree, and added text-overflow ellipsis protection to feature badges to ensure 100% inside-card fit across 320px, 360px, 375px, 390px, and 430px viewports with zero horizontal scrolling.
+  - **Side-by-Side Action Buttons**: Placed "Add to Cart" and "Buy Now" in an equal 50/50 responsive 2-column grid with dedicated button SVG sizing and micro-padding on narrow devices.
+  - **Typography & Review Count**: Resolved `.review-count` selector binding and standardized typography.
+- **2. Cart Drawer 3-Zone Architecture & Visual Hierarchy (`CartDrawer.jsx`, `CartDrawer.css`)**:
+  - **Explicit Header**: Clarified top header to display **"Your Cart"** with item count badge **"(X items)"** and preserved smooth close interaction.
+  - **3-Zone Layout**: Structured drawer into Zone 1 (Fixed Header `flex-shrink: 0`), Zone 2 (Scrollable Body `flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0;`), and Zone 3 (Fixed Bottom Checkout `flex-shrink: 0`), preventing recommendations from getting blocked by checkout controls.
+  - **Shortened Free Shipping Bar**: Streamlined message to **`Add ₹320 more for FREE Express Shipping 🚚`** (or **`🎉 You unlocked FREE Express Shipping!`**) with smooth rounded progress track.
+  - **Spacious Recommendations**: Redesigned "Frequently Bought Together" cards with generous padding, individual spice thumbnails (`44px × 44px`), clear metadata, and easy-tap `+ Add` buttons.
+  - **Stronger Checkout Hierarchy**: Prominent bold Total amount (`1.35rem`) with tax breakdown note, and elevated royal emerald checkout CTA button with gold shimmer border.
+- **3. Verification & Build**:
+  - Tested mobile viewports from 320px to 430px with 0px horizontal overflow.
+  - `npm run build`: **Passed cleanly (0 errors)**.
+
 
 ### Implemented Improvements & Fixes
 - **1. Order Confirmation Pop-Up / Modal & Status Page**:
