@@ -21,7 +21,7 @@ const ProductPage = () => {
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [selectedPack, setSelectedPack] = useState(PACK_SIZES[0]);
   const { addToCart, openCartDrawer } = useCart();
-  const { user, toggleWishlist } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -110,13 +110,6 @@ const ProductPage = () => {
             {/* Left Column: Image Gallery */}
             <div className="pdp-gallery">
               <div className="pdp-main-image-wrapper">
-                <button
-                  className="wishlist-btn"
-                  onClick={() => toggleWishlist(product)}
-                  aria-label="Save to Wishlist"
-                >
-                  <Heart size={20} className={user?.wishlist?.some(p => p.id === product.id) ? 'active' : ''} />
-                </button>
                 {discountPercent > 0 && (
                   <span className="pdp-discount-badge">-{discountPercent}% OFF</span>
                 )}

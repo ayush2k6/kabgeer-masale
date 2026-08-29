@@ -42,6 +42,7 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignupPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/account" element={<ProfilePage />} />
                     <Route path="/recipes" element={<RecipesPage />} />
                     <Route path="/products" element={<CataloguePage />} />
                     <Route path="/product/:id" element={<ProductPage />} />

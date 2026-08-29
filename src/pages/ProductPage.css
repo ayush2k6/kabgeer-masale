@@ -111,35 +111,6 @@
   transform: scale(1.04);
 }
 
-.wishlist-btn {
-  position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
-  background: #ffffff;
-  border: 1px solid rgba(26, 47, 34, 0.1);
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-  z-index: 10;
-  color: #888;
-  transition: all 0.2s ease;
-}
-
-.wishlist-btn:hover {
-  transform: scale(1.1);
-  color: #cc0c39;
-}
-
-.wishlist-btn .active {
-  color: #cc0c39;
-  fill: #cc0c39;
-}
-
 .pdp-discount-badge {
   position: absolute;
   top: 1.25rem;

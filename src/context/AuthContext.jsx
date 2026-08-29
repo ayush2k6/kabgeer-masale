@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import PageLoader from '../components/PageLoader';
-import { PRODUCTS } from '../data/products';
+
 
 const AuthContext = createContext();
 
@@ -15,31 +15,16 @@ export const AuthProvider = ({ children }) => {
   const [isFading, setIsFading] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
-  // Helper to fetch core user auth & wishlist data (Profile details editing is deferred)
+  // Helper to fetch core user auth data (Profile details editing is deferred)
   const fetchUserProfile = async (sessionUser) => {
     if (!sessionUser) return null;
     const userId = sessionUser.id;
 
-    // Fetch wishlist from public.wishlists
-    const { data: wishlistRows, error: wishErr } = await supabase
-      .from('wishlists')
-      .select('product_id')
-      .eq('customer_id', userId);
-
-    if (wishErr) {
-      console.error('Error fetching user wishlist:', wishErr.message);
-    }
-
-    // Map wishlist product IDs to static product objects from PRODUCTS
-    const wishlistedProductIds = (wishlistRows || []).map(r => r.product_id);
-    const userWishlist = PRODUCTS.filter(p => wishlistedProductIds.includes(p.id));
-
-    // Core user object for Auth, Wishlist, and Orders (Profile details editing deferred)
+    // Core user object for Auth and Orders (Profile details editing deferred)
     return {
       id: userId,
       email: sessionUser.email,
-      name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email?.split('@')[0] || 'Customer',
-      wishlist: userWishlist
+      name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email?.split('@')[0] || 'Customer'
     };
   };
 
@@ -175,50 +160,6 @@ export const AuthProvider = ({ children }) => {
     console.log("Profile editing feature is deferred for initial launch.");
   };
 
-  const toggleWishlist = async (product) => {
-    if (!user || !user.id) {
-      alert("Please log in to add items to your wishlist.");
-      return;
-    }
-
-    try {
-      const wishlist = user.wishlist || [];
-      const isWishlisted = wishlist.some(p => p.id === product.id);
-
-      if (isWishlisted) {
-        const { error } = await supabase
-          .from('wishlists')
-          .delete()
-          .eq('customer_id', user.id)
-          .eq('product_id', product.id);
-
-        if (error) throw error;
-
-        setUser(prev => ({
-          ...prev,
-          wishlist: prev.wishlist.filter(p => p.id !== product.id)
-        }));
-      } else {
-        const { error } = await supabase
-          .from('wishlists')
-          .insert({
-            customer_id: user.id,
-            product_id: product.id
-          });
-
-        if (error) throw error;
-
-        setUser(prev => ({
-          ...prev,
-          wishlist: [...(prev.wishlist || []), product]
-        }));
-      }
-    } catch (error) {
-      console.error("Error toggling wishlist:", error);
-      throw error;
-    }
-  };
-
   const logout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) console.error("Error signing out:", error);
@@ -232,7 +173,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ 
-      user, orders, loading, login, register, logout, addOrder, updateProfileDetails, toggleWishlist
+      user, orders, loading, login, register, logout, addOrder, updateProfileDetails
     }}>
       {!showContent && <PageLoader isFading={isFading} />}
       {showContent && children}
