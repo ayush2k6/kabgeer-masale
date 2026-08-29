@@ -16,8 +16,7 @@ END $$;
 
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
 
--- 2. Authoritative is_admin() Helper Function
-DROP FUNCTION IF EXISTS public.is_admin();
+-- 2. Authoritative is_admin() Helper Function (CREATE OR REPLACE preserves dependent RLS policies)
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
@@ -82,7 +81,6 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 5. Prevent Non-Admin Role Self-Elevation on Profiles
-DROP FUNCTION IF EXISTS public.protect_profile_role() CASCADE;
 CREATE OR REPLACE FUNCTION public.protect_profile_role()
 RETURNS TRIGGER AS $$
 BEGIN
