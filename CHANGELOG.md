@@ -11,13 +11,14 @@ Part 3.6 — Admin Dashboard V1 Implementation.
   - Implemented [AdminRoute.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/components/AdminRoute.jsx) and [AdminLoginPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/AdminLoginPage.jsx) for protected administrative access without exposing private credentials.
 - **Dashboard Overview (KPIs)**:
   - Created [AdminDashboardPage.jsx](file:///c:/Users/Acer/Documents/kabgeer-ji/src/pages/AdminDashboardPage.jsx) featuring Total Orders, Pending/Processing Orders, Paid Orders, Delivered Orders, and Total Revenue calculations.
-- **Orders List & Live Filtering**:
+  - Interactive KPI cards: Clicking on any card automatically filters the orders table (e.g. clicking "Paid Orders" or "Pending / Processing").
+- **Orders List & Live Multi-Filter Engine**:
   - Implemented responsive orders table displaying Order ID, Date, Customer (Name, Email, Guest/Registered pill), Amount, Payment Status, and Order Status.
-  - Added real-time text search (Order ID, Name, Email, Phone) and dropdown status filters (Order Status, Payment Status).
-- **Order Details Drawer**:
-  - Shows complete shipping/delivery address, customer metadata, and ordered line items with images, quantities, unit prices, and financials breakdown.
-- **Order Fulfillment Status Update**:
-  - Integrated direct order status updater supporting all valid database statuses (`Pending`, `Confirmed`, `Processing`, `Shipped`, `Delivered`, `Cancelled`). Payment status remains strictly immutable and controlled by payment verification.
+  - Multi-attribute search (Order ID, Name, Email, Phone, City, State) + dropdown status filters + sorting selector (Newest, Oldest, Highest/Lowest Amount).
+- **Order Details Drawer & Quick Tools**:
+  - Shows complete shipping/delivery address, customer metadata, clickable phone/email links, and ordered line items with images, quantities, unit prices, and financials breakdown.
+  - 1-Click "Copy Order ID" and "Copy Address" clipboard tools for fulfillment packing labels.
+  - 1-Click Quick Status Chips (`Confirmed`, `Processing`, `Shipped`, `Delivered`, `Cancelled`) with instant database sync.
 - **Verification & Testing**:
   - Created automated test suite (`test_admin_dashboard.mjs`) passing 5/5 checks.
   - Executed `npm run lint` (0 errors) and `npm run build` (0 errors).
