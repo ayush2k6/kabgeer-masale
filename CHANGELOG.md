@@ -3,6 +3,23 @@
 ## 2026-08-29
 
 ### Task
+Part 3.6.3 — Remote Security Migration Verification.
+
+### Audit & Verification Results
+- **Remote Schema Verification**:
+  - `public.profiles.role`: Verified column exists on remote database.
+  - `public.is_admin()`: Responds accurately on remote database (`false` for unauthenticated callers).
+  - Direct Table RLS: Verified active (unauthenticated direct queries to `public.orders` return 0 rows).
+  - Superuser RPCs (`get_all_orders_admin`, `admin_update_order_status`): Confirmed that the new migration SQL `20260829010000_part_3_6_2_admin_security_hardening.sql` must be executed in the Supabase SQL Editor to replace legacy function definitions.
+- **Frontend & Functions Verification**:
+  - `src/`: Verified 0 hardcoded test credentials or bypass strings.
+  - `cors.ts`: Verified allowlist configured locally without wildcard (`*`).
+  - `npm run lint`: **0 errors**.
+  - `npm run build`: **0 errors**.
+
+---
+
+### Task
 Part 3.6.2 — Admin Security Hardening Implementation.
 
 ### Implemented Security Hardening

@@ -96,6 +96,14 @@ PART 3.6.2 (Admin Security Hardening Implementation)
 ├── RLS Policy Enforcement    ✅ COMPLETE (Orders & items isolated by customer_id and is_admin())
 └── Security Suite & Build    ✅ COMPLETE (5/5 security tests passed, 0 lint errors, 0 build errors)
 
+PART 3.6.3 (Remote Security Migration Verification)
+├── public.profiles.role     ✅ VERIFIED ON REMOTE DB (Column exists)
+├── public.is_admin()        ✅ VERIFIED ON REMOTE DB (Function responds accurately)
+├── Direct Table RLS         ✅ VERIFIED ON REMOTE DB (Unauthenticated access blocked)
+├── Frontend Credentials     ✅ VERIFIED CLEAN (0 hardcoded test credentials in src/)
+├── Local CORS Config        ✅ VERIFIED HARDENED (No wildcard origin)
+└── Remote RPC Hardening     ⚠️ NOT APPLIED ON REMOTE DB (Migration SQL execution required via Supabase SQL Editor)
+
 PART 3.5, 3.6, 3.7 & 3.8
 ├── 3.5.1 Audit / Blueprint        ✅ COMPLETED
 ├── 3.5.2 Edge Functions            ✅ COMPLETED (create-razorpay-order, verify-razorpay-payment, razorpay-webhook)
