@@ -17,6 +17,7 @@ END $$;
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
 
 -- 2. Authoritative is_admin() Helper Function
+DROP FUNCTION IF EXISTS public.is_admin();
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
@@ -32,6 +33,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
 
 -- 3. Hardened Superuser RPC for Admin Orders Fetch
+DROP FUNCTION IF EXISTS public.get_all_orders_admin();
 CREATE OR REPLACE FUNCTION public.get_all_orders_admin()
 RETURNS SETOF public.orders AS $$
 BEGIN
@@ -47,6 +49,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 4. Hardened Superuser RPC for Admin Order Status Updates
+DROP FUNCTION IF EXISTS public.admin_update_order_status(UUID, TEXT);
 CREATE OR REPLACE FUNCTION public.admin_update_order_status(target_order_id UUID, new_status TEXT)
 RETURNS public.orders AS $$
 DECLARE
@@ -79,6 +82,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 5. Prevent Non-Admin Role Self-Elevation on Profiles
+DROP FUNCTION IF EXISTS public.protect_profile_role() CASCADE;
 CREATE OR REPLACE FUNCTION public.protect_profile_role()
 RETURNS TRIGGER AS $$
 BEGIN
