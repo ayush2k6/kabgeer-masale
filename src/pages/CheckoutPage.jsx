@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ChevronLeft, Info, CreditCard, Lock, ShieldCheck, AlertCircle, Trash2, ShoppingBag, Tag, Check, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { ShieldCheck, Truck, ArrowLeft, Trash2, X, ShoppingBag } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
-import { supabase } from '../lib/supabaseClient';
 import logo from '../assets/logo.png';
+import { supabase } from '../lib/supabaseClient';
 import './CheckoutPage.css';
 
 const INDIAN_STATES = [
   'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam',
-  'Bihar', 'Chandigarh', 'Chhattisgarh', 'Dadra and Nagar Haveli and Daman and Diu',
+  'Bihar', 'Chandigarh', 'Chhattisgarh', 'Dadra and Nagar Haveli', 'Daman and Diu',
   'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir',
   'Jharkhand', 'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh',
   'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha',
@@ -21,12 +21,13 @@ const INDIAN_STATES = [
 // Helper to safely load Razorpay Checkout SDK script
 const loadRazorpayScript = () => {
   return new Promise((resolve) => {
-    if (window.Razorpay) {
+    if (typeof window !== 'undefined' && window.Razorpay) {
       resolve(true);
       return;
     }
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
     script.onload = () => resolve(true);
     script.onerror = () => resolve(false);
     document.body.appendChild(script);
@@ -50,7 +51,6 @@ const CheckoutPage = () => {
 
   const subtotal = getCartTotal();
   const discount = getDiscountAmount();
-  const paymentMethod = 'online'; // COD disabled for V1
   const finalTotal = Math.max(0, subtotal - discount);
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -418,10 +418,10 @@ const CheckoutPage = () => {
                     <span>Subtotal</span>
                     <span>₹{subtotal.toFixed(2)}</span>
                   </div>
-                  {codFee > 0 && (
-                    <div className="mob-sum-row">
-                      <span>COD Handling Fee</span>
-                      <span>₹{codFee.toFixed(2)}</span>
+                  {discount > 0 && (
+                    <div className="mob-sum-row" style={{ color: '#16a34a' }}>
+                      <span>Discount ({appliedCoupon?.code || 'Coupon'})</span>
+                      <span>-₹{discount.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="mob-sum-row">
