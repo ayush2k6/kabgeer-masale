@@ -248,13 +248,11 @@ const CheckoutPage = () => {
           ? import.meta.env.VITE_SUPABASE_ANON_KEY
           : 'sb_publishable_9Ry6OuD-80stD-4Cz8fMaQ_0EAHlUsU');
 
-      const { data: sessionData } = await supabase.auth.getSession();
-      const authToken = sessionData?.session?.access_token || supabaseAnonKey;
-
       const response = await fetch(`${supabaseUrl}/functions/v1/create-razorpay-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
           'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify({
@@ -345,6 +343,7 @@ const CheckoutPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
           'Authorization': `Bearer ${supabaseAnonKey}`
         },
         body: JSON.stringify(verifyPayload)
