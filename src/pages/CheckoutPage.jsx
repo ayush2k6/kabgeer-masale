@@ -44,7 +44,8 @@ const CheckoutPage = () => {
     appliedCoupon,
     applyCoupon,
     removeCoupon,
-    getDiscountAmount
+    getDiscountAmount,
+    isBundleOfferActive
   } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -762,6 +763,26 @@ const CheckoutPage = () => {
                 );
               })}
 
+              {isBundleOfferActive() && (
+                <div className="summary-item" style={{ backgroundColor: 'rgba(39, 174, 96, 0.05)', border: '1px dashed #27ae60', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
+                  <div className="summary-item-img placeholder-img" style={{ position: 'relative', width: '50px', height: '50px' }}>
+                    <span className="item-badge" style={{ backgroundColor: '#27ae60' }}>2</span>
+                    <div style={{ width: '100%', height: '100%', backgroundColor: '#fff', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Sparkles size={24} color="#27ae60" />
+                    </div>
+                  </div>
+                  <div className="summary-item-details" style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, paddingRight: '10px' }}>
+                    <span className="item-name" style={{ color: '#27ae60', fontWeight: '600' }}>Mini Masala Boxes (Assorted)</span>
+                    <span style={{ fontSize: '0.8rem', color: '#16a34a' }}>Bundle Offer Gift</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                    <span className="summary-item-price" style={{ fontWeight: 700, color: '#16a34a' }}>
+                      FREE
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {cartItems.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#666' }}>
                   <ShoppingBag size={36} style={{ margin: '0 auto 0.5rem auto', color: '#ccc', display: 'block' }} />
@@ -804,7 +825,7 @@ const CheckoutPage = () => {
                 </div>
                 {discount > 0 && (
                   <div className="summary-row" style={{ color: '#16a34a', fontWeight: 600 }}>
-                    <span>Discount ({appliedCoupon?.code})</span>
+                    <span>Discount {isBundleOfferActive() ? '(Bundle 10% OFF)' : (appliedCoupon ? `(${appliedCoupon.code})` : '')}</span>
                     <span>-₹{discount.toFixed(2)}</span>
                   </div>
                 )}

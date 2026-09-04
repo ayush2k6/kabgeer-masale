@@ -22,9 +22,6 @@
 .catalogue-banner-image {
   width: 100%;
   height: auto;
-  min-height: 180px;
-  max-height: 380px;
-  object-fit: cover;
   display: block;
 }
 

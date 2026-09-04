@@ -13,8 +13,9 @@
   --color-white: #FFFFFF;
   --color-border: rgba(26, 47, 34, 0.08);
   --color-danger: #C94C4C;
-  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Playfair Display', Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   
   /* Luxurious Soft Shadows */
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
@@ -386,4 +387,24 @@ button {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Pricing Font Normalization */
+.unified-sale-price,
+.unified-mrp-price,
+.pdp-sale-price,
+.pdp-mrp-price,
+.pdp-price,
+.pack-price,
+.drawer-item-total,
+.addon-price,
+.summary-val,
+.total-amount,
+.order-item-preview-price,
+.order-price-col,
+.montage-sale-price,
+.search-result-price,
+.mobile-item-price,
+.summary-item-price {
+  font-family: var(--font-sans) !important;
 }

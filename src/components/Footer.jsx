@@ -28,7 +28,7 @@ const Footer = () => {
   return (
     <footer className="footer-wrapper">
       <div className="container footer-inner">
-        
+
         {/* Brand Column */}
         <div className="footer-brand">
           <Link to="/" className="footer-logo-link">
@@ -38,10 +38,8 @@ const Footer = () => {
             Bringing authentic 65-year-old Lucknavi spice formulations and rich flavors to kitchens across India with love and tradition.
           </p>
           <div className="social-links">
-            <a href="https://wa.me/919082730822" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><WhatsAppIcon size={18} /></a>
-            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><FacebookIcon size={18} /></a>
-            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><InstagramIcon size={18} /></a>
-            <a href="mailto:olympic.kabgeer@gmail.com" aria-label="Email"><Mail size={18} /></a>
+            <a href="https://wa.me/8090086636" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><WhatsAppIcon size={18} /></a>
+            <a href="https://www.instagram.com/kabgeermasala/" aria-label="Instagram"><InstagramIcon size={18} /></a>
           </div>
         </div>
 
@@ -77,6 +75,12 @@ const Footer = () => {
               <Link to="/about">
                 <div className="policy-item-icon"><Info size={15} /></div>
                 <span>Our Story</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact">
+                <div className="policy-item-icon"><Mail size={15} /></div>
+                <span>Contact Us</span>
               </Link>
             </li>
           </ul>
@@ -125,19 +129,12 @@ const Footer = () => {
           <div className="footer-contact-info">
             <p className="contact-item">
               <Phone size={15} className="contact-icon" />
-              <span>+91 9082730822</span>
+              <span>+91 8090086636</span>
             </p>
             <p className="contact-item">
               <Mail size={15} className="contact-icon" />
               <span>olympic.kabgeer@gmail.com</span>
             </p>
-            <p className="contact-item">
-              <Shield size={15} className="contact-icon" />
-              <span>Lucknow, Uttar Pradesh, India</span>
-            </p>
-          </div>
-          <div className="footer-trust-badge">
-            🔒 256-Bit SSL Encrypted & Razorpay Verified Checkout
           </div>
         </div>
 

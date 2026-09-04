@@ -106,7 +106,7 @@ const hardcodedRecipes = {
 
 const RECIPES = PRODUCTS.map((product, index) => {
   if (hardcodedRecipes[product.name]) {
-    return { ...hardcodedRecipes[product.name], id: `r${index + 1}`, image: product.image };
+    return { ...hardcodedRecipes[product.name], id: `r${index + 1}`, image: product.dishImage || product.image };
   }
 
   const isNonVeg = product.tags?.includes('Non-Veg');
@@ -118,7 +118,7 @@ const RECIPES = PRODUCTS.map((product, index) => {
     masala: product.name,
     desc: product.description || `A delicious recipe using Kabgeer ${product.name}.`,
     category: isNonVeg ? 'Non-Veg' : 'Veg',
-    image: product.image,
+    image: product.dishImage || product.image,
     ingredients: [
       isNonVeg ? '500g Meat/Chicken' : '500g Mixed Vegetables/Paneer/Dal',
       '2 tbsp Desi Ghee or Oil',

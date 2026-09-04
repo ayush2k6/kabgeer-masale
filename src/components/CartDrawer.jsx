@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { X, ShoppingBag, Plus, Minus, Trash2, Tag, ArrowRight, Truck, Sparkles, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { PRODUCTS } from '../data/products';
@@ -20,20 +20,30 @@ const CartDrawer = () => {
     appliedCoupon,
     applyCoupon,
     removeCoupon,
-    getDiscountAmount
+    getDiscountAmount,
+    isBundleOfferActive,
+    getCartCount,
+    getBundleCartCount
   } = useCart();
 
   const [couponInput, setCouponInput] = useState('');
   const [couponError, setCouponError] = useState('');
   const navigate = useNavigate();
 
+  const location = useLocation();
+
   if (!isCartDrawerOpen) return null;
 
   const subtotal = getCartTotal();
   const discount = getDiscountAmount();
   const finalTotal = Math.max(0, subtotal - discount);
-  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
-  const freeShippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  
+  const cartCount = getCartCount();
+  const bundleCount = getBundleCartCount();
+  const bundleOfferActive = isBundleOfferActive();
+  const itemsToBundleOffer = Math.max(0, 4 - bundleCount);
+  const bundleProgress = Math.min(100, (bundleCount / 4) * 100);
+  const showBundleProgress = location.pathname === '/bundle' || bundleCount > 0;
 
   // Filter 2 add-on products not yet in cart
   const addOnProducts = PRODUCTS.filter(p => !cartItems.some(item => item.id === p.id)).slice(0, 2);
@@ -74,28 +84,29 @@ const CartDrawer = () => {
           </button>
         </div>
 
-        {/* 2. Scrollable Body Area (Free Shipping + Items + Recommendations) */}
         <div className="cart-drawer-body">
-          {/* Free Shipping Progress Bar */}
-          <div className="free-shipping-bar-container">
-            <div className="shipping-bar-header">
-              {amountToFreeShipping > 0 ? (
-                <p className="shipping-bar-text">
-                  Add <strong className="gold-text">₹{amountToFreeShipping}</strong> more for <strong className="green-text">FREE Express Shipping 🚚</strong>
-                </p>
-              ) : (
-                <p className="shipping-bar-text green-text">
-                  🎉 You unlocked <strong>FREE Express Shipping!</strong>
-                </p>
-              )}
+          {/* Bundle Offer Progress Bar */}
+          {showBundleProgress && (
+            <div className="free-shipping-bar-container" style={{ background: 'rgba(212, 175, 55, 0.05)' }}>
+              <div className="shipping-bar-header">
+                {!bundleOfferActive ? (
+                  <p className="shipping-bar-text">
+                    <strong>Build your bundle:</strong> Add <strong className="gold-text">{itemsToBundleOffer}</strong> more {itemsToBundleOffer === 1 ? 'item' : 'items'} to unlock <strong className="gold-text">10% OFF + 2 FREE Mini Boxes! 🎁</strong>
+                  </p>
+                ) : (
+                  <p className="shipping-bar-text green-text">
+                    🎉 Bundle Complete! You unlocked <strong>10% OFF + 2 FREE Mini Boxes!</strong>
+                  </p>
+                )}
+              </div>
+              <div className="progress-track" style={{ background: 'rgba(212, 175, 55, 0.15)' }}>
+                <div
+                  className="progress-fill"
+                  style={{ width: `${bundleProgress}%`, background: 'linear-gradient(90deg, #b59226 0%, #d4af37 100%)' }}
+                ></div>
+              </div>
             </div>
-            <div className="progress-track">
-              <div
-                className="progress-fill"
-                style={{ width: `${freeShippingProgress}%` }}
-              ></div>
-            </div>
-          </div>
+          )}
 
           {cartItems.length === 0 ? (
             <div className="empty-drawer-state">
@@ -114,7 +125,7 @@ const CartDrawer = () => {
               {/* Item Rows */}
               <div className="drawer-item-list">
                 {cartItems.map((item) => {
-                  const itemId = item.cartItemId || `${item.id}__${item.weight || '50g'}`;
+                  const itemId = item.cartItemId || `${item.id}__${item.weight || (item.weightInGrams ? `${item.weightInGrams}g` : '50g')}`;
                   return (
                     <div key={itemId} className="drawer-item-card">
                       <div className="drawer-item-img-wrapper">
@@ -163,12 +174,12 @@ const CartDrawer = () => {
                         </div>
                         <div className="addon-info">
                           <span className="addon-name">{addon.name}</span>
-                          <span className="addon-pack-meta">50g Pack</span>
+                          <span className="addon-pack-meta">{addon.weight || (addon.weightInGrams ? `${addon.weightInGrams}g` : '50g')} Pack</span>
                           <span className="addon-price">₹{addon.price}.00</span>
                         </div>
                         <button
                           className="btn-add-addon"
-                          onClick={() => addToCart({ ...addon, weight: '50g', price: addon.price }, 1)}
+                          onClick={() => addToCart({ ...addon, weight: addon.weight || (addon.weightInGrams ? `${addon.weightInGrams}g` : '50g'), price: addon.price }, 1)}
                         >
                           + Add
                         </button>
@@ -217,14 +228,20 @@ const CartDrawer = () => {
               </div>
               {discount > 0 && (
                 <div className="summary-row discount-row">
-                  <span>Discount ({appliedCoupon?.code})</span>
+                  <span>Discount {bundleOfferActive ? '(Bundle 10% OFF)' : (appliedCoupon ? `(${appliedCoupon.code})` : '')}</span>
                   <span className="summary-val">-₹{discount.toFixed(2)}</span>
+                </div>
+              )}
+              {bundleOfferActive && (
+                <div className="summary-row" style={{ color: '#27ae60', fontWeight: '500' }}>
+                  <span><Sparkles size={13} style={{marginRight: '4px', verticalAlign: 'middle'}}/> 2 Mini Masala Boxes</span>
+                  <span className="summary-val">FREE</span>
                 </div>
               )}
               <div className="summary-row">
                 <span>Shipping</span>
-                <span className={amountToFreeShipping === 0 ? "shipping-free-tag" : "shipping-calc-tag"}>
-                  {amountToFreeShipping === 0 ? "FREE Express" : "Calculated at checkout"}
+                <span className="shipping-free-tag">
+                  FREE
                 </span>
               </div>
               <div className="summary-row total-row">

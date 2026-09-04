@@ -9,17 +9,25 @@ import './ProductPage.css';
 
 import makeInIndiaLogo from '../assets/make in india logo.png';
 
-const PACK_SIZES = [
-  { label: '50g Pack', weight: '50g', multiplier: 1, badge: 'Standard' },
-  { label: '100g Pack (2x50g)', weight: '100g', multiplier: 1.9, badge: 'Save 5%' },
-  { label: '250g Pack (5x50g)', weight: '250g', multiplier: 4.5, badge: 'Best Value' }
-];
-
 const ProductPage = () => {
   const { id } = useParams();
-  const [quantity, setQuantity] = useState(1);
+  const product = PRODUCTS.find(p => p.id === id);
+
+  const getDynamicPackSizes = (prod) => {
+    if (!prod) return [];
+    const w = prod.weightInGrams || 50;
+    return [
+      { label: `${w}g Pack`, weight: `${w}g`, multiplier: 1, badge: '' },
+      { label: `${w * 2}g Pack (2x${w}g)`, weight: `${w * 2}g`, multiplier: 2, badge: '' },
+      { label: `${w * 5}g Pack (5x${w}g)`, weight: `${w * 5}g`, multiplier: 5, badge: '' }
+    ];
+  };
+
+  const packSizes = getDynamicPackSizes(product);
+
+  const [quantity, setQuantity] = useState(2);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
-  const [selectedPack, setSelectedPack] = useState(PACK_SIZES[0]);
+  const [selectedPack, setSelectedPack] = useState(packSizes[0]);
   const { addToCart, openCartDrawer } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -27,10 +35,10 @@ const ProductPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     setActiveImageIdx(0);
-    setSelectedPack(PACK_SIZES[0]);
-  }, [id]);
-
-  const product = PRODUCTS.find(p => p.id === id);
+    if (product) {
+      setSelectedPack(getDynamicPackSizes(product)[0]);
+    }
+  }, [id, product]);
 
   if (!product) {
     return (
@@ -43,10 +51,10 @@ const ProductPage = () => {
     );
   }
 
-  // Calculate dynamic pricing based on selected pack size
+  // No artificial discounts
   const basePrice = Math.round(product.price * selectedPack.multiplier);
-  const originalPrice = product.mrp ? Math.round(product.mrp * selectedPack.multiplier) : Math.round(basePrice * 1.18);
-  const discountPercent = Math.round(((originalPrice - basePrice) / originalPrice) * 100);
+  const originalPrice = basePrice;
+  const discountPercent = 0;
 
   const images = Array.isArray(product.images) && product.images.length > 0
     ? product.images
@@ -65,9 +73,7 @@ const ProductPage = () => {
     ? product.ingredients.join(', ')
     : (product.ingredients || 'Pure ground spices, aromatic herbs, and handpicked natural seasonings.');
 
-  const usageText = Array.isArray(product.usageInstructions)
-    ? product.usageInstructions.join(' ')
-    : (product.usageInstructions || product.howToUse || `Add 1-2 tsp during cooking. Store in an airtight container in a dry, cool place.`);
+  const usageText = "For the best taste and aroma, follow our authentic step-by-step recipe below. Store in an airtight container in a cool, dry place to maintain freshness.";
 
   const chefTipText = product.chefTip || 'Sprinkle a pinch towards the end of cooking to lock in the rich Mughlai aroma and essential oils.';
 
@@ -138,13 +144,13 @@ const ProductPage = () => {
 
             {/* Right Column: Product Specs & Ordering */}
             <div className="pdp-details">
-              
+
               <div className="pdp-category-tag">
                 <Sparkles size={14} className="gold-icon" /> {product.category || 'Authentic Lucknavi Masala'}
               </div>
 
               <h1 className="pdp-title">{product.name}</h1>
-              
+
               {/* Rating Review Row */}
               <div className="pdp-rating-row">
                 <div className="stars-wrapper">
@@ -165,8 +171,12 @@ const ProductPage = () => {
               <div className="pdp-pricing-card">
                 <div className="price-row">
                   <span className="pdp-price">₹{basePrice}.00</span>
-                  <span className="pdp-mrp">M.R.P.: <s>₹{originalPrice}.00</s></span>
-                  <span className="pdp-savings-badge">Save ₹{originalPrice - basePrice}.00 ({discountPercent}%)</span>
+                  {discountPercent > 0 && (
+                    <>
+                      <span className="pdp-mrp">M.R.P.: <s>₹{originalPrice}.00</s></span>
+                      <span className="pdp-savings-badge">Save ₹{originalPrice - basePrice}.00 ({discountPercent}%)</span>
+                    </>
+                  )}
                 </div>
                 <span className="pdp-taxes">Inclusive of all taxes • Free Shipping on orders above ₹399</span>
               </div>
@@ -175,11 +185,11 @@ const ProductPage = () => {
               <div className="pdp-pack-selector">
                 <label className="selector-label">Select Pack Size:</label>
                 <div className="pack-options-grid">
-                  {PACK_SIZES.map(pack => (
+                  {packSizes.map(pack => (
                     <button
                       key={pack.weight}
                       type="button"
-                      className={`pack-option-pill ${selectedPack.weight === pack.weight ? 'active' : ''}`}
+                      className={`pack-option-pill ${selectedPack?.weight === pack.weight ? 'active' : ''}`}
                       onClick={() => setSelectedPack(pack)}
                     >
                       <div className="pack-pill-left">
@@ -208,7 +218,7 @@ const ProductPage = () => {
               {/* Action Buttons */}
               <div className="pdp-actions-row">
                 <div className="pdp-quantity-selector">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity">
+                  <button onClick={() => setQuantity(Math.max(2, quantity - 1))} aria-label="Decrease quantity">
                     <Minus size={16} />
                   </button>
                   <span>{quantity}</span>
@@ -269,7 +279,7 @@ const ProductPage = () => {
           <div className="info-block usage-block">
             <div className="info-header">
               <div className="info-icon"><Utensils size={20} /></div>
-              <h3>How To Use & Storage</h3>
+              <h3>How To Use & Store</h3>
             </div>
             <p>{usageText}</p>
             <Link
@@ -277,7 +287,7 @@ const ProductPage = () => {
               state={{ openRecipeFor: product.name }}
               className="btn-view-recipe"
             >
-              <BookOpen size={16} /> View Step-by-Step Recipe
+              <BookOpen size={16} /> View Recipe
             </Link>
           </div>
         </div>
@@ -287,7 +297,7 @@ const ProductPage = () => {
           <div className="brand-feat">
             <div className="b-icon-wrapper"><Sparkles size={26} /></div>
             <h4>Authentic Formulations</h4>
-            <p>Traditional 65-year-old Mughlai & Lucknavi spice heritage.</p>
+            <p>Traditional 65 year old spice heritage.</p>
           </div>
           <div className="brand-feat">
             <div className="b-icon-wrapper"><Award size={26} /></div>
@@ -313,7 +323,7 @@ const ProductPage = () => {
           <div className="related-header">
             <span className="section-subtitle-badge">EXPLORE MORE FLAVOURS</span>
             <h2>Recommended Spices & Masalas</h2>
-            <p>Complete your Lucknavi spice collection with our signature blends.</p>
+            <p>Complete your spice collection with our signature blends.</p>
           </div>
           <div className="related-grid">
             {relatedProducts.map(relProd => (

@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { 
-  Package, 
-  LogOut, 
-  ChevronDown, 
-  ChevronUp, 
-  ShoppingBag, 
-  ArrowRight, 
-  ShieldCheck, 
-  UserCheck, 
-  LogIn, 
-  Crown, 
-  Sparkles, 
-  MapPin, 
-  Truck, 
-  Award, 
-  CheckCircle2, 
-  Mail, 
+import {
+  Package,
+  LogOut,
+  ChevronDown,
+  ChevronUp,
+  ShoppingBag,
+  ArrowRight,
+  ShieldCheck,
+  UserCheck,
+  LogIn,
+  Crown,
+  Sparkles,
+  MapPin,
+  Truck,
+  Award,
+  CheckCircle2,
+  Mail,
   Phone,
   RotateCcw,
   Gift
@@ -100,14 +100,14 @@ const ProfilePage = () => {
   const latestOrderWithAddress = orders && orders.length > 0
     ? orders.find(o => o.shipping_address || o.shippingDetails)
     : null;
-  const defaultAddress = latestOrderWithAddress 
+  const defaultAddress = latestOrderWithAddress
     ? (latestOrderWithAddress.shipping_address || latestOrderWithAddress.shippingDetails)
     : null;
 
   return (
     <div className="account-page-wrapper">
       <div className="account-container">
-        
+
         {/* Admin Portal Quick Access Banner (if user has admin role) */}
         {isAdmin && (
           <div className="admin-access-ribbon">
@@ -127,7 +127,7 @@ const ProfilePage = () => {
         {/* 1. Royal Patron Hero Card */}
         <div className="royal-patron-hero">
           <div className="patron-hero-main">
-            
+
             <div className="patron-crest-avatar">
               <span className="crest-letter">{customerInitial}</span>
               <div className="crest-crown-badge">
@@ -137,7 +137,7 @@ const ProfilePage = () => {
 
             <div className="patron-hero-details">
               <div className="patron-tier-badge">
-                <Sparkles size={13} /> {isAdmin ? 'MASTER HERITAGE ADMIN' : 'LUCKNAVI SPICE CONNOISSEUR'}
+                <Sparkles size={13} /> {isAdmin ? 'MASTER HERITAGE ADMIN' : 'SPICE CONNOISSEUR'}
               </div>
               <h1 className="patron-greeting">Welcome, {customerName}</h1>
               <div className="patron-meta-row">
@@ -149,9 +149,9 @@ const ProfilePage = () => {
           </div>
 
           <div className="patron-hero-actions">
-            <button 
+            <button
               type="button"
-              className="btn-patron-logout" 
+              className="btn-patron-logout"
               onClick={logout}
               aria-label="Sign out of your account"
             >
@@ -160,47 +160,13 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* 2. VIP Patron Privileges Strip */}
-        <div className="patron-privileges-strip">
-          <div className="privilege-item">
-            <div className="privilege-icon"><Package size={18} /></div>
-            <div>
-              <strong>{ordersCount} {ordersCount === 1 ? 'Order' : 'Orders'} Placed</strong>
-              <span>Authentic Lucknavi Blends</span>
-            </div>
-          </div>
-
-          <div className="privilege-item">
-            <div className="privilege-icon"><Truck size={18} /></div>
-            <div>
-              <strong>Free Express Shipping</strong>
-              <span>On orders above ₹399</span>
-            </div>
-          </div>
-
-          <div className="privilege-item">
-            <div className="privilege-icon"><Gift size={18} /></div>
-            <div>
-              <strong>10% Bundle Privilege</strong>
-              <span>Auto-applied in Bundle Builder</span>
-            </div>
-          </div>
-
-          <div className="privilege-item">
-            <div className="privilege-icon"><Award size={18} /></div>
-            <div>
-              <strong>65-Year Purity Seal</strong>
-              <span>100% Pure, Zero Preservatives</span>
-            </div>
-          </div>
-        </div>
 
         {/* 3. Main Dashboard Layout Grid */}
         <div className="account-layout-grid">
-          
+
           {/* Left Column: Profile & Concierge Sidebar */}
           <div className="account-sidebar-col">
-            
+
             {/* Delivery Destination Card */}
             <div className="sidebar-card">
               <div className="sidebar-card-header">
@@ -228,14 +194,11 @@ const ProfilePage = () => {
                 <h3>Royal Concierge</h3>
               </div>
               <p className="concierge-desc">
-                Need recipe advice, custom bulk quantities, or order assistance? Our team in Lucknow is here to assist you.
+                Need recipe advice, custom bulk quantities, or order assistance ? Our team is here to assist you.
               </p>
               <div className="concierge-links">
-                <a href="https://wa.me/919082730822" target="_blank" rel="noopener noreferrer" className="concierge-btn whatsapp-btn">
+                <a href="https://wa.me/8090086636" target="_blank" rel="noopener noreferrer" className="concierge-btn whatsapp-btn">
                   💬 WhatsApp Support
-                </a>
-                <a href="mailto:olympic.kabgeer@gmail.com" className="concierge-btn email-btn">
-                  <Mail size={14} /> Email Concierge
                 </a>
               </div>
             </div>
@@ -244,7 +207,7 @@ const ProfilePage = () => {
             <div className="sidebar-card bundle-promo-card">
               <Crown size={22} className="gold-accent mb-1" />
               <h3>Craft Your Custom Box</h3>
-              <p>Pick any 3+ spice blends and enjoy flat 10% OFF with luxury gift packaging.</p>
+              <p>Pick any 4+ spice blends and enjoy flat 10% OFF with luxury gift packaging.</p>
               <Link to="/bundle" className="btn-sidebar-bundle">
                 Open Bundle Builder <ArrowRight size={14} />
               </Link>
@@ -255,10 +218,10 @@ const ProfilePage = () => {
           {/* Right Column: Order History Section */}
           <div className="account-main-col">
             <div className="orders-section-card">
-              
+
               <div className="orders-section-header">
                 <div className="header-title-wrap">
-                  <h2>Royal Order History</h2>
+                  <h2>Order History</h2>
                   <span className="orders-count-pill">
                     {ordersCount} {ordersCount === 1 ? 'Order' : 'Orders'}
                   </span>
@@ -275,7 +238,7 @@ const ProfilePage = () => {
                   </div>
                   <h3>Your Spice Casket is Empty</h3>
                   <p>
-                    You haven't placed any spice orders yet. Start your royal culinary journey with our 65-year-old Lucknowi secret recipes.
+                    You haven't placed any spice orders yet. Start your royal culinary journey with our 65 year old recipes.
                   </p>
                   <div className="empty-orders-actions">
                     <Link to="/bundle" className="btn-empty-bundle">
@@ -302,7 +265,7 @@ const ProfilePage = () => {
 
                     return (
                       <div key={orderId} className={`order-casket-card ${isExpanded ? 'expanded' : ''}`}>
-                        
+
                         {/* Order Header Summary Bar */}
                         <div className="order-casket-header">
                           <div className="order-id-date-col">
@@ -363,7 +326,7 @@ const ProfilePage = () => {
                         {/* Expandable Order Breakdown & Address */}
                         {isExpanded && (
                           <div className="order-casket-drawer">
-                            
+
                             <h4 className="drawer-subheading">Itemized Spice Selection</h4>
                             <div className="drawer-items-list">
                               {items.map((item, idx) => {

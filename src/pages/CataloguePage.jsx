@@ -40,11 +40,25 @@ const CataloguePage = () => {
     return PRODUCTS.filter(product => {
       const matchesCategory = activeCategory === 'All Masalas' || product.category === activeCategory;
       const q = searchQuery.trim().toLowerCase();
-      const matchesSearch = !q ||
-        product.name?.toLowerCase().includes(q) ||
-        product.category?.toLowerCase().includes(q) ||
-        product.description?.toLowerCase().includes(q) ||
-        product.about?.toLowerCase().includes(q);
+      let matchesSearch = !q;
+      
+      if (q) {
+        const searchSpace = [
+          product.name,
+          product.category,
+          product.description,
+          product.about,
+          ...(product.tags || [])
+        ].filter(Boolean).join(' ').toLowerCase();
+        
+        if (q === 'veg') {
+          // Prevent 'veg' search from matching 'non-veg'
+          const cleanedSpace = searchSpace.replace(/non-veg/g, '').replace(/non veg/g, '');
+          matchesSearch = cleanedSpace.includes('veg');
+        } else {
+          matchesSearch = searchSpace.includes(q);
+        }
+      }
         
       let matchesPrice = true;
       if (priceFilter === 'under-60') matchesPrice = product.price < 60;

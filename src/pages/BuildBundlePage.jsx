@@ -3,6 +3,7 @@ import { ArrowRight, Sparkles, Truck, ShieldCheck, Flame } from 'lucide-react';
 import { PRODUCTS, CATEGORIES } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import './BuildBundlePage.css';
+import buildBundleBanner from '../assets/build your bundle banner.png';
 
 const BuildBundlePage = () => {
   const [activeCategory, setActiveCategory] = useState('All Masalas');
@@ -30,79 +31,44 @@ const BuildBundlePage = () => {
 
   return (
     <div className="build-bundle-page-wrapper">
-      
+
+      {/* Banner Image */}
+      <div style={{ width: '100%', overflow: 'hidden', display: 'block' }}>
+        <img src={buildBundleBanner} alt="Build Your Bundle" style={{ width: '100%', height: 'auto', display: 'block' }} />
+      </div>
+
       {/* 1. Hero Banner Section — Royal Awadhi Curation */}
       <section className="bundle-hero">
         <div className="bundle-hero-ambient-glow" />
-        
+
         <div className="container bundle-hero-container">
           <div className="bundle-hero-content">
-            
-            <div className="royal-badge-pill">
-              <Sparkles size={14} className="gold-icon" />
-              <span>Royal Awadhi Curation</span>
-              <span className="badge-dot">•</span>
-              <span>Custom Spice Box</span>
-            </div>
 
             <h1 className="hero-title">
-              Craft Your <em>Royal Spice Box</em>
+              Craft Your <em> Own Spice Box</em>
             </h1>
 
             <p className="hero-subtitle">
-              Curate your personalized selection of authentic Lucknavi masala blends. Milled in small batches, freshly sealed, and delivered free across India.
+              Curate your personalized selection of authentic masala blends. Milled in small batches, freshly sealed, and delivered free across India.
             </p>
 
-            {/* How It Works Steps Grid */}
-            <div className="bundle-steps-grid">
-              <div className="bundle-step-card">
-                <div className="step-num-badge">1</div>
-                <div className="step-text-col">
-                  <h4>Choose Blends</h4>
-                  <p>Pick heritage Mughlai, daily, or pure powders</p>
-                </div>
-              </div>
-
-              <div className="bundle-step-divider">
-                <ArrowRight size={18} />
-              </div>
-
-              <div className="bundle-step-card">
-                <div className="step-num-badge">2</div>
-                <div className="step-text-col">
-                  <h4>Build Custom Box</h4>
-                  <p>Mix & match any quantities for your kitchen</p>
-                </div>
-              </div>
-
-              <div className="bundle-step-divider">
-                <ArrowRight size={18} />
-              </div>
-
-              <div className="bundle-step-card">
-                <div className="step-num-badge">3</div>
-                <div className="step-text-col">
-                  <h4>Fresh Delivery</h4>
-                  <p>Packed in Lucknow & shipped free to your door</p>
-                </div>
-              </div>
+            {/* Bundle Offer Highlight */}
+            <div className="bundle-offer-highlight" style={{
+              background: 'rgba(212, 175, 55, 0.12)',
+              border: '1.5px dashed rgba(212, 175, 55, 0.5)',
+              borderRadius: '12px',
+              padding: '1.25rem 2rem',
+              marginBottom: '2.5rem',
+              display: 'inline-block'
+            }}>
+              <h3 style={{ color: '#d4af37', fontSize: '1.15rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontWeight: '700' }}>
+                <Sparkles size={18} fill="#d4af37" /> Special Bundle Offer!
+              </h3>
+              <p style={{ color: '#fcfaf5', fontSize: '1rem', margin: 0, opacity: 0.9 }}>
+                Buy <strong>4 or more products</strong> to unlock <strong style={{ color: '#d4af37' }}>10% OFF + 2 FREE Mini Masala Boxes!</strong>
+              </p>
             </div>
 
-            {/* Value Highlights */}
-            <div className="bundle-perks-row">
-              <div className="bundle-perk-item">
-                <Flame size={15} color="#d4af37" />
-                <span>Stone Ground Pure</span>
-              </div>
-              <div className="bundle-perk-item">
-                <Truck size={15} color="#d4af37" />
-                <span>Free Pan-India Delivery</span>
-              </div>
-              <div className="bundle-perk-item">
-                <ShieldCheck size={15} color="#d4af37" />
-                <span>No Added Preservatives</span>
-              </div>
-            </div>
 
           </div>
         </div>
@@ -111,7 +77,7 @@ const BuildBundlePage = () => {
       {/* 2. Main Content Area */}
       <section className="bundle-main-content">
         <div className="container bundle-container">
-          
+
           {/* Category Filter Tabs */}
           <div className="bundle-filters-wrapper">
             <div className="bundle-filters-scroll">
@@ -153,7 +119,7 @@ const BuildBundlePage = () => {
             {filteredProducts.map(spice => (
               <ProductCard
                 key={spice.id}
-                product={spice}
+                product={{...spice, isBundleItem: true}}
                 actionLabel="Add to Box"
               />
             ))}

@@ -7,28 +7,14 @@ export const useCart = () => useContext(CartContext);
 const VALID_COUPONS = {};
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => {
-    const saved = localStorage.getItem('kabgeer_cart');
-    if (!saved) return [];
-    try {
-      const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed.map(item => ({
-        ...item,
-        cartItemId: item.cartItemId || `${item.id}__${item.weight || '50g'}`
-      })) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [cartItems, setCartItems] = useState([]);
 
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
   const toastTimeout = useRef(null);
 
-  useEffect(() => {
-    localStorage.setItem('kabgeer_cart', JSON.stringify(cartItems));
-  }, [cartItems]);
+
 
   const showToast = (message) => {
     setToastMessage(message);
@@ -64,10 +50,11 @@ export const CartProvider = ({ children }) => {
             : item
         );
       }
-      return [...prev, { ...product, cartItemId: targetCartItemId, quantity: addQty }];
+      
+      const initialQty = Math.max(2, addQty);
+      return [...prev, { ...product, cartItemId: targetCartItemId, quantity: initialQty }];
     });
     showToast(`${product.name} (${weight}) added to your spice box!`);
-    openCartDrawer();
   };
 
   const removeFromCart = (cartItemId) => {
@@ -75,7 +62,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (cartItemId, newQuantity) => {
-    if (newQuantity < 1) {
+    if (newQuantity < 2) {
       removeFromCart(cartItemId);
       return;
     }
@@ -110,7 +97,22 @@ export const CartProvider = ({ children }) => {
     showToast('Coupon removed.');
   };
 
+  const getBundleCartCount = () => {
+    return cartItems.filter(item => item.isBundleItem).length;
+  };
+
+  const getBundleCartTotal = () => {
+    return cartItems.reduce((total, item) => total + (item.isBundleItem ? item.price * item.quantity : 0), 0);
+  };
+
+  const isBundleOfferActive = () => {
+    return getBundleCartCount() >= 4;
+  };
+
   const getDiscountAmount = () => {
+    if (isBundleOfferActive()) {
+      return getBundleCartTotal() * 0.10;
+    }
     return 0;
   };
 
@@ -123,6 +125,7 @@ export const CartProvider = ({ children }) => {
       updateQuantity,
       getCartTotal,
       getCartCount,
+      getBundleCartCount,
       clearCart,
       isCartDrawerOpen,
       toggleCartDrawer,
@@ -131,7 +134,8 @@ export const CartProvider = ({ children }) => {
       appliedCoupon,
       applyCoupon,
       removeCoupon,
-      getDiscountAmount
+      getDiscountAmount,
+      isBundleOfferActive
     }}>
       {children}
       

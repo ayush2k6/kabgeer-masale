@@ -684,23 +684,30 @@
 /* Recommended Section */
 .pdp-related-section {
   text-align: center;
+  padding: 4.5rem 0;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+  margin-top: 2rem;
 }
 
 .related-header {
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
 }
 
 .related-header h2 {
-  font-family: var(--font-body);
-  font-size: 2rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.4rem;
   color: #1a2f22;
-  margin-bottom: 0.35rem;
-  font-weight: 700;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .related-header p {
-  color: #666;
-  font-size: 0.95rem;
+  color: #555;
+  font-size: 1rem;
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 .related-grid {

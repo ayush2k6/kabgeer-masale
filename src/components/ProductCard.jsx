@@ -42,7 +42,7 @@ const ProductCard = ({ product, actionLabel, onActionClick }) => {
 
       <div className="unified-card-info">
         <h3 className="unified-product-title">{product.name}</h3>
-        <p className="unified-product-meta">{weightDisplay} • {product.packType || 'Single Pack'}</p>
+        <p className="unified-product-meta">{weightDisplay}</p>
 
         <div className="unified-product-rating">
           <div className="rating-stars">

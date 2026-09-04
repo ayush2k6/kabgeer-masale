@@ -62,7 +62,7 @@
    MAIN HEADER
    ================================================ */
 .main-header {
-  padding: 0.4rem 0;
+  padding: 0.7rem 0;
   position: relative;
   overflow: visible;
 }
@@ -89,7 +89,7 @@
 }
 
 .header-brand-logo {
-  height: 48px;
+  height: 54px;
   width: auto;
   object-fit: contain;
   display: block;

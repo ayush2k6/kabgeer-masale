@@ -1,0 +1,79 @@
+.montage-product-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #fcf9f2;
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  padding: 1.25rem;
+}
+
+.montage-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.montage-card-image-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  border-radius: 8px;
+  background: #ffffff; /* Give it a white background so the transparent PNG looks nice */
+}
+
+.montage-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Contain the box so it doesn't get cut off */
+  padding: 1rem;
+}
+
+.montage-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.montage-product-title {
+  font-size: 1.25rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  color: #1a2f22;
+  margin: 0;
+}
+
+.montage-sale-price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #855723;
+  margin-bottom: 0.75rem;
+}
+
+.montage-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #855723;
+  color: #ffffff;
+  padding: 0.85rem 1.5rem;
+  border-radius: 30px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.montage-card-btn:hover {
+  background-color: #6a441a;
+}
+
+.montage-card-btn.in-cart {
+  background-color: #2d4b2e;
+}
