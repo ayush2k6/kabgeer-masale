@@ -135,22 +135,29 @@ const OrderSuccessPage = () => {
           {order?.order_items && order.order_items.length > 0 && (
             <div className="order-items-preview-box">
               <h4 className="order-items-preview-title">
-                Ordered Spices ({order.order_items.length})
+                Ordered Spices
               </h4>
               <div className="order-items-preview-list">
-                {order.order_items.map((item, idx) => (
-                  <div key={idx} className="order-item-preview-row">
-                    <div className="order-item-preview-left">
-                      <Package size={15} color="#d4af37" style={{ flexShrink: 0 }} />
-                      <span className="order-item-preview-name">
-                        <strong>{item.product_name || 'Authentic Masala'}</strong> {item.weight_pack ? `(${item.weight_pack})` : ''} × {item.quantity}
+                {order.order_items.map((item, idx) => {
+                  const itemTotal = Number(
+                    item.total_price ?? 
+                    item.line_total ?? 
+                    (item.unit_price ? Number(item.unit_price) * Number(item.quantity || 1) : 0)
+                  );
+                  return (
+                    <div key={idx} className="order-item-preview-row">
+                      <div className="order-item-preview-left">
+                        <Package size={15} color="#d4af37" style={{ flexShrink: 0 }} />
+                        <span className="order-item-preview-name">
+                          <strong>{item.product_name || 'Authentic Masala'}</strong> {item.weight_pack ? `(${item.weight_pack})` : ''} × {item.quantity}
+                        </span>
+                      </div>
+                      <span className="order-item-preview-price">
+                        ₹{itemTotal.toFixed(2)}
                       </span>
                     </div>
-                    <span className="order-item-preview-price">
-                      ₹{Number(item.line_total || 0).toFixed(2)}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

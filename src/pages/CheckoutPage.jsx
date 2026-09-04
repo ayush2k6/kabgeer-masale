@@ -381,6 +381,8 @@ const CheckoutPage = () => {
           product_name: item.name,
           weight_pack: item.weight || (item.weightInGrams ? `${item.weightInGrams}g` : '50g'),
           quantity: item.quantity,
+          unit_price: item.price,
+          total_price: item.price * item.quantity,
           line_total: item.price * item.quantity
         })),
         shipping_address: { ...formData }
