@@ -798,7 +798,7 @@ const CheckoutPage = () => {
                 );
               })}
 
-              {isBundleOfferActive() && (
+              {(typeof isBundleOfferActive === 'function' && isBundleOfferActive()) && (
                 <div className="summary-item" style={{ backgroundColor: 'rgba(39, 174, 96, 0.05)', border: '1px dashed #27ae60', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
                   <div className="summary-item-img placeholder-img" style={{ position: 'relative', width: '50px', height: '50px' }}>
                     <span className="item-badge" style={{ backgroundColor: '#27ae60' }}>2</span>
@@ -860,7 +860,7 @@ const CheckoutPage = () => {
                 </div>
                 {discount > 0 && (
                   <div className="summary-row" style={{ color: '#16a34a', fontWeight: 600 }}>
-                    <span>Discount {isBundleOfferActive() ? '(Bundle 10% OFF)' : (appliedCoupon ? `(${appliedCoupon.code})` : '')}</span>
+                    <span>Discount {(typeof isBundleOfferActive === 'function' && isBundleOfferActive()) ? '(Bundle 10% OFF)' : (appliedCoupon ? `(${appliedCoupon.code})` : '')}</span>
                     <span>-₹{discount.toFixed(2)}</span>
                   </div>
                 )}

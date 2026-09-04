@@ -7,13 +7,13 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import './index.css';
 
-const HomePage = lazy(() => import('./pages/HomePage'));
-const CataloguePage = lazy(() => import('./pages/CataloguePage'));
-const ProductPage = lazy(() => import('./pages/ProductPage'));
-const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+import HomePage from './pages/HomePage';
+import CataloguePage from './pages/CataloguePage';
+import ProductPage from './pages/ProductPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
-const OrderSuccessPage = lazy(() => import('./pages/OrderSuccessPage'));
 const BuildBundlePage = lazy(() => import('./pages/BuildBundlePage'));
 const BulkEnquiryPage = lazy(() => import('./pages/BulkEnquiryPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
