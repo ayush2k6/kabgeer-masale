@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Search, User, ShoppingBag, X, ArrowUp, Home, Package, Sparkles, ChefHat } from 'lucide-react';
+import { Search, ShoppingBag, X, ArrowUp, Home, Package, Sparkles, ChefHat } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import { PRODUCTS } from '../data/products';
 import CartDrawer from './CartDrawer';
 import './Header.css';
@@ -10,7 +9,6 @@ import logo from '../assets/logo.png';
 
 const Header = () => {
   const { getCartCount, openCartDrawer } = useCart();
-  const { user, isAdmin } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -18,10 +16,6 @@ const Header = () => {
   const searchRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const isOnAuthPage = ['/login', '/signup', '/account', '/profile', '/admin'].some(
-    p => location.pathname.startsWith(p)
-  );
 
   useEffect(() => {
     const handleScroll = () => setShowTopBtn(window.scrollY > 400);
@@ -211,15 +205,6 @@ const Header = () => {
                 )}
               </div>
 
-              {/* User (Desktop Header) */}
-              <Link
-                to={user ? (isAdmin ? "/admin" : "/account") : "/login"}
-                className={`icon-btn user-btn header-user-btn${isOnAuthPage ? ' user-btn-active' : ''}`}
-                aria-label={isAdmin ? "Admin Portal" : "Account"}
-              >
-                <User size={20} />
-              </Link>
-
               {/* Cart */}
               <button className="icon-btn cart-btn" onClick={openCartDrawer} aria-label="Cart">
                 <ShoppingBag size={20} />
@@ -253,10 +238,10 @@ const Header = () => {
           <ChefHat size={20} />
           <span>Recipes</span>
         </NavLink>
-        <NavLink to="/account" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <User size={20} />
-          <span>Account</span>
-        </NavLink>
+        <button type="button" className="mobile-nav-item" onClick={openCartDrawer} style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative' }}>
+          <ShoppingBag size={20} />
+          <span>Cart {getCartCount() > 0 ? `(${getCartCount()})` : ''}</span>
+        </button>
       </nav>
 
       {/* Scroll to Top */}

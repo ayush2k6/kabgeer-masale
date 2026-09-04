@@ -17,10 +17,10 @@ Current Branch: v1-release / main (Deployed on Vercel)
 | Part 3.5 | Backend + Razorpay Payment (Supabase Migration) | ✅ COMPLETE |
 | Part 3.6 | Resend Transactional Email Automation | ✅ COMPLETE (LIVE VERIFIED) |
 | Part 3.7 | Google Sheets Order Sync | ✅ COMPLETE (LIVE VERIFIED) |
-| Part 3.8 | Trackon Courier Integration | 🟡 DEV-COMPLETE (Simulation Mode) |
+| Part 3.8 | Trackon Shipping Management | ✅ MANUAL SYNC VIA GOOGLE SHEETS |
 | Part 4 | Security Hardening, RLS Audit & Env Validation | ✅ COMPLETE |
 | Part 5 | Final E2E QA, UI Redesign, Cart Drawer & Form Validations | ✅ COMPLETE & VERIFIED |
-| Customer Page V1 | Account, Order History, Order Details, Wishlist Removal | ✅ COMPLETE |
+| Guest Checkout | 100% Frictionless Guest Checkout (Auth barriers removed) | ✅ COMPLETE & VERIFIED |
 | Part 3.6.2 | Admin Security Hardening (Auth, RLS, RPC, CORS) | ✅ COMPLETE |
 | Part 3.6.3 | Remote Security Migration Verification | ✅ COMPLETE & LIVE VERIFIED |
 | V1 UI/UX Polish | UI/UX Consistency, Sans-Serif System, Checkout Corrections & Validation | ✅ COMPLETE & VERIFIED |

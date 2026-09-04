@@ -42,11 +42,11 @@ function App() {
                 <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', fontSize: '1.2rem', color: 'var(--color-primary)' }}>Loading...</div>}>
                   <Routes>
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/account" element={<ProfilePage />} />
-                    <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+                    <Route path="/login" element={<Navigate to="/products" replace />} />
+                    <Route path="/signup" element={<Navigate to="/products" replace />} />
+                    <Route path="/profile" element={<Navigate to="/products" replace />} />
+                    <Route path="/account" element={<Navigate to="/products" replace />} />
+                    <Route path="/admin/login" element={<AdminLoginPage />} />
                     <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
                     <Route path="/admin/orders" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
                     <Route path="/recipes" element={<RecipesPage />} />

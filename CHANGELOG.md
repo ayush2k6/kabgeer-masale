@@ -1,5 +1,29 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-04 (Guest Checkout & Simplified Store Experience)
+
+### Task
+Implement 100% Frictionless Guest Checkout, remove customer login/account friction, and align order management with manual Trackon shipping via Google Sheets.
+
+### Implemented Improvements & Fixes
+- **1. Frictionless Guest Checkout (`CheckoutPage.jsx`)**:
+  - Removed `useAuth` dependency and "Sign in" barriers from contact details.
+  - Customers seamlessly enter contact and shipping details without account creation.
+  - Razorpay live order flow and confirmation screens verified.
+- **2. Navigation & Routing Updates (`Header.jsx`, `App.jsx`)**:
+  - Removed desktop user profile icon and replaced mobile bottom nav account tab with direct Cart trigger.
+  - Redirected customer auth routes (`/login`, `/signup`, `/profile`, `/account`) to `/products`.
+  - Configured dedicated administrator portal at `/admin/login`.
+- **3. Order Success & Line Items Resolution (`OrderSuccessPage.jsx`)**:
+  - Fixed total paid calculation fallback to ensure accurate display of transaction amounts.
+  - Cleaned up item list headers.
+- **4. Manual Trackon Workflow**:
+  - Real-time order sync directly to Google Sheets for owner manual shipping and Trackon AWB updates.
+- **5. Build & Verification**:
+  - `npm run build`: **Passed cleanly (0 errors)**.
+
+---
+
 ## 2026-09-04
 
 ### Task

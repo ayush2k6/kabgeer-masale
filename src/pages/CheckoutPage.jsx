@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import { 
   ShieldCheck, 
   Trash2, 
@@ -58,7 +57,6 @@ const CheckoutPage = () => {
     getDiscountAmount,
     isBundleOfferActive
   } = useCart();
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const subtotal = getCartTotal();
@@ -91,22 +89,6 @@ const CheckoutPage = () => {
     phone: '',
     saveInfo: false
   });
-
-  useEffect(() => {
-    if (user) {
-      setFormData(prev => ({
-        ...prev,
-        email: user.email || prev.email,
-        firstName: user.name ? user.name.split(' ')[0].replace(/[^a-zA-Z\s]/g, '') : prev.firstName,
-        lastName: user.name ? user.name.split(' ').slice(1).join(' ').replace(/[^a-zA-Z\s]/g, '') : prev.lastName,
-        phone: user.phone ? user.phone.replace(/\D/g, '').slice(0, 10) : prev.phone,
-        address: user.address || prev.address,
-        city: user.city || prev.city,
-        state: user.state || prev.state,
-        pinCode: user.pinCode ? user.pinCode.replace(/\D/g, '').slice(0, 6) : prev.pinCode
-      }));
-    }
-  }, [user]);
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -485,7 +467,6 @@ const CheckoutPage = () => {
             <div className="checkout-section">
               <div className="section-header">
                 <h3>Contact Details <span style={{ color: '#dc2626', fontSize: '0.9rem' }}>*</span></h3>
-                {!user && <Link to="/login" className="login-link">Sign in</Link>}
               </div>
               <input 
                 type="email" 
