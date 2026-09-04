@@ -1,7 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Truck, ArrowLeft, Trash2, X, ShoppingBag } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  Trash2, 
+  X, 
+  ShoppingBag, 
+  AlertCircle, 
+  Info, 
+  CreditCard, 
+  Check, 
+  Sparkles 
+} from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
 import logo from '../assets/logo.png';
