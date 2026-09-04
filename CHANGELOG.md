@@ -1,5 +1,56 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-04
+
+### Task
+UI Layouts, Typography, Dish Photography, Montage Product Cards, and Bundle Logic Updates (Commit `a998510` by Ayush Tiwari).
+
+### Implemented Improvements & Fixes
+- **1. Cooked Dish Photography & Product Mockup Assets**:
+  - Integrated 20+ authentic cooked dish photos under `public/assets/dishes/` (Mutton Nihari, Chicken Korma, Galauti Kebab, Pav Bhaji, Biryani, Sambhar, Chole Bhature, etc.).
+  - Added new spice box mockups under `public/assets/mockups/` and updated product covers in `src/assets/products/`.
+- **2. Montage Product Cards (`MontageProductCard.jsx`, `MontageProductCard.css`)**:
+  - Created new `MontageProductCard` component showcasing high-resolution food montages alongside spice packs.
+- **3. UI Layouts & Page Polish**:
+  - **Home Page (`HomePage.jsx`, `HomePage.css`)**: Redesigned hero banners, culinary highlights, and recipe teasers.
+  - **About Page & Contact Page (`AboutPage.jsx`, `ContactPage.jsx`, `.css`)**: Refactored grid layouts, contact forms, and brand story presentation.
+  - **Product Detail Page (PDP) & Profile Page**: Streamlined visual styling and order presentation.
+- **4. Bundle & Cart Logic (`BuildBundlePage.jsx`, `CartContext.jsx`, `products.js`)**:
+  - Updated bundle pricing calculations and customized spice selection workflows.
+- **5. Build & Regression Testing**:
+  - Merged changes into local release branch.
+  - `npm run build`: **Passed cleanly (0 errors, 1859 modules transformed)**.
+
+---
+
+## 2026-08-31
+
+### Task
+Production Checkout & Order Creation CORS and Variable Fixes.
+
+### Implemented Improvements & Fixes
+- **1. Universal Production CORS Policy (`supabase/functions/_shared/cors.ts`)**:
+  - Updated CORS headers to allow `https://kabgeermasale.vercel.app` and wildcard `*.vercel.app` production/preview domains, resolving preflight `Load failed` errors.
+- **2. Checkout Page API Key & Session Token (`CheckoutPage.jsx`)**:
+  - Fixed `authToken` definition and added required `apikey` gateway header on Supabase Edge Function requests.
+  - Removed undefined `codFee` variable reference from mobile order summary dropdown to eliminate blank screen crashes.
+- **3. Edge Functions Redeployment**:
+  - Redeployed all 7 Supabase backend functions with verified HTTP 200 execution and automated Google Sheets sync.
+
+---
+
+## 2026-08-30
+
+### Task
+Minimal Luxury Vector SVG Favicon Branding.
+
+### Implemented Improvements & Fixes
+- **1. Minimal Vector Favicon (`public/favicon.svg`, `index.html`)**:
+  - Designed bespoke Royal Emerald (`#0F2818`) & Heritage Gold (`#D4AF37`) monogram favicon with star anise crown accent.
+  - Replaced default Vite icon in `index.html`.
+
+---
+
 ## 2026-08-29
 
 ### Task

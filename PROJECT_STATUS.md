@@ -1,7 +1,7 @@
 # Kabgeer Ji — Project Status Dashboard
 
-Last Updated: 2026-08-28
-Current Branch: tanmay-development
+Last Updated: 2026-09-04
+Current Branch: v1-release / main (Deployed on Vercel)
 
 ---
 
