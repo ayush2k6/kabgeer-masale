@@ -10,7 +10,8 @@ import {
   Info, 
   CreditCard, 
   Check, 
-  Sparkles 
+  Sparkles,
+  Lock 
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
