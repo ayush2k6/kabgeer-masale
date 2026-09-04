@@ -370,10 +370,32 @@ const CheckoutPage = () => {
         throw new Error(data.error || data.details || 'Server-side payment verification failed.');
       }
 
+      const finalPaidAmount = Number(pendingServerOrder?.totalAmount ?? finalTotal);
+      const successData = {
+        orderId: verifyPayload.orderId,
+        displayOrderId: verifyPayload.displayOrderId,
+        totalAmount: finalPaidAmount,
+        order_status: 'Confirmed',
+        payment_status: 'Paid',
+        order_items: cartItems.map(item => ({
+          product_name: item.name,
+          weight_pack: item.weight || (item.weightInGrams ? `${item.weightInGrams}g` : '50g'),
+          quantity: item.quantity,
+          line_total: item.price * item.quantity
+        })),
+        shipping_address: { ...formData }
+      };
+
+      try {
+        sessionStorage.setItem(`kbg_order_${verifyPayload.displayOrderId}`, JSON.stringify(successData));
+      } catch {
+        // ignore
+      }
+
       clearCart();
       setShowPaymentModal(false);
       setIsSubmitting(false);
-      navigate(`/order-success?id=${verifyPayload.displayOrderId}`);
+      navigate(`/order-success?id=${verifyPayload.displayOrderId}`, { state: successData });
     } catch (err) {
       console.error('Payment Verification Failure:', err);
       setErrorMessage(`Payment verification failed: ${err.message}`);

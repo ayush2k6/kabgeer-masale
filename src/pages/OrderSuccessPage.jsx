@@ -9,7 +9,18 @@ const OrderSuccessPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const orderParam = searchParams.get('id') || searchParams.get('orderId') || '';
   
-  const [order, setOrder] = useState(null);
+  const [order, setOrder] = useState(() => {
+    if (location.state && (location.state.displayOrderId === orderParam || location.state.orderId === orderParam)) {
+      return location.state;
+    }
+    try {
+      const cached = sessionStorage.getItem(`kbg_order_${orderParam}`);
+      if (cached) return JSON.parse(cached);
+    } catch {
+      // ignore
+    }
+    return null;
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -31,7 +42,7 @@ const OrderSuccessPage = () => {
 
         const { data, error } = await query.maybeSingle();
         if (!error && data) {
-          setOrder(data);
+          setOrder(prev => ({ ...(prev || {}), ...data }));
         }
       } catch (err) {
         console.error('Error fetching order details:', err);
@@ -59,7 +70,7 @@ const OrderSuccessPage = () => {
       });
       return { date: dateStr, time: timeStr };
     } catch {
-      return { date: 'Recently', time: '' };
+      return { date: 'Today', time: '' };
     }
   };
 
