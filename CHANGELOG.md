@@ -1,5 +1,24 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-10 (Standard ₹50 Express Shipping & Minimalist Sans-Serif Cart)
+
+### Task
+Update delivery policy from free shipping to flat ₹50 express delivery fee on all orders and apply minimalist sans-serif typography across the cart drawer.
+
+### Implemented Improvements & Fixes
+- **1. Flat ₹50 Express Delivery Pricing**:
+  - `CartDrawer.jsx`: Added ₹50 flat shipping fee to financial summary and total calculation (`subtotal - discount + 50`).
+  - `CheckoutPage.jsx`: Added ₹50 shipping fee across mobile order summary, shipping method radio badge, desktop sidebar, and backend order payload.
+  - `supabase/functions/create-razorpay-order/index.ts`: Enforced authoritative ₹50 shipping fee in server-side price calculation and Razorpay order amount.
+  - `Header.jsx` & `ProductPage.jsx`: Updated marquee and product subtitle to reflect "Express Delivery ₹50".
+- **2. Minimalist Sans-Serif Typography (`CartDrawer.css`)**:
+  - Enforced clean sans-serif font family (`var(--font-sans)`) across the Cart Drawer container, headings, item cards, inputs, buttons, and summary tags.
+- **3. Verification & Live Sync**:
+  - Live order creation (`KAB-20260910-3658`) verified with exact ₹50 shipping breakdown and successful real-time Google Sheets sync.
+  - `npm run build`: **Passed cleanly (0 errors)**.
+
+---
+
 ## 2026-09-04 (Guest Checkout & Simplified Store Experience)
 
 ### Task

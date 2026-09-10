@@ -5,8 +5,6 @@ import { useCart } from '../context/CartContext';
 import { PRODUCTS } from '../data/products';
 import './CartDrawer.css';
 
-const FREE_SHIPPING_THRESHOLD = 399;
-
 const CartDrawer = () => {
   const {
     cartItems,
@@ -36,7 +34,8 @@ const CartDrawer = () => {
 
   const subtotal = getCartTotal();
   const discount = getDiscountAmount();
-  const finalTotal = Math.max(0, subtotal - discount);
+  const shippingFee = cartItems.length > 0 ? 50 : 0;
+  const finalTotal = Math.max(0, subtotal - discount + shippingFee);
   
   const cartCount = getCartCount();
   const bundleCount = getBundleCartCount();
@@ -239,10 +238,8 @@ const CartDrawer = () => {
                 </div>
               )}
               <div className="summary-row">
-                <span>Shipping</span>
-                <span className="shipping-free-tag">
-                  FREE
-                </span>
+                <span>Shipping Fee</span>
+                <span className="summary-val">₹{shippingFee.toFixed(2)}</span>
               </div>
               <div className="summary-row total-row">
                 <div className="total-label-group">

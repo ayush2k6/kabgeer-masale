@@ -178,7 +178,7 @@ const ProductPage = () => {
                     </>
                   )}
                 </div>
-                <span className="pdp-taxes">Inclusive of all taxes • Free Shipping on orders above ₹399</span>
+                <span className="pdp-taxes">Inclusive of all taxes • Standard Express Delivery ₹50</span>
               </div>
 
               {/* Pack Size Selector */}

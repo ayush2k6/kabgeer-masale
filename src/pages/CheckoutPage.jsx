@@ -61,7 +61,8 @@ const CheckoutPage = () => {
 
   const subtotal = getCartTotal();
   const discount = getDiscountAmount();
-  const finalTotal = Math.max(0, subtotal - discount);
+  const shippingFee = cartItems.length > 0 ? 50 : 0;
+  const finalTotal = Math.max(0, subtotal - discount + shippingFee);
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -255,7 +256,8 @@ const CheckoutPage = () => {
         body: JSON.stringify({
           ...payload,
           pricingConfig: {
-            shippingFee: 0
+            shippingFee: shippingFee,
+            discountAmount: discount
           }
         })
       });
@@ -444,7 +446,7 @@ const CheckoutPage = () => {
                   )}
                   <div className="mob-sum-row">
                     <span>Shipping</span>
-                    <span style={{ color: '#16a34a', fontWeight: 600 }}>FREE</span>
+                    <span style={{ fontWeight: 600 }}>₹{shippingFee.toFixed(2)}</span>
                   </div>
                   <div className="mob-sum-row mob-sum-total">
                     <strong>Total</strong>
@@ -649,7 +651,7 @@ const CheckoutPage = () => {
                     <input type="radio" name="shippingMethod" checked readOnly />
                     <span>Standard Express Shipping (2–4 Working Days)</span>
                   </div>
-                  <strong style={{ color: '#16a34a', fontSize: '0.9rem' }}>FREE</strong>
+                  <strong style={{ color: 'var(--color-primary)', fontSize: '0.9rem' }}>₹{shippingFee.toFixed(2)}</strong>
                 </label>
               </div>
             </div>
@@ -846,8 +848,8 @@ const CheckoutPage = () => {
                   </div>
                 )}
                 <div className="summary-row">
-                  <span>Estimated Shipping</span>
-                  <span style={{ color: '#16a34a', fontWeight: 600 }}>FREE</span>
+                  <span>Standard Shipping</span>
+                  <span style={{ fontWeight: 600 }}>₹{shippingFee.toFixed(2)}</span>
                 </div>
                 <div className="summary-row total-row mt-2" style={{ borderTop: '1px solid #e0e0e0', paddingTop: '1rem' }}>
                   <span>Total Amount</span>

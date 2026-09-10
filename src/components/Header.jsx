@@ -91,17 +91,17 @@ const Header = () => {
           <div className="top-bar-marquee">
             <div className="top-bar-content">
               <span>🌿 GHAR SE GHAR TAK <span className="gold-accent">•</span> PURE LUCKNAVI SPICES & RICH FLAVOURS</span>
-              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> FREE DELIVERY ACROSS INDIA</span>
+              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> EXPRESS DELIVERY ACROSS INDIA</span>
               <span>✨ 100% PURE & NATURAL <span className="gold-accent">•</span> NO ADDED PRESERVATIVES</span>
               <span>🌿 GHAR SE GHAR TAK <span className="gold-accent">•</span> PURE LUCKNAVI SPICES & RICH FLAVOURS</span>
-              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> FREE DELIVERY ACROSS INDIA</span>
+              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> EXPRESS DELIVERY ACROSS INDIA</span>
             </div>
             <div className="top-bar-content" aria-hidden="true">
               <span>🌿 GHAR SE GHAR TAK <span className="gold-accent">•</span> PURE LUCKNAVI SPICES & RICH FLAVOURS</span>
-              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> FREE DELIVERY ACROSS INDIA</span>
+              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> EXPRESS DELIVERY ACROSS INDIA</span>
               <span>✨ 100% PURE & NATURAL <span className="gold-accent">•</span> NO ADDED PRESERVATIVES</span>
               <span>🌿 GHAR SE GHAR TAK <span className="gold-accent">•</span> PURE LUCKNAVI SPICES & RICH FLAVOURS</span>
-              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> FREE DELIVERY ACROSS INDIA</span>
+              <span>🚚 FRESHLY PACKED <span className="gold-accent">•</span> EXPRESS DELIVERY ACROSS INDIA</span>
             </div>
           </div>
         </div>
