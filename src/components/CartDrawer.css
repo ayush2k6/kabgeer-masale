@@ -21,7 +21,7 @@
   max-height: 100vh;
   max-height: 100dvh;
   background-color: var(--color-bg, #faf6f0);
-  font-family: var(--font-sans);
+  font-family: var(--font-sans) !important;
   display: flex;
   flex-direction: column;
   box-shadow: -10px 0 35px rgba(0, 0, 0, 0.2);
@@ -32,7 +32,7 @@
 }
 
 .cart-drawer-container * {
-  font-family: var(--font-sans);
+  font-family: var(--font-sans) !important;
 }
 
 @keyframes slideInRight {
@@ -75,7 +75,7 @@
   font-size: 1.15rem;
   font-weight: 700;
   margin: 0;
-  font-family: var(--font-body);
+  font-family: var(--font-sans) !important;
   color: #ffffff;
   letter-spacing: 0.2px;
 }
