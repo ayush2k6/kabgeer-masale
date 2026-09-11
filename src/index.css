@@ -389,22 +389,112 @@ button {
   }
 }
 
-/* Pricing Font Normalization */
+/* ================================================================
+   GLOBAL NUMERIC & PRICING TYPOGRAPHY SYSTEM (Clean Sans-Serif)
+   ================================================================ */
+
+/* 1. All Price, Currency & Monetary Elements */
+.price,
+.sale-price,
+.mrp-price,
+.original-price,
+.mrp,
+.savings,
+.savings-badge,
+.discount-badge,
+.savings-pill,
+.discount-pill,
 .unified-sale-price,
 .unified-mrp-price,
 .pdp-sale-price,
 .pdp-mrp-price,
 .pdp-price,
+.pdp-mrp,
+.pdp-savings-badge,
 .pack-price,
+.pack-pill-price,
+.pack-pill-mrp,
 .drawer-item-total,
 .addon-price,
 .summary-val,
 .total-amount,
+.total-price,
+.currency-code,
 .order-item-preview-price,
 .order-price-col,
 .montage-sale-price,
 .search-result-price,
 .mobile-item-price,
-.summary-item-price {
+.summary-item-price,
+.cart-total,
+.card-price,
+.subtotal-val,
+.shipping-val,
+.bundle-price,
+.tier-price,
+.table-cell-price,
+.price-row *,
+.summary-row span:last-child,
+.mob-sum-row span:last-child,
+.drawer-summary-box .summary-val,
+.drawer-summary-box .total-amount {
   font-family: var(--font-sans) !important;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* 2. All Weights, Quantities, Counts & Badges */
+.weight,
+.product-weight,
+.pdp-weight,
+.pack-weight,
+.pack-pill-weight,
+.drawer-item-weight,
+.addon-pack-meta,
+.qty-picker,
+.qty-picker span,
+.qty-picker button,
+.quantity,
+.cart-badge,
+.drawer-items-count,
+.items-count,
+.stock-count,
+.badge-count,
+.step-number,
+.step-badge,
+.step-count,
+.stat-number,
+.hero-stat-number,
+.hero-stat-label strong,
+.rating,
+.rating-num,
+.rating-text,
+.rating-stars,
+.review-count,
+.recipe-time,
+.recipe-servings,
+.order-id,
+.display-order-id,
+.tracking-number,
+.phone-number,
+.pin-code,
+.kpi-value,
+.kpi-title,
+.kpi-change,
+.table-cell-num,
+.bundle-count,
+.category-count-pill,
+.grid-count-text span,
+.grid-count-text strong {
+  font-family: var(--font-sans) !important;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* 3. Numeric Inputs & Form Fields */
+input[type="number"],
+input[type="tel"],
+.form-input,
+.pincode-input,
+.phone-input {
+  font-family: var(--font-sans) !important;
+  font-variant-numeric: tabular-nums lining-nums;
 }
