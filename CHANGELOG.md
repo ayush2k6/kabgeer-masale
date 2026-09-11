@@ -1,5 +1,22 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-11 (Live Razorpay Payment Gateway Activation)
+
+### Task
+Activate and verify production live Razorpay payment processing using the client's live merchant credentials (`RAZORPAY_KEY_ID` & `RAZORPAY_KEY_SECRET`).
+
+### Implemented Improvements & Verification
+- **1. Supabase Vault Environment Secrets**:
+  - Live Key ID (`rzp_live_TakyL1BujPgfdE`) and private server-side Key Secret successfully configured in Supabase Edge Functions environment.
+- **2. Serverless Edge Function Verification (`create-razorpay-order`)**:
+  - Successfully communicated with Razorpay Production REST API (`https://api.razorpay.com/v1/orders`).
+  - Generated live Razorpay order (`order_Tao3jBjMZOZHCv`) with `isSimulationMode: false`.
+  - Cleaned up verification record to ensure pristine order ledger.
+- **3. Status**:
+  - Production payment gateway is **100% LIVE and operational** for customer checkout (UPI, Cards, NetBanking, Wallets).
+
+---
+
 ## 2026-09-11 (Admin Portal Sans-Serif Typography Isolation)
 
 ### Task
