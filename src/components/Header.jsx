@@ -42,6 +42,18 @@ const Header = () => {
     setSearchResults([]);
   }, [location.pathname]);
 
+  // Secret Admin Shortcut: Ctrl+Shift+A / Cmd+Shift+A
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        navigate('/admin/login');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const handleSearchChange = useCallback((value) => {
@@ -58,10 +70,18 @@ const Header = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return;
+
+    // Secret Admin Shortcut: #admin, /admin, or admin
+    if (query === '#admin' || query === '/admin' || query === 'admin') {
       closeSearch();
+      navigate('/admin/login');
+      return;
     }
+
+    navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    closeSearch();
   };
 
   const handleSuggestionClick = (productId) => {

@@ -1,5 +1,20 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-11 (Admin Portal Secret Access — #admin Search Shortcut)
+
+### Task
+Implement an easter egg shortcut to the admin portal via secret search keyword `#admin` and global keyboard shortcut `Ctrl+Shift+A`.
+
+### Implemented Improvements & Fixes
+- **1. Secret Search Trigger (`Header.jsx`)**:
+  - Typing `#admin`, `/admin`, or `admin` in the search bar and submitting instantly redirects to `/admin/login`.
+- **2. Global Keyboard Shortcut (`Header.jsx`)**:
+  - Added global keydown listener for `Ctrl+Shift+A` (or `Cmd+Shift+A` on Mac) to open `/admin/login`.
+- **3. Build & Verification**:
+  - `npm run build`: **Passed cleanly (0 errors)**.
+
+---
+
 ## 2026-09-11 (Header Navigation Cleanup — Single Unified Cart Button)
 
 ### Task
