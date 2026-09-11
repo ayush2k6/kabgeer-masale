@@ -1,5 +1,22 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-11 (Admin Portal Sans-Serif Typography Isolation)
+
+### Task
+Apply clean, high-legibility sans-serif typography (`Plus Jakarta Sans` / `var(--font-sans)`) exclusively across all admin pages (`AdminDashboardPage` and `AdminLoginPage`) while preserving the storefront's heritage Playfair serif identity.
+
+### Implemented Improvements & Fixes
+- **1. Admin Layout Font Enforcement (`AdminDashboardPage.css`)**:
+  - Enforced `font-family: var(--font-sans) !important;` on `.admin-layout` and all child elements (metrics cards, filters, order table, customer badges, detail modal, items list, financial breakdown).
+- **2. Admin Login Page Font Enforcement (`AdminLoginPage.css`)**:
+  - Enforced `font-family: var(--font-sans) !important;` on `.admin-login-wrapper` and all child elements (login card, headers, labels, inputs, submit button, error messages).
+- **3. Global Sans Font Definition (`index.css`)**:
+  - Updated `--font-sans` to prioritize `'Plus Jakarta Sans'` across all modern utility elements.
+- **4. Build & Verification**:
+  - `npm run build`: **Passed cleanly (0 errors)**.
+
+---
+
 ## 2026-09-11 (Admin Portal Secret Access — #admin Search Shortcut)
 
 ### Task

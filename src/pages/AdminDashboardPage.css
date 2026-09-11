@@ -1,9 +1,11 @@
-/* AdminDashboardPage.css — Admin Dashboard V1 Polished */
+.admin-layout,
+.admin-layout * {
+  font-family: var(--font-sans) !important;
+}
 
 .admin-layout {
   min-height: 100vh;
   background-color: #f8fafc;
-  font-family: var(--font-body);
   color: #1e293b;
 }
 
