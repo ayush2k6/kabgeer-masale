@@ -238,10 +238,6 @@ const Header = () => {
           <ChefHat size={20} />
           <span>Recipes</span>
         </NavLink>
-        <button type="button" className="mobile-nav-item" onClick={openCartDrawer} style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative' }}>
-          <ShoppingBag size={20} />
-          <span>Cart {getCartCount() > 0 ? `(${getCartCount()})` : ''}</span>
-        </button>
       </nav>
 
       {/* Scroll to Top */}

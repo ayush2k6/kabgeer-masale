@@ -1,5 +1,22 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-11 (Header Navigation Cleanup — Single Unified Cart Button)
+
+### Task
+Streamline cart access by keeping only the primary navbar cart button in the header and removing the duplicate cart trigger from the mobile bottom navigation bar.
+
+### Implemented Improvements & Fixes
+- **1. Header & Mobile Navigation Streamlining (`Header.jsx`)**:
+  - Removed duplicate cart button from the mobile bottom navigation bar.
+  - Kept single unified Cart button in the top navbar header across all screen viewports.
+  - Restored clean 4-item discovery bottom bar (`Home`, `Products`, `Bundle`, `Recipes`).
+- **2. Global Numeric Sans-Serif Typography (`index.css`, `OrderSuccessPage.css`, `CartDrawer.css`)**:
+  - Standardized all numbers, prices, MRPs, weights, quantities, ratings, dates, and order codes to modern sans-serif (`Plus Jakarta Sans`).
+- **3. Build & Verification**:
+  - `npm run build`: **Passed cleanly (0 errors)**.
+
+---
+
 ## 2026-09-10 (Standard ₹50 Express Shipping & Minimalist Sans-Serif Cart)
 
 ### Task
