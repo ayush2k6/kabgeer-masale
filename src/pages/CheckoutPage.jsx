@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { 
   ShieldCheck, 
@@ -12,7 +12,7 @@ import {
   Sparkles,
   Lock 
 } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
 import logo from '../assets/logo.png';
 import { supabase } from '../lib/supabaseClient';
@@ -58,6 +58,17 @@ const CheckoutPage = () => {
     isBundleOfferActive
   } = useCart();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const couponParam = searchParams.get('coupon') || searchParams.get('promo');
+    const isTest = searchParams.get('test') === '1' || searchParams.get('test') === 'true';
+    if (couponParam) {
+      applyCoupon(couponParam);
+    } else if (isTest) {
+      applyCoupon('TESTPAY1');
+    }
+  }, [searchParams]);
 
   const subtotal = getCartTotal();
   const discount = getDiscountAmount();

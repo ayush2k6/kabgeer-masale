@@ -172,31 +172,22 @@ serve(async (req) => {
       }
     }
 
-    // 7. Trigger Transactional Email Dispatch (Non-blocking fail-safe call)
-    try {
-      await supabase.functions.invoke('send-order-email', {
-        body: { orderId: dbOrder.id }
-      });
-    } catch (emailErr: any) {
-      console.warn('Non-blocking send-order-email trigger notice:', emailErr?.message);
-    }
+    // 7. Trigger Downstream Automations in Parallel / Background
+    // (Email dispatch via Resend, Google Sheets sync, and Trackon booking)
+    const backgroundTasks = Promise.allSettled([
+      supabase.functions.invoke('send-order-email', { body: { orderId: dbOrder.id } }),
+      supabase.functions.invoke('sync-google-sheets', { body: { orderId: dbOrder.id } }),
+      supabase.functions.invoke('create-shipment', { body: { orderId: dbOrder.id } })
+    ]);
 
-    // 8. Trigger Google Sheets Real-Time Order Sync (Non-blocking fail-safe call)
-    try {
-      await supabase.functions.invoke('sync-google-sheets', {
-        body: { orderId: dbOrder.id }
-      });
-    } catch (sheetErr: any) {
-      console.warn('Non-blocking sync-google-sheets trigger notice:', sheetErr?.message);
-    }
-
-    // 9. Trigger Trackon Shipment Booking (Non-blocking fail-safe call)
-    try {
-      await supabase.functions.invoke('create-shipment', {
-        body: { orderId: dbOrder.id }
-      });
-    } catch (shipErr: any) {
-      console.warn('Non-blocking create-shipment trigger notice:', shipErr?.message);
+    if (typeof (globalThis as any).EdgeRuntime !== 'undefined' && (globalThis as any).EdgeRuntime?.waitUntil) {
+      (globalThis as any).EdgeRuntime.waitUntil(backgroundTasks);
+    } else {
+      // Fast fallback timeout (max 1.5s) to guarantee snappy checkout experience
+      await Promise.race([
+        backgroundTasks,
+        new Promise((resolve) => setTimeout(resolve, 1500))
+      ]);
     }
 
     return new Response(
