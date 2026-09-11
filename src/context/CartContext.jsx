@@ -87,9 +87,21 @@ export const CartProvider = ({ children }) => {
   };
 
   const applyCoupon = (code) => {
-    const cleanCode = code ? code.trim() : '';
+    const cleanCode = code ? code.trim().toUpperCase() : '';
     if (!cleanCode) return { success: false, message: 'Please enter a coupon code.' };
-    return { success: false, message: 'No coupons are currently active at this time.' };
+    
+    if (cleanCode === 'TESTPAY1') {
+      const couponObj = {
+        code: 'TESTPAY1',
+        description: 'Developer Live Test Mode (Total ₹1.00)',
+        type: 'test_pay_1'
+      };
+      setAppliedCoupon(couponObj);
+      showToast('Live test coupon TESTPAY1 applied! Total set to ₹1.');
+      return { success: true, coupon: couponObj };
+    }
+
+    return { success: false, message: 'Invalid or expired coupon code.' };
   };
 
   const removeCoupon = () => {
@@ -110,6 +122,10 @@ export const CartProvider = ({ children }) => {
   };
 
   const getDiscountAmount = () => {
+    if (appliedCoupon?.code === 'TESTPAY1') {
+      const subtotal = getCartTotal();
+      return Math.max(0, subtotal - 1);
+    }
     if (isBundleOfferActive()) {
       return getBundleCartTotal() * 0.10;
     }

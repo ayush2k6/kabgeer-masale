@@ -1,5 +1,21 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-11 (Live ₹1 Test Mode via TESTPAY1 Secret Coupon)
+
+### Task
+Implement secret administrative test coupon `TESTPAY1` to enable zero-friction live ₹1 end-to-end payment testing without polluting the public product catalogue with dummy items.
+
+### Implemented Improvements & Verification
+- **1. Cart Context (`CartContext.jsx`)**:
+  - Added secret promo code handler for `TESTPAY1`.
+  - Calculates dynamic discount to reduce subtotal to ₹1.00.
+- **2. Checkout & Cart Drawer (`CheckoutPage.jsx`, `CartDrawer.jsx`)**:
+  - Automatically waives the ₹50 shipping fee when `TESTPAY1` is applied, locking the total payable amount to exactly ₹1.00.
+- **3. Build & Compilation**:
+  - `npm run build`: **Passed cleanly (0 errors)**.
+
+---
+
 ## 2026-09-11 (Live Razorpay Payment Gateway Activation)
 
 ### Task
