@@ -104,6 +104,38 @@ serve(async (req) => {
       );
     }
 
+    // 4. Action: Clear all test data / orders / shipments / payments
+    if (action === 'clear_all_orders' || action === 'reset_all_data') {
+      try {
+        await supabase.from('order_items').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await supabase.from('payments').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await supabase.from('shipments').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        const { error: delOrdersErr } = await supabase.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
+        if (body.clearNonAdminProfiles) {
+          await supabase.from('profiles').delete().neq('role', 'admin');
+        }
+
+        if (delOrdersErr) {
+          console.error('Error clearing orders:', delOrdersErr);
+          return new Response(
+            JSON.stringify({ error: delOrdersErr.message }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({ success: true, message: 'All test order data and records purged successfully.' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (purgeErr: any) {
+        return new Response(
+          JSON.stringify({ error: purgeErr.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     return new Response(
       JSON.stringify({ error: `Unknown action '${action}'.` }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
