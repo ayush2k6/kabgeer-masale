@@ -50,6 +50,10 @@ const AdminDashboardPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [newOrderStatus, setNewOrderStatus] = useState('');
+  const [awbInput, setAwbInput] = useState('');
+  const [courierInput, setCourierInput] = useState('Trackon');
+  const [notifyEmail, setNotifyEmail] = useState(true);
+  const [cancellationReason, setCancellationReason] = useState('');
   const [statusUpdateMessage, setStatusUpdateMessage] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
 
@@ -101,10 +105,14 @@ const AdminDashboardPage = () => {
     fetchAllOrders();
   }, [fetchAllOrders]);
 
-  // Set default status when an order is opened
+  // Set default status and shipping details when an order is opened
   useEffect(() => {
     if (selectedOrder) {
       setNewOrderStatus(selectedOrder.order_status || 'Pending');
+      setAwbInput(selectedOrder.trackon_awb || selectedOrder.shiprocket_awb || '');
+      setCourierInput(selectedOrder.courier_partner || 'Trackon');
+      setNotifyEmail(true);
+      setCancellationReason('');
       setStatusUpdateMessage(null);
     }
   }, [selectedOrder]);
@@ -191,39 +199,70 @@ const AdminDashboardPage = () => {
     return result;
   }, [orders, searchQuery, statusFilter, paymentFilter, sortBy]);
 
-  // Update Order Fulfillment Status
+  // Update Order Fulfillment Status & Dispatch Automated Customer Notification
   const handleUpdateStatus = async (e, directStatus = null) => {
     if (e) e.preventDefault();
     const targetStatus = directStatus || newOrderStatus;
-    if (!selectedOrder || !targetStatus || targetStatus === selectedOrder.order_status) return;
+    if (!selectedOrder || !targetStatus) return;
 
     setUpdatingStatus(true);
     setStatusUpdateMessage(null);
 
     try {
-      // 1. Try direct Supabase update
-      const { error: updateErr } = await supabase
-        .from('orders')
-        .update({
+      // 1. Primary: Update via admin-manage-orders Edge Function (handles status + AWB + email notification)
+      const { data: edgeRes, error: edgeErr } = await supabase.functions.invoke('admin-manage-orders', {
+        body: {
+          action: 'update_status',
+          orderId: selectedOrder.id,
+          orderStatus: targetStatus,
+          awbNumber: awbInput.trim() || undefined,
+          courierPartner: courierInput.trim() || 'Trackon',
+          sendEmail: notifyEmail,
+          cancellationReason: targetStatus === 'Cancelled' ? cancellationReason : undefined,
+          adminEmail: user?.email || 'admin@kabgeerji.com'
+        }
+      });
+
+      if (edgeErr || !edgeRes?.success) {
+        // Fallback: Direct Supabase database update
+        const updatePayload = {
           order_status: targetStatus,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', selectedOrder.id);
+        };
+        if (awbInput.trim()) updatePayload.trackon_awb = awbInput.trim();
+        if (courierInput.trim()) updatePayload.courier_partner = courierInput.trim();
+        if (targetStatus === 'Shipped') updatePayload.shipped_at = new Date().toISOString();
+        if (targetStatus === 'Delivered') updatePayload.delivered_at = new Date().toISOString();
 
-      if (updateErr) {
-        // 2. Try RPC fallback
-        const { error: rpcUpErr } = await supabase.rpc('admin_update_order_status', {
-          target_order_id: selectedOrder.id,
-          new_status: targetStatus
-        });
-        if (rpcUpErr) throw new Error(rpcUpErr.message || updateErr.message);
+        const { error: directErr } = await supabase
+          .from('orders')
+          .update(updatePayload)
+          .eq('id', selectedOrder.id);
+
+        if (directErr) {
+          throw new Error(edgeErr?.message || directErr.message);
+        }
       }
 
-      // Optimistically update local state
-      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, order_status: targetStatus } : o));
-      setSelectedOrder(prev => ({ ...prev, order_status: targetStatus }));
+      // Optimistically update local UI state
+      const updatedRecord = {
+        ...selectedOrder,
+        order_status: targetStatus,
+        trackon_awb: awbInput.trim() || selectedOrder.trackon_awb,
+        courier_partner: courierInput.trim() || selectedOrder.courier_partner
+      };
+
+      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, ...updatedRecord } : o));
+      setSelectedOrder(prev => ({ ...prev, ...updatedRecord }));
       setNewOrderStatus(targetStatus);
-      setStatusUpdateMessage({ type: 'success', text: `Order status updated to '${targetStatus}' successfully!` });
+
+      const emailNote = notifyEmail && ['Shipped', 'Delivered', 'Cancelled'].includes(targetStatus)
+        ? ' ✉️ Customer email dispatched!'
+        : '';
+      setStatusUpdateMessage({ 
+        type: 'success', 
+        text: `Order status updated to '${targetStatus}'!${emailNote}` 
+      });
     } catch (err) {
       console.error('Error updating order status:', err);
       setStatusUpdateMessage({ type: 'error', text: err.message || 'Failed to update order status.' });
@@ -604,33 +643,102 @@ const AdminDashboardPage = () => {
                     <button
                       key={st}
                       type="button"
-                      className={`chip-status-btn ${selectedOrder.order_status === st ? 'active' : ''}`}
-                      onClick={(e) => handleUpdateStatus(e, st)}
-                      disabled={updatingStatus || selectedOrder.order_status === st}
+                      className={`chip-status-btn ${newOrderStatus === st ? 'active' : ''}`}
+                      onClick={() => setNewOrderStatus(st)}
+                      disabled={updatingStatus}
                     >
                       {st}
                     </button>
                   ))}
                 </div>
 
-                <form onSubmit={handleUpdateStatus} className="status-update-control-box">
-                  <select
-                    value={newOrderStatus}
-                    onChange={(e) => setNewOrderStatus(e.target.value)}
-                    className="status-select-input"
-                  >
-                    {ORDER_STATUS_OPTIONS.map(opt => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                  
-                  <button
-                    type="submit"
-                    className="btn-save-status"
-                    disabled={updatingStatus || newOrderStatus === selectedOrder.order_status}
-                  >
-                    {updatingStatus ? 'Saving...' : 'Update Status'}
-                  </button>
+                <form onSubmit={handleUpdateStatus} className="status-update-control-box" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+                    <select
+                      value={newOrderStatus}
+                      onChange={(e) => setNewOrderStatus(e.target.value)}
+                      className="status-select-input"
+                      style={{ flex: 1 }}
+                    >
+                      {ORDER_STATUS_OPTIONS.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                    
+                    <button
+                      type="submit"
+                      className="btn-save-status"
+                      disabled={updatingStatus}
+                    >
+                      {updatingStatus ? 'Updating...' : 'Update & Notify'}
+                    </button>
+                  </div>
+
+                  {/* Shipping & AWB Details Box (When Shipped or Processing) */}
+                  {(newOrderStatus === 'Shipped' || selectedOrder.order_status === 'Shipped') && (
+                    <div style={{ padding: '0.75rem', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <Truck size={13} color="#0284c7" /> Courier & AWB Tracking Details
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                        <div>
+                          <label style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Courier Partner</label>
+                          <select 
+                            value={courierInput} 
+                            onChange={(e) => setCourierInput(e.target.value)}
+                            style={{ width: '100%', padding: '0.4rem 0.5rem', fontSize: '0.82rem', border: '1px solid #cbd5e1', borderRadius: '4px', backgroundColor: '#ffffff' }}
+                          >
+                            <option value="Trackon">Trackon Courier</option>
+                            <option value="Shiprocket">Shiprocket</option>
+                            <option value="India Post">India Post</option>
+                            <option value="DTDC">DTDC</option>
+                            <option value="Delhivery">Delhivery</option>
+                            <option value="Blue Dart">Blue Dart</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>AWB / Consignment No.</label>
+                          <input 
+                            type="text" 
+                            placeholder="e.g. TRK123456" 
+                            value={awbInput} 
+                            onChange={(e) => setAwbInput(e.target.value)}
+                            style={{ width: '100%', padding: '0.4rem 0.5rem', fontSize: '0.82rem', border: '1px solid #cbd5e1', borderRadius: '4px', fontFamily: 'monospace' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Cancellation Reason Box */}
+                  {newOrderStatus === 'Cancelled' && (
+                    <div style={{ padding: '0.65rem 0.75rem', backgroundColor: '#fef2f2', borderRadius: '6px', border: '1px solid #fca5a5' }}>
+                      <label style={{ fontSize: '0.72rem', color: '#991b1b', display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Cancellation Reason (Optional)</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. Customer requested cancellation / Pin code unserviceable" 
+                        value={cancellationReason} 
+                        onChange={(e) => setCancellationReason(e.target.value)}
+                        style={{ width: '100%', padding: '0.4rem 0.5rem', fontSize: '0.82rem', border: '1px solid #fca5a5', borderRadius: '4px' }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Automated Email Notification Checkbox */}
+                  {['Shipped', 'Delivered', 'Cancelled'].includes(newOrderStatus) && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.8rem', color: '#334155' }}>
+                      <input 
+                        type="checkbox" 
+                        id="notifyEmailCheck" 
+                        checked={notifyEmail} 
+                        onChange={(e) => setNotifyEmail(e.target.checked)}
+                        style={{ cursor: 'pointer', accentColor: '#16a34a' }}
+                      />
+                      <label htmlFor="notifyEmailCheck" style={{ cursor: 'pointer', userSelect: 'none' }}>
+                        Send branded <strong>{newOrderStatus}</strong> email to {selectedOrder.customer_email}
+                      </label>
+                    </div>
+                  )}
                 </form>
                 <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0.5rem 0 0 0' }}>
                   Payment status (<strong>{selectedOrder.payment_status}</strong>) is read-only and managed authoritatively by the Razorpay payment gateway.

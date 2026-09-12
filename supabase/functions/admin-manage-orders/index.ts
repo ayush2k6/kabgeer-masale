@@ -72,7 +72,7 @@ serve(async (req) => {
 
     // 3. Action: Update order fulfillment status
     if (action === 'update_status') {
-      const { orderId, orderStatus } = body;
+      const { orderId, orderStatus, awbNumber, courierPartner, sendEmail, cancellationReason } = body;
       if (!orderId || !orderStatus) {
         return new Response(
           JSON.stringify({ error: 'Missing orderId or orderStatus.' }),
@@ -80,12 +80,31 @@ serve(async (req) => {
         );
       }
 
+      const updateFields: any = {
+        order_status: orderStatus,
+        updated_at: new Date().toISOString()
+      };
+
+      if (awbNumber) {
+        updateFields.trackon_awb = awbNumber.trim();
+        updateFields.shiprocket_awb = awbNumber.trim();
+      }
+      if (courierPartner) {
+        updateFields.courier_partner = courierPartner.trim();
+      }
+      if (orderStatus === 'Shipped') {
+        updateFields.shipped_at = new Date().toISOString();
+        updateFields.shipment_status = 'Dispatched';
+      } else if (orderStatus === 'Delivered') {
+        updateFields.delivered_at = new Date().toISOString();
+        updateFields.shipment_status = 'Delivered';
+      } else if (orderStatus === 'Cancelled') {
+        updateFields.shipment_status = 'Cancelled';
+      }
+
       const { data: updatedOrder, error: updateErr } = await supabase
         .from('orders')
-        .update({
-          order_status: orderStatus,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateFields)
         .eq('id', orderId)
         .select('*, order_items(*)')
         .single();
@@ -98,8 +117,29 @@ serve(async (req) => {
         );
       }
 
+      let emailResult = null;
+      // Trigger status update email if requested or default ON for key statuses
+      if (sendEmail !== false && ['Shipped', 'Delivered', 'Cancelled'].includes(orderStatus)) {
+        try {
+          const { data: emailData, error: emailErr } = await supabase.functions.invoke('send-order-email', {
+            body: {
+              orderId: updatedOrder.id,
+              emailType: 'status_update',
+              newStatus: orderStatus,
+              awbNumber: awbNumber || updatedOrder.trackon_awb || updatedOrder.shiprocket_awb,
+              courierName: courierPartner || updatedOrder.courier_partner || 'Trackon',
+              cancellationReason: cancellationReason || undefined
+            }
+          });
+          emailResult = emailData || { error: emailErr?.message };
+        } catch (e: any) {
+          console.error('Status notification email dispatch error:', e);
+          emailResult = { error: e?.message };
+        }
+      }
+
       return new Response(
-        JSON.stringify({ success: true, order: updatedOrder }),
+        JSON.stringify({ success: true, order: updatedOrder, emailNotification: emailResult }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

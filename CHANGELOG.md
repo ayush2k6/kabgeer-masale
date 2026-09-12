@@ -1,5 +1,26 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-12 (Automated Customer Order Status Email Notifications)
+
+### Task
+Implement automated, branded customer email notifications upon order status changes (**Shipped**, **Delivered**, **Cancelled**) with live Trackon courier tracking integration and rich Awadhi recipe recommendations.
+
+### Implemented Improvements & Verification
+- **1. Branded Email Templates (`send-order-email`)**:
+  - **🚚 Order Shipped Template**: Includes courier partner name (`Trackon Courier`), AWB tracking number, direct one-click `[Track Consignment Status]` action button, itemized package list, and destination address.
+  - **🎉 Order Delivered Template**: Features delivery confirmation, royal freshness/storage tips, and a direct `[Explore Master Recipes]` CTA to drive customer engagement on the recipes portal.
+  - **⚠️ Order Cancelled Template**: Provides clear cancellation notice, full refund timeline details (3–5 business days), and support contact information.
+- **2. Admin Dashboard Integration (`AdminDashboardPage.jsx`, `admin-manage-orders`)**:
+  - Enhanced the status update workflow in the admin order drawer modal.
+  - Added real-time **AWB Number / Consignment ID** and **Courier Partner** input fields when updating to *Shipped*.
+  - Added an optional cancellation reason field when marking orders as *Cancelled*.
+  - Added an interactive **"Send email notification to customer"** toggle (checked by default).
+- **3. Supabase Cloud Deployment & Build Verification**:
+  - Deployed updated `send-order-email` and `admin-manage-orders` Edge Functions to Supabase Cloud (`cfvopnzcqbtqcupdomto`).
+  - `npm run build`: **Passed cleanly in 3.75s (0 errors)**.
+
+---
+
 ## 2026-09-12 (Production Data Purge & Clean Slate Reset)
 
 ### Task
