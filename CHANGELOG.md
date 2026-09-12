@@ -1,5 +1,22 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-12 (Production Data Purge & Clean Slate Reset)
+
+### Task
+Purge all 60 test orders, test order items, payment transactions, shipment logs, and test customer accounts across Supabase database and Admin portal to provide a pristine clean slate for live customer launch.
+
+### Implemented Improvements & Verification
+- **1. Server-Side Data Purge (`admin-manage-orders`)**:
+  - Deleted all 60 historical test orders from `public.orders`.
+  - Cascaded cleanup across `public.order_items`, `public.payments`, and `public.shipments`.
+  - Purged test customer profile records while strictly preserving administrative credentials.
+- **2. Inventory Re-balancing**:
+  - Reset all 25 active spice SKU stock levels back to standard 100 units.
+- **3. Verification**:
+  - Confirmed 0 remaining orders in database query and Admin Dashboard (`/admin/dashboard`).
+
+---
+
 ## 2026-09-12 (Storefront Asset Compression & Page Load Speed Optimization)
 
 ### Task
