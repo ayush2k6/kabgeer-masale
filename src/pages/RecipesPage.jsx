@@ -200,10 +200,13 @@ const RecipesPage = () => {
                 className="recipe-card"
                 onClick={() => setSelectedRecipe(recipe)}
               >
-                <div
-                  className="recipe-card-img-wrap"
-                  style={{ backgroundImage: `url('${recipe.image}')` }}
-                >
+                <div className="recipe-card-img-wrap">
+                  <img
+                    src={recipe.image}
+                    alt={recipe.title}
+                    className="recipe-card-img"
+                    loading="lazy"
+                  />
                   <span className={`recipe-category-badge ${recipe.category === 'Veg' ? 'veg' : 'non-veg'}`}>
                     {recipe.category}
                   </span>

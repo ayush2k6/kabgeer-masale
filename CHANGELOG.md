@@ -1,5 +1,23 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-12 (Dish Mockups Sync & Recipe Card Image Optimization)
+
+### Task
+Synchronize and map product dish mockup images and resolve recipe card image cut-off/cropping (Commit `501f15e` by Ayush Tiwari).
+
+### Implemented Improvements & Fixes
+- **1. Dishes Mockups Asset Ingestion**:
+  - Ingested 5 high-resolution dish mockup image assets into `public/assets/dishes/` (`chaat masala.jpeg`, `coriander powder.png`, `kashmiri lal mirch powder.png`, `red chilli powder.png`, `turmeric powder.png`).
+- **2. Product Master Data Mapping (`products.js`)**:
+  - Configured matching `dishImage` properties for Chaat Masala, Coriander Powder, Turmeric Powder, Red Chilli Powder, and Kashmiri Lal Mirch.
+- **3. Recipe Card Layout Fix (`RecipesPage.jsx`, `RecipesPage.css`)**:
+  - Swapped background-image cover cropping with semantic `<img className="recipe-card-img" />` utilizing `object-fit: contain; object-position: center;`.
+  - Added inner padding and adjusted container height for zero edge clipping and smooth hover scaling.
+- **4. Build & Verification**:
+  - `npm run build`: **Passed cleanly (0 errors)**.
+
+---
+
 ## 2026-09-11 (Live ₹1 Test Mode via TESTPAY1 Secret Coupon)
 
 ### Task
@@ -120,7 +138,6 @@ Implement 100% Frictionless Guest Checkout, remove customer login/account fricti
   - Cleaned up item list headers.
 - **4. Manual Trackon Workflow**:
   - Real-time order sync directly to Google Sheets for owner manual shipping and Trackon AWB updates.
-- **5. Build & Verification**:
   - `npm run build`: **Passed cleanly (0 errors)**.
 
 ---
