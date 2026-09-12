@@ -49,6 +49,7 @@ const AdminDashboardPage = () => {
   // Selected Order for Drawer Modal
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
   const [newOrderStatus, setNewOrderStatus] = useState('');
   const [awbInput, setAwbInput] = useState('');
   const [courierInput, setCourierInput] = useState('Trackon');
@@ -256,18 +257,60 @@ const AdminDashboardPage = () => {
       setSelectedOrder(prev => ({ ...prev, ...updatedRecord }));
       setNewOrderStatus(targetStatus);
 
-      const emailNote = notifyEmail && ['Shipped', 'Delivered', 'Cancelled'].includes(targetStatus)
-        ? ' ✉️ Customer email dispatched!'
-        : '';
+      const currentTimeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+      const emailSentDetails = notifyEmail && ['Shipped', 'Delivered', 'Cancelled'].includes(targetStatus)
+        ? `Branded '${targetStatus}' email successfully dispatched to ${selectedOrder.customer_email} at ${currentTimeStr} IST`
+        : null;
+
+      const trackingDetails = (targetStatus === 'Shipped' || targetStatus === 'Dispatched') && (awbInput.trim() || selectedOrder.trackon_awb)
+        ? `Courier: ${courierInput.trim() || 'Trackon'} | AWB: ${awbInput.trim() || selectedOrder.trackon_awb}`
+        : null;
+
       setStatusUpdateMessage({ 
         type: 'success', 
-        text: `Order status updated to '${targetStatus}'!${emailNote}` 
+        headline: `✓ Order #${selectedOrder.display_order_id} marked as '${targetStatus}'`,
+        emailDetails: emailSentDetails,
+        trackingDetails: trackingDetails
       });
     } catch (err) {
       console.error('Error updating order status:', err);
-      setStatusUpdateMessage({ type: 'error', text: err.message || 'Failed to update order status.' });
+      setStatusUpdateMessage({ type: 'error', headline: 'Failed to update order status', text: err.message || 'Please check network connection.' });
     } finally {
       setUpdatingStatus(false);
+    }
+  };
+
+  // Manual Email Trigger Handler
+  const handleManualResendEmail = async (order) => {
+    if (!order) return;
+    setResendingEmail(true);
+    try {
+      const isStatusUpdate = ['Shipped', 'Delivered', 'Cancelled'].includes(order.order_status);
+      const { data: res, error: err } = await supabase.functions.invoke('send-order-email', {
+        body: {
+          orderId: order.id,
+          emailType: isStatusUpdate ? 'status_update' : 'confirmation',
+          newStatus: order.order_status,
+          awbNumber: order.trackon_awb || order.shiprocket_awb,
+          courierName: order.courier_partner || 'Trackon',
+          forceResend: true
+        }
+      });
+      if (err) throw err;
+      const currentTimeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+      setStatusUpdateMessage({
+        type: 'success',
+        headline: `✓ Email Successfully Sent!`,
+        emailDetails: `Dispatched to ${order.customer_email} at ${currentTimeStr} IST`
+      });
+    } catch (e) {
+      setStatusUpdateMessage({
+        type: 'error',
+        headline: 'Failed to resend email',
+        text: e.message
+      });
+    } finally {
+      setResendingEmail(false);
     }
   };
 
@@ -626,14 +669,32 @@ const AdminDashboardPage = () => {
                 
                 {statusUpdateMessage && (
                   <div style={{ 
-                    padding: '0.6rem 0.85rem', 
-                    borderRadius: '6px', 
-                    marginBottom: '0.75rem', 
-                    fontSize: '0.82rem',
-                    backgroundColor: statusUpdateMessage.type === 'success' ? '#dcfce7' : '#fee2e2',
-                    color: statusUpdateMessage.type === 'success' ? '#15803d' : '#b91c1c'
+                    padding: '0.85rem 1rem', 
+                    borderRadius: '8px', 
+                    marginBottom: '0.9rem', 
+                    fontSize: '0.85rem',
+                    lineHeight: '1.5',
+                    backgroundColor: statusUpdateMessage.type === 'success' ? '#ecfdf5' : '#fef2f2',
+                    border: `1px solid ${statusUpdateMessage.type === 'success' ? '#6ee7b7' : '#fca5a5'}`,
+                    color: statusUpdateMessage.type === 'success' ? '#065f46' : '#991b1b',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.35rem'
                   }}>
-                    {statusUpdateMessage.text}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.88rem' }}>
+                      {statusUpdateMessage.type === 'success' ? <CheckCircle2 size={16} color="#059669" /> : <AlertCircle size={16} color="#dc2626" />}
+                      <span>{statusUpdateMessage.headline || statusUpdateMessage.text}</span>
+                    </div>
+                    {statusUpdateMessage.emailDetails && (
+                      <div style={{ fontSize: '0.78rem', color: '#047857', backgroundColor: 'rgba(5, 150, 105, 0.1)', padding: '0.35rem 0.6rem', borderRadius: '4px' }}>
+                        ✉️ <strong>Email Sent:</strong> {statusUpdateMessage.emailDetails}
+                      </div>
+                    )}
+                    {statusUpdateMessage.trackingDetails && (
+                      <div style={{ fontSize: '0.78rem', color: '#0369a1', backgroundColor: 'rgba(2, 132, 199, 0.08)', padding: '0.35rem 0.6rem', borderRadius: '4px' }}>
+                        🚚 <strong>Tracking Info:</strong> {statusUpdateMessage.trackingDetails}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -745,9 +806,11 @@ const AdminDashboardPage = () => {
                 </p>
               </div>
 
-              {/* Customer Info */}
+              {/* Customer Info & Email Dispatch Status */}
               <div className="drawer-section">
-                <div className="drawer-section-title">Customer Information</div>
+                <div className="drawer-section-title">
+                  <span>Customer & Notification Info</span>
+                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.88rem' }}>
                   <div><strong>Name:</strong> {selectedOrder.customer_name || 'Customer'}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -771,6 +834,36 @@ const AdminDashboardPage = () => {
                     <span className={`badge-customer-type ${selectedOrder.customer_type === 'guest' ? 'badge-guest' : 'badge-registered'}`}>
                       {selectedOrder.customer_type === 'guest' ? 'Guest Checkout' : 'Registered Customer'}
                     </span>
+                  </div>
+
+                  {/* Customer Email Dispatch Card */}
+                  <div style={{ marginTop: '0.65rem', padding: '0.65rem 0.8rem', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#166534' }}>
+                      <CheckCircle2 size={15} color="#16a34a" />
+                      <span><strong>Email Status:</strong> {selectedOrder.order_status} notification active</span>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={resendingEmail}
+                      onClick={() => handleManualResendEmail(selectedOrder)}
+                      style={{
+                        padding: '0.25rem 0.55rem',
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #86efac',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        color: '#15803d',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem'
+                      }}
+                      title="Re-send email notification to customer"
+                    >
+                      <RotateCw size={11} className={resendingEmail ? 'animate-spin' : ''} />
+                      {resendingEmail ? 'Sending...' : 'Resend Email'}
+                    </button>
                   </div>
                 </div>
               </div>
