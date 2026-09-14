@@ -1,5 +1,21 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-14 (Standardize Delivery Timeline to 6–7 Days)
+
+### Task
+Update customer-facing delivery timelines across the storefront (Product details page and Checkout page) to consistently reflect **6–7 days** (aligning with Shipping & Delivery Policy and FAQs).
+
+### Implemented Changes & Verification
+- **1. Product Detail Page (`ProductPage.jsx`)**:
+  - Updated express delivery perk banner to `Delivered in 6–7 days across India`.
+- **2. Checkout Page (`CheckoutPage.jsx`)**:
+  - Updated shipping method label to `Standard Express Shipping (6–7 Working Days)`.
+- **3. Consistency Check**:
+  - Confirmed consistency across `ShippingPage.jsx` ("Standard delivery time is 6–7 working days") and `FaqsPage.jsx` ("Orders are typically delivered within 6–7 working days").
+- **4. Build Verification**:
+  - `npm run build`: **Passed cleanly with 0 errors**.
+
+---
 ## 2026-09-14 (Fix Checkout & Payment Gateway Database Error)
 
 ### Task

@@ -661,7 +661,7 @@ const CheckoutPage = () => {
                 <label className="radio-label active" style={{ justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <input type="radio" name="shippingMethod" checked readOnly />
-                    <span>Standard Express Shipping (2–4 Working Days)</span>
+                    <span>Standard Express Shipping (6–7 Working Days)</span>
                   </div>
                   <strong style={{ color: 'var(--color-primary)', fontSize: '0.9rem' }}>₹{shippingFee.toFixed(2)}</strong>
                 </label>
