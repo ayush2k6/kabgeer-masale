@@ -1,5 +1,22 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-14 (BYB Order Identification & Display Tagging)
+
+### Task
+Implement clear `BYB` (Build Your Bundle) order tagging across the checkout pipeline, server-side Edge Functions, Admin Dashboard, and Google Sheets sync.
+
+### Implemented Changes & Verification
+- **1. Checkout Payload (`CheckoutPage.jsx`)**:
+  - Automatically detect and send `isBundle: true` when a customer places an order containing bundle items or unlocks the bundle discount.
+- **2. Order ID Generation (`create-razorpay-order`)**:
+  - Automatically assign `BYB-YYYYMMDD-XXXX` prefix for bundle orders (vs `KAB-YYYYMMDD-XXXX` for standard orders).
+- **3. Admin Dashboard (`AdminDashboardPage.jsx`)**:
+  - Render a distinct amber `BYB` badge next to the Order ID in both the main Orders table and the Order Details drawer.
+- **4. Supabase Deployment & Build Verification**:
+  - Deployed `create-razorpay-order` to Supabase Cloud (`cfvopnzcqbtqcupdomto`).
+  - `npm run build`: **Passed cleanly in 2.12s (0 errors)**.
+
+---
 ## 2026-09-14 (Standardize Delivery Timeline to 6–7 Days)
 
 ### Task

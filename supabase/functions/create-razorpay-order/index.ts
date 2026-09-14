@@ -185,9 +185,11 @@ serve(async (req) => {
     const finalTotal = Math.max(1, Math.round((subtotal - discountAmount + taxAmount + shippingFee) * 100) / 100);
 
     // 7. Generate Display Order ID
+    const isBundle = Boolean(body.isBundle) || (totalQuantity >= 4 && discountAmount > 0);
+    const orderPrefix = isBundle ? 'BYB' : 'KAB';
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const randomCode = Math.floor(1000 + Math.random() * 9000);
-    const displayOrderId = `KAB-${dateStr}-${randomCode}`;
+    const displayOrderId = `${orderPrefix}-${dateStr}-${randomCode}`;
 
     // 8. Create Razorpay Order if keys are present (or fallback to simulation)
     let razorpayOrderId = `order_sim_${Date.now()}`;

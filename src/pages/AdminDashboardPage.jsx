@@ -577,6 +577,21 @@ const AdminDashboardPage = () => {
                       <tr key={order.id}>
                         <td className="order-id-cell">
                           #{order.display_order_id || order.id.slice(0, 8).toUpperCase()}
+                          {(order.display_order_id?.startsWith('BYB') || order.display_order_id?.includes('BYB')) && (
+                            <span style={{
+                              marginLeft: '6px',
+                              fontSize: '0.68rem',
+                              fontWeight: 700,
+                              backgroundColor: '#fef3c7',
+                              color: '#92400e',
+                              border: '1px solid #fde68a',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              letterSpacing: '0.5px'
+                            }}>
+                              BYB
+                            </span>
+                          )}
                         </td>
                         <td style={{ color: '#64748b', fontSize: '0.82rem' }}>
                           {formattedDate}
@@ -634,6 +649,22 @@ const AdminDashboardPage = () => {
               <div>
                 <h3>
                   Order #{selectedOrder.display_order_id || selectedOrder.id}
+                  {(selectedOrder.display_order_id?.startsWith('BYB') || selectedOrder.display_order_id?.includes('BYB')) && (
+                    <span style={{
+                      marginLeft: '8px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      backgroundColor: '#fef3c7',
+                      color: '#92400e',
+                      border: '1px solid #fde68a',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      verticalAlign: 'middle',
+                      letterSpacing: '0.5px'
+                    }}>
+                      BYB
+                    </span>
+                  )}
                   <button 
                     type="button" 
                     className="btn-copy-small"

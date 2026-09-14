@@ -245,7 +245,8 @@ const CheckoutPage = () => {
           pinCode: formData.pinCode.trim(),
           country: formData.country
         },
-        couponCode: appliedCoupon?.code || null
+        couponCode: appliedCoupon?.code || null,
+        isBundle: (typeof isBundleOfferActive === 'function' ? isBundleOfferActive() : false) || cartItems.some(item => item.isBundleItem)
       };
 
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://cfvopnzcqbtqcupdomto.supabase.co';
