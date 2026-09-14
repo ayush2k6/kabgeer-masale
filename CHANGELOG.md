@@ -1,5 +1,30 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-14 (Fix Checkout & Payment Gateway Database Error)
+
+### Task
+Investigate and eliminate the database error encountered during checkout in desktop mode when initializing orders and Razorpay payment gateway.
+
+### Root Cause Analysis
+- In `supabase/functions/create-razorpay-order/index.ts`:
+  - `taxAmount` was referenced in arithmetic `(subtotal - discountAmount + taxAmount + shippingFee)` without being defined, resulting in `undefined` evaluating to `NaN`.
+  - The calculated `finalTotal` evaluated to `NaN` instead of a valid numeric value.
+  - Inserting `NaN` into PostgreSQL `public.orders` (`total_amount NUMERIC(10, 2)`) caused PostgreSQL to throw: `invalid input syntax for type numeric: "NaN"` ("Failed to record order in database.").
+
+### Implemented Improvements & Verification
+- **1. Server-Side Calculations Fix (`create-razorpay-order`)**:
+  - Safely declared and parsed `taxAmount` (`Number(pricingConfig.taxAmount) || 0`).
+  - Added dynamic `shippingFee` parsing from `pricingConfig.shippingFee` with reliable fallback to default `50`.
+  - Guaranteed `finalTotal` is always non-NaN, valid numeric rounded to 2 decimal places.
+- **2. Supabase Cloud Deployment**:
+  - Successfully deployed `create-razorpay-order` to Supabase Cloud (`cfvopnzcqbtqcupdomto`).
+- **3. End-to-End Live Verification**:
+  - Executed automated test against live endpoint, verifying successful order creation (HTTP 200, valid Razorpay Order ID generated, inserted cleanly into `orders` and `order_items`).
+  - Cleaned up test record from database.
+- **4. Build Verification**:
+  - `npm run build`: **Passed cleanly with 0 errors**.
+
+---
 ## 2026-09-12 (Automated Customer Order Status Email Notifications)
 
 ### Task

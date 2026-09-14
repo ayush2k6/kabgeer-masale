@@ -178,7 +178,10 @@ serve(async (req) => {
 
     // 6. Authoritative Server-Side Pricing Calculations
     const discountAmount = Math.max(0, Math.min(subtotal, Number(pricingConfig.discountAmount) || 0));
-    const shippingFee = 50; // Standard flat express shipping fee
+    const shippingFee = typeof pricingConfig.shippingFee === 'number' && pricingConfig.shippingFee >= 0
+      ? pricingConfig.shippingFee
+      : 50;
+    const taxAmount = Number(pricingConfig.taxAmount) || 0;
     const finalTotal = Math.max(1, Math.round((subtotal - discountAmount + taxAmount + shippingFee) * 100) / 100);
 
     // 7. Generate Display Order ID
