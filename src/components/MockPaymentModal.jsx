@@ -24,13 +24,13 @@ const MockPaymentModal = ({ amount, displayOrderId, razorpayOrderId, onClose, on
         <button className="close-modal" onClick={onClose} disabled={isProcessing}>
           <X size={20} />
         </button>
-        
+
         <div className="payment-modal-header">
           <h3>Kabgeer Masale</h3>
           <p>Secure Checkout by Razorpay (Test Mode)</p>
           {displayOrderId && <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '4px' }}>Order: {displayOrderId}</p>}
         </div>
-        
+
         <div className="payment-modal-amount">
           <span>Amount to Pay</span>
           <h2>₹{Number(amount || 0).toFixed(2)}</h2>
@@ -46,14 +46,14 @@ const MockPaymentModal = ({ amount, displayOrderId, razorpayOrderId, onClose, on
               <div className="radio-inner"></div>
             </div>
           </div>
-          
+
           <div className="payment-trust">
             <ShieldCheck size={16} color="#16a34a" />
             <span>100% Secure Payment</span>
           </div>
-          
-          <button 
-            className={`btn btn-primary btn-large w-100 pay-btn ${isProcessing ? 'processing' : ''}`} 
+
+          <button
+            className={`btn btn-primary btn-large w-100 pay-btn ${isProcessing ? 'processing' : ''}`}
             onClick={handlePayment}
             disabled={isProcessing}
           >

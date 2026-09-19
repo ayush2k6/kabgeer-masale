@@ -17,7 +17,7 @@ const FaqsPage = () => {
           </div>
           <div className="faq-item">
             <h3 className="faq-question">How long does delivery take?</h3>
-            <p className="faq-answer">Orders are typically delivered within 6–7 working days, depending on your location and courier service availability.</p>
+            <p className="faq-answer">Orders are typically delivered within 5–7 working days, depending on your location and courier service availability.</p>
           </div>
           <div className="faq-item">
             <h3 className="faq-question">Can I track my order?</h3>
@@ -26,6 +26,10 @@ const FaqsPage = () => {
           <div className="faq-item">
             <h3 className="faq-question">Do you accept bulk orders?</h3>
             <p className="faq-answer">Yes. For wholesale, distribution, or bulk purchase enquiries, please contact us through WhatsApp or the enquiry form.</p>
+          </div>
+          <div className="faq-item">
+            <h3 className="faq-question">What is the return or replacement policy for damaged items?</h3>
+            <p className="faq-answer">Due to the nature of food products, returns/replacements are only accepted for damaged, defective, or incorrect products reported within 48 hours of delivery. A complete, unedited box opening (unboxing) video clearly showing the package and issue is mandatory for processing claims.</p>
           </div>
           <div className="faq-item">
             <h3 className="faq-question">How can I contact customer support?</h3>

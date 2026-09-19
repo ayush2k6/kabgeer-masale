@@ -242,7 +242,7 @@ const ProductPage = () => {
                   <Truck size={20} className="trust-icon" />
                   <div>
                     <strong>Express Delivery</strong>
-                    <span>Delivered in 6–7 days across India</span>
+                    <span>Delivered in 5–7 working days across India</span>
                   </div>
                 </div>
                 <div className="trust-pill-card">

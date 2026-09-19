@@ -74,7 +74,7 @@ const HomePage = () => {
       <section className="quick-masala-section non-veg-bg">
         <div className="container">
           <div className="section-header-row mb-4">
-            <h2 className="section-title text-white">Our Quick Non-Veg Masala</h2>
+            <h2 className="section-title text-white">Our Quick Non-Veg Masalas</h2>
           </div>
           <div className="montage-product-grid-4">
             {quickNonVegProducts.map(product => (
@@ -160,7 +160,7 @@ const HomePage = () => {
       <section className="quick-masala-section daily-bg">
         <div className="container">
           <div className="section-header-row mb-4">
-            <h2 className="section-title">Our Daily Essential Masala</h2>
+            <h2 className="section-title">Our Daily Essential Masalas</h2>
           </div>
           <div className="montage-product-grid-4">
             {dailyEssentialProducts.map(product => (
@@ -182,7 +182,7 @@ const HomePage = () => {
             <div>
               <span className="section-subtitle-badge">SIGNATURE COLLECTION</span>
               <h2 className="home-slider-title">Explore Our Masala Catalogue</h2>
-              <p className="home-slider-desc">Handcrafted 65-year-old Lucknavi spice formulations loved by thousands of home chefs.</p>
+              <p className="home-slider-desc"><b>Handcrafted 65 year old spice formulations loved by thousands of home chefs.</b></p>
             </div>
             <div className="slider-arrows-group">
               <button onClick={() => scrollSlider('left')} className="slider-arrow-btn" aria-label="Previous products">

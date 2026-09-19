@@ -39,106 +39,30 @@ const AboutPage = () => {
       {/* Our Story */}
       <section className="about-story">
         <div className="container story-container">
+          <div className="story-header fade-in-up" data-animate="true">
+            <h2>Kabgeer's Story</h2>
+          </div>
           <div className="story-text">
-            <span className="section-subtitle-badge fade-in-up" data-animate="true" style={{ display: 'inline-block', marginBottom: '1rem' }}>OUR STORY</span>
-            <h2 className="fade-in-up" data-animate="true">Kabgeer's Story</h2>
-
-            <p className="fade-in-up" data-animate="true">
-              Kabgeer was never just about spices.<br />
-              It began in a small kitchen, filled with warmth and tradition.<br />
-              A place where recipes were not written, but remembered.<br />
-              Where every dish carried a story.<br />
-              Where every aroma meant home.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              More than 65 years ago,<br />
-              our family started crafting masalas with care.<br />
-              Not for business, but for love.<br />
-              Every blend was made by hand.<br />
-              Every ingredient was chosen with intention.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              There were no shortcuts.<br />
-              No preservatives.<br />
-              No compromises.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              Just pure spices,<br />
-              ground fresh,<br />
-              and mixed with generations of experience.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              Over time, these recipes became a legacy.<br />
-              Passed down from one generation to the next.<br />
-              Refined, but never changed at heart.
-            </p>
-
-            <p className="pull-quote fade-in-up" data-animate="true">
+            <p className="fade-in-up" data-animate="true" style={{ marginBottom: '1.5rem' }}>
+              Kabgeer was never just about spices. It began in a small kitchen, filled with warmth and tradition.
+              A place where recipes were not written, but remembered. Where every dish carried a story. Where every aroma meant home.
+              More than 65 years ago, our family started crafting masalas with care.<br></br>
+              <b>Not for business, but for love.</b>
+              <br></br>
+              Every blend was made by hand. Every ingredient was chosen with intention.
+              There were no shortcuts. No preservatives. No compromises. Just pure spices, ground fresh, and mixed with generations of experience.
+              Over time, these recipes became a legacy. Passed down from one generation to the next. Refined, but never changed at heart.
               Because some things should stay authentic.
             </p>
 
             <p className="fade-in-up" data-animate="true">
-              As life became faster,<br />
-              we noticed something changing.<br />
-              People had less time to cook.<br />
-              Fewer people knew traditional recipes.<br />
-              And many believed good food required too much effort.
-            </p>
-
-            <p className="pull-quote-large fade-in-up" data-animate="true">
-              That’s when Kabgeer was born.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              A simple idea with a powerful purpose—<br />
-              to bring authentic taste back into everyday kitchens.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              To make cooking easy.<br />
-              To make it fast.<br />
-              To make it possible for anyone to cook.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
+              As life became faster, we noticed something changing. People had less time to cook. Fewer people knew traditional recipes. And many believed good food required too much effort.
+              That’s when Kabgeer was born. <br></br><b>A simple idea with a powerful purpose - to bring authentic taste back into everyday kitchens.</b> To make cooking easy. To make it fast. To make it possible for anyone to cook.
               Even if they’ve never stepped into a kitchen before.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              With Kabgeer,<br />
-              you don’t need years of experience.<br />
-              You don’t need complicated ingredients.<br />
-              You don’t need to be a chef.
-            </p>
-
-            <p className="pull-quote fade-in-up" data-animate="true">
-              You just need the will to cook.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              Our ready-to-cook masalas are crafted<br />
-              so that anyone can create delicious meals in minutes.<br />
-              Without losing the richness of tradition.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              Each pack carries the same taste<br />
-              that once filled our home.
-            </p>
-
-            <p className="fade-in-up" data-animate="true">
-              The same aroma that brought families together.<br />
-              The same authenticity that defines Indian cooking.
-            </p>
-
-            <p className="pull-quote-italic fade-in-up" data-animate="true">
-              From our kitchen to yours,<br />
-              we bring you purity you can trust.<br />
-              Quality you can taste.
+              With Kabgeer, you don’t need years of experience. You don’t need complicated ingredients. You don’t need to be a chef. You just need the will to cook.
+              Our ready-to-cook masalas are crafted so that anyone can create delicious meals in minutes. Without losing the richness of tradition.
+              Each pack carries the same taste that once filled our home. The same aroma that brought families together. The same authenticity that defines Indian cooking.
+              <br></br><b>From our kitchen to yours, we bring you purity you can trust. Quality you can taste.</b>
             </p>
           </div>
         </div>

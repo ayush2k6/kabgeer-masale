@@ -14,7 +14,7 @@ const ShippingPage = () => {
           <p>At Kabgeer, we strive to ensure that every order reaches you safely and on time.</p>
           <ul>
             <li>Orders are processed within 1–2 business days after confirmation.</li>
-            <li>Standard delivery time is 6–7 working days depending on the delivery location.</li>
+            <li>Standard delivery time is 5–7 working days depending on the delivery location.</li>
             <li>Delivery timelines may vary during festivals, holidays, or unforeseen circumstances.</li>
             <li>Once dispatched, tracking details will be shared with the customer.</li>
             <li>Shipping charges, if applicable, will be displayed during checkout.</li>

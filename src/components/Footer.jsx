@@ -24,6 +24,13 @@ const InstagramIcon = ({ size = 18 }) => (
   </svg>
 );
 
+const YoutubeIcon = ({ size = 18 }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+    <polygon points="10 15 15 12 10 9 10 15" fill="currentColor" />
+  </svg>
+);
+
 const Footer = () => {
   return (
     <footer className="footer-wrapper">
@@ -39,7 +46,8 @@ const Footer = () => {
           </p>
           <div className="social-links">
             <a href="https://wa.me/8090086636" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><WhatsAppIcon size={18} /></a>
-            <a href="https://www.instagram.com/kabgeermasala/" aria-label="Instagram"><InstagramIcon size={18} /></a>
+            <a href="https://www.instagram.com/kabgeermasala/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon size={18} /></a>
+            <a href="https://www.youtube.com/@KabgeerMasala" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><YoutubeIcon size={18} /></a>
           </div>
         </div>
 
@@ -142,8 +150,8 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <div className="container bottom-inner">
-          <p>© 2026 Kabgeer Masale. All Rights Reserved.</p>
-          <p>Crafted with <Heart size={14} className="heart" /> in India</p>
+          <p>Copyright © 2026 Kabgeer Masale. All rights reserved.</p>
+          <p>Crafted with ❤️ in India</p>
         </div>
       </div>
     </footer>

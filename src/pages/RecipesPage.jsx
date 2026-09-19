@@ -32,7 +32,7 @@ const hardcodedRecipes = {
     ]
   },
   'Chole Masale': {
-    title: 'Delhi-Style Chole Bhature',
+    title: 'Amritsari-Style Chole Bhature',
     time: '30 mins',
     servings: '4',
     masala: 'Chole Masale',
@@ -58,7 +58,7 @@ const hardcodedRecipes = {
   'Veg Tandoori Masala': {
     title: 'Smoky Veg Tandoori Tikka',
     time: '25 mins',
-    servings: '2',
+    servings: '4',
     masala: 'Veg Tandoori Masala',
     desc: 'Get restaurant-style charred flavors at home with paneer and vegetables.',
     category: 'Veg',

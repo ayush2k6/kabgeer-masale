@@ -1,5 +1,35 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-18 (Recipe Section Corrections & 5–7 Working Days Delivery Standard)
+
+### Task
+1. Fix recipe section servings error to standardize to 4 servings across all recipes.
+2. Update Chole recipe style from "Delhi-Style" to "Amritsari-Style" in recipe section.
+3. Standardize delivery duration across all storefront pages to 5 to 7 working days.
+4. Replace generic "Craft Your Own Spice Box" text on Build Your Bundle page with high-converting "Special Bundle Offer!" headline.
+5. Add mandatory unboxing / parcel opening video condition to Returns & Refunds policy and FAQs.
+6. Add official YouTube channel link (`https://www.youtube.com/@KabgeerMasala`) next to Instagram in the Footer.
+
+### Implemented Changes & Verification
+- **1. Build Your Bundle Hero Section (`BuildBundlePage.jsx`)**:
+  - Replaced generic title/subtitle with prominent headline `Special Bundle Offer!` and subtitle `Buy 4 or more products to unlock 10% OFF + 2 FREE Mini Masala Boxes!`.
+- **2. Recipe Section (`RecipesPage.jsx`)**:
+  - Normalized Veg Tandoori Masala recipe servings from `2` to `4` (all recipes now consistently specify 4 servings).
+  - Updated Chole recipe title from `Delhi-Style Chole Bhature` to `Amritsari-Style Chole Bhature`.
+- **3. Delivery Duration Standardization (`ProductPage.jsx`, `ShippingPage.jsx`, `FaqsPage.jsx`, `CheckoutPage.jsx`)**:
+  - `ProductPage.jsx`: Updated delivery badge to `Delivered in 5–7 working days across India`.
+  - `ShippingPage.jsx`: Updated policy timeline to `Standard delivery time is 5–7 working days depending on the delivery location.`.
+  - `FaqsPage.jsx`: Updated FAQ timeline answer to `Orders are typically delivered within 5–7 working days, depending on your location and courier service availability.`.
+  - `CheckoutPage.jsx`: Updated shipping method label to `Standard Express Shipping (5–7 Working Days)`.
+- **4. Returns & Refunds Policy (`ReturnsPage.jsx`, `FaqsPage.jsx`)**:
+  - Added mandatory requirement for a complete, unedited parcel opening (unboxing) video clearly showing the outer packaging and the issue when submitting a return, damage, or refund claim.
+- **5. Footer Social Links (`Footer.jsx`)**:
+  - Added official YouTube social icon and link (`https://www.youtube.com/@KabgeerMasala`) alongside WhatsApp and Instagram.
+- **6. Build & Test Verification**:
+  - `npm run build`: **Passed cleanly in 2.23s (0 errors)**.
+
+---
+
 ## 2026-09-14 (BYB Order Identification & Display Tagging)
 
 ### Task
@@ -1043,3 +1073,11 @@ None. The files created are purely for documentation/project administration and 
 ### Remaining Issues
 - React 19 linter errors: `Math.random` impure render violation in `OrderSuccessPage.jsx`, cascading states inside hooks, and unused variables.
 - Payment, shipping, sheets logging, and transactional email integrations are currently simulated on the client side or missing.
+
+## [Unreleased] - 2026-09-19
+### UI/UX Polish & Layout Fixes
+- Updated cover images for Mutton Biryani Masala, Chicken Biryani Masala, and Veg Biryani Masala.
+- Fixed uneven product card sizes across grids by implementing absolute positioning with aspect-ratio constraint.
+- Refactored 'Kabgeer's Story' section in AboutPage to flow as continuous paragraphs centered on the page.
+- Typo corrections in HomePage ('Masala' -> 'Masalas').
+- Mock Payment Modal and Footer formatting tweaks.

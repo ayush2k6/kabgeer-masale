@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { ArrowRight, Sparkles, Truck, ShieldCheck, Flame } from 'lucide-react';
 import { PRODUCTS, CATEGORIES } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import './BuildBundlePage.css';
@@ -45,29 +44,12 @@ const BuildBundlePage = () => {
           <div className="bundle-hero-content">
 
             <h1 className="hero-title">
-              Craft Your <em> Own Spice Box</em>
+              Special <em>Bundle Offer!</em>
             </h1>
 
-            <p className="hero-subtitle">
-              Curate your personalized selection of authentic masala blends. Milled in small batches, freshly sealed, and delivered free across India.
+            <p className="hero-subtitle" style={{ fontSize: '1.15rem', color: '#fcfaf5', marginBottom: '2.5rem' }}>
+              Buy <strong>4 or more products</strong> to unlock <strong style={{ color: '#d4af37' }}>10% OFF + 2 FREE Mini Masala Boxes!</strong>
             </p>
-
-            {/* Bundle Offer Highlight */}
-            <div className="bundle-offer-highlight" style={{
-              background: 'rgba(212, 175, 55, 0.12)',
-              border: '1.5px dashed rgba(212, 175, 55, 0.5)',
-              borderRadius: '12px',
-              padding: '1.25rem 2rem',
-              marginBottom: '2.5rem',
-              display: 'inline-block'
-            }}>
-              <h3 style={{ color: '#d4af37', fontSize: '1.15rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontWeight: '700' }}>
-                <Sparkles size={18} fill="#d4af37" /> Special Bundle Offer!
-              </h3>
-              <p style={{ color: '#fcfaf5', fontSize: '1rem', margin: 0, opacity: 0.9 }}>
-                Buy <strong>4 or more products</strong> to unlock <strong style={{ color: '#d4af37' }}>10% OFF + 2 FREE Mini Masala Boxes!</strong>
-              </p>
-            </div>
 
 
           </div>
