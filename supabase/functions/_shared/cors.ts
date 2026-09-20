@@ -3,6 +3,8 @@ const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://localhost:3000',
   'http://127.0.0.1:5173',
+  'https://kabgeermasala.com',
+  'https://www.kabgeermasala.com',
   'https://kabgeerji.com',
   'https://www.kabgeerji.com',
   'https://kabgeermasale.vercel.app',

@@ -292,7 +292,7 @@ function renderDeliveredEmailHtml(order: any, items: any[]): string {
               Discover traditional family recipes crafted specifically for your Kabgeer spice blends — from royal Galauti Kebabs and aromatic Dum Biryani to rich Nihari and Korma.
             </p>
             <div>
-              <a href="https://kabgeermasale.vercel.app/recipes" target="_blank" style="display: inline-block; background-color: #1a2f22; color: #d4af37; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">
+              <a href="https://kabgeermasala.com/recipes" target="_blank" style="display: inline-block; background-color: #1a2f22; color: #d4af37; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">
                 Explore Master Recipes →
               </a>
             </div>
