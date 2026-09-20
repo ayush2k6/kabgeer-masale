@@ -1,5 +1,19 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-20 (Quick Masala Sections Horizontal Slider)
+
+### Task
+Implement horizontal slide navigation for "Our Quick Non-Veg Masalas", "Our Quick Veg Masalas", and "Our Daily Essential Masalas" sections on mobile devices.
+
+### Implemented Changes & Verification
+- **Home Page (`HomePage.jsx`)**:
+  - Replaced static grid layouts with `home-product-slider` container.
+  - Added left/right Chevron navigation arrows.
+  - Added smooth scroll refs for `nonVegSliderRef`, `vegSliderRef`, and `dailySliderRef`.
+- **Verification**: Verified sliders render correctly and horizontal scrolling works properly.
+
+---
+
 ## 2026-09-20 (Footer Amazon Link)
 
 ### Task

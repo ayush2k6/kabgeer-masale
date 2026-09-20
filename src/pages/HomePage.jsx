@@ -12,7 +12,10 @@ import rawIngredientsImg from '../assets/raw-ingredients.png';
 import whyChooseUsImg from '../assets/why choose us.png';
 
 const HomePage = () => {
-  const sliderRef = useRef(null);
+  const signatureSliderRef = useRef(null);
+  const nonVegSliderRef = useRef(null);
+  const vegSliderRef = useRef(null);
+  const dailySliderRef = useRef(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -45,10 +48,10 @@ const HomePage = () => {
   // Signature catalogue selection for horizontal showcase
   const signatureProducts = PRODUCTS.slice(0, 8);
 
-  const scrollSlider = (direction) => {
-    if (sliderRef.current) {
+  const scrollSlider = (ref, direction) => {
+    if (ref.current) {
       const scrollAmount = direction === 'left' ? -320 : 320;
-      sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      ref.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -73,12 +76,22 @@ const HomePage = () => {
       {/* Our Quick Non-Veg Masala */}
       <section className="quick-masala-section non-veg-bg">
         <div className="container">
-          <div className="section-header-row mb-4">
-            <h2 className="section-title text-white">Our Quick Non-Veg Masalas</h2>
+          <div className="slider-header-row mb-4" style={{ alignItems: 'center' }}>
+            <h2 className="section-title text-white" style={{ margin: 0 }}>Our Quick Non-Veg Masalas</h2>
+            <div className="slider-arrows-group">
+              <button onClick={() => scrollSlider(nonVegSliderRef, 'left')} className="slider-arrow-btn" aria-label="Previous products" style={{backgroundColor: 'rgba(255,255,255,0.2)', color: 'white'}}>
+                <ChevronLeft size={20} />
+              </button>
+              <button onClick={() => scrollSlider(nonVegSliderRef, 'right')} className="slider-arrow-btn" aria-label="Next products" style={{backgroundColor: 'rgba(255,255,255,0.2)', color: 'white'}}>
+                <ChevronRight size={20} />
+              </button>
+            </div>
           </div>
-          <div className="montage-product-grid-4">
+          <div className="home-product-slider" ref={nonVegSliderRef}>
             {quickNonVegProducts.map(product => (
-              <MontageProductCard key={product.id} product={product} />
+              <div key={product.id} className="home-slider-card-item">
+                <MontageProductCard product={product} />
+              </div>
             ))}
           </div>
           <div className="section-cta-row text-center">
@@ -113,12 +126,22 @@ const HomePage = () => {
       {/* Our Quick Veg Masala */}
       <section className="quick-masala-section veg-bg">
         <div className="container">
-          <div className="section-header-row mb-4">
-            <h2 className="section-title text-white">Our Quick Veg Masalas</h2>
+          <div className="slider-header-row mb-4" style={{ alignItems: 'center' }}>
+            <h2 className="section-title text-white" style={{ margin: 0 }}>Our Quick Veg Masalas</h2>
+            <div className="slider-arrows-group">
+              <button onClick={() => scrollSlider(vegSliderRef, 'left')} className="slider-arrow-btn" aria-label="Previous products" style={{backgroundColor: 'rgba(255,255,255,0.2)', color: 'white'}}>
+                <ChevronLeft size={20} />
+              </button>
+              <button onClick={() => scrollSlider(vegSliderRef, 'right')} className="slider-arrow-btn" aria-label="Next products" style={{backgroundColor: 'rgba(255,255,255,0.2)', color: 'white'}}>
+                <ChevronRight size={20} />
+              </button>
+            </div>
           </div>
-          <div className="montage-product-grid-4">
+          <div className="home-product-slider" ref={vegSliderRef}>
             {quickVegProducts.map(product => (
-              <MontageProductCard key={product.id} product={product} />
+              <div key={product.id} className="home-slider-card-item">
+                <MontageProductCard product={product} />
+              </div>
             ))}
           </div>
           <div className="section-cta-row text-center">
@@ -159,12 +182,22 @@ const HomePage = () => {
       {/* Daily Essential Masala Section */}
       <section className="quick-masala-section daily-bg">
         <div className="container">
-          <div className="section-header-row mb-4">
-            <h2 className="section-title">Our Daily Essential Masalas</h2>
+          <div className="slider-header-row mb-4" style={{ alignItems: 'center' }}>
+            <h2 className="section-title" style={{ margin: 0 }}>Our Daily Essential Masalas</h2>
+            <div className="slider-arrows-group">
+              <button onClick={() => scrollSlider(dailySliderRef, 'left')} className="slider-arrow-btn" aria-label="Previous products">
+                <ChevronLeft size={20} />
+              </button>
+              <button onClick={() => scrollSlider(dailySliderRef, 'right')} className="slider-arrow-btn" aria-label="Next products">
+                <ChevronRight size={20} />
+              </button>
+            </div>
           </div>
-          <div className="montage-product-grid-4">
+          <div className="home-product-slider" ref={dailySliderRef}>
             {dailyEssentialProducts.map(product => (
-              <MontageProductCard key={product.id} product={product} />
+              <div key={product.id} className="home-slider-card-item">
+                <MontageProductCard product={product} />
+              </div>
             ))}
           </div>
           <div className="section-cta-row text-center">
@@ -185,16 +218,16 @@ const HomePage = () => {
               <p className="home-slider-desc"><b>Handcrafted 65 year old spice formulations loved by thousands of home chefs.</b></p>
             </div>
             <div className="slider-arrows-group">
-              <button onClick={() => scrollSlider('left')} className="slider-arrow-btn" aria-label="Previous products">
+              <button onClick={() => scrollSlider(signatureSliderRef, 'left')} className="slider-arrow-btn" aria-label="Previous products">
                 <ChevronLeft size={20} />
               </button>
-              <button onClick={() => scrollSlider('right')} className="slider-arrow-btn" aria-label="Next products">
+              <button onClick={() => scrollSlider(signatureSliderRef, 'right')} className="slider-arrow-btn" aria-label="Next products">
                 <ChevronRight size={20} />
               </button>
             </div>
           </div>
 
-          <div className="home-product-slider" ref={sliderRef}>
+          <div className="home-product-slider" ref={signatureSliderRef}>
             {signatureProducts.map(product => (
               <div key={product.id} className="home-slider-card-item">
                 <ProductCard product={product} />
