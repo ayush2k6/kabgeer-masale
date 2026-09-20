@@ -130,7 +130,7 @@ const AboutPage = () => {
                   <Mail size={24} className="company-info-icon" />
                   <div>
                     <strong>Email id</strong>
-                    <p>olympic.kabgeer@gmail.com</p>
+                    <p>enquiry@kabgeermasala.com</p>
                   </div>
                 </div>
                 <div className="company-info-item">

@@ -149,7 +149,7 @@ const Footer = () => {
             </p>
             <p className="contact-item">
               <Mail size={15} className="contact-icon" />
-              <span>olympic.kabgeer@gmail.com</span>
+              <span>enquiry@kabgeermasala.com</span>
             </p>
           </div>
         </div>
@@ -158,7 +158,7 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <div className="container bottom-inner">
-          <p>Copyright © 2026 Kabgeer Masale. All rights reserved.</p>
+          <p>Copyright © 2026 Kabgeer Masala. All rights reserved.</p>
           <p>Crafted with ❤️ in India</p>
         </div>
       </div>
