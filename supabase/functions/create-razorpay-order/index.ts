@@ -232,6 +232,28 @@ serve(async (req) => {
 
     const fullName = `${shipping.firstName || ''} ${shipping.lastName || ''}`.trim() || 'Valued Customer';
 
+    // 8.5 Ensure user profile exists to satisfy Foreign Key constraint if registered
+    if (customerId) {
+      try {
+        const { error: pErr } = await supabase
+          .from('profiles')
+          .upsert({
+            id: customerId,
+            email: sanitizedEmail,
+            full_name: fullName,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'id' });
+        
+        if (pErr) {
+          console.warn('Profile upsert warning, setting customerId to null fallback:', pErr.message);
+          customerId = null;
+        }
+      } catch (err: any) {
+        console.warn('Profile check exception:', err?.message);
+        customerId = null;
+      }
+    }
+
     const normalizedShippingAddress = {
       firstName: shipping.firstName || '',
       lastName: shipping.lastName || '',
@@ -246,7 +268,7 @@ serve(async (req) => {
     };
 
     // 9. Insert Record into public.orders
-    const { data: insertedOrder, error: orderInsertErr } = await supabase
+    let { data: insertedOrder, error: orderInsertErr } = await supabase
       .from('orders')
       .insert({
         display_order_id: displayOrderId,
@@ -268,6 +290,36 @@ serve(async (req) => {
       })
       .select()
       .single();
+
+    // Resilient fallback: If insert failed due to customer_id or constraint, retry as guest without customer_id
+    if (orderInsertErr && customerId) {
+      console.warn('Retrying order insert without customer_id due to error:', orderInsertErr.message);
+      const retry = await supabase
+        .from('orders')
+        .insert({
+          display_order_id: displayOrderId,
+          customer_id: null,
+          customer_name: fullName,
+          customer_email: sanitizedEmail,
+          customer_phone: sanitizedPhone,
+          shipping_address: normalizedShippingAddress,
+          billing_address: normalizedShippingAddress,
+          customer_type: 'guest',
+          order_status: 'Pending',
+          payment_status: 'Pending',
+          subtotal: subtotal,
+          discount: discountAmount,
+          tax: taxAmount,
+          shipping_fee: shippingFee,
+          total_amount: finalTotal,
+          razorpay_order_id: razorpayOrderId
+        })
+        .select()
+        .single();
+
+      insertedOrder = retry.data;
+      orderInsertErr = retry.error;
+    }
 
     if (orderInsertErr || !insertedOrder) {
       console.error('Order insert error:', orderInsertErr);
