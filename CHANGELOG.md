@@ -1,5 +1,16 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-20 (Footer Amazon Link)
+
+### Task
+Add Amazon store link next to the YouTube link in the footer.
+
+### Implemented Changes & Verification
+- **Footer Social Links (`Footer.jsx`)**:
+  - Added official Amazon social icon and link alongside WhatsApp, Instagram, and YouTube.
+
+---
+
 ## 2026-09-18 (Recipe Section Corrections & 5–7 Working Days Delivery Standard)
 
 ### Task
