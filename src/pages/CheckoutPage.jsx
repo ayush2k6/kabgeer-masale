@@ -325,12 +325,17 @@ const CheckoutPage = () => {
           modal: {
             ondismiss: function () {
               setIsSubmitting(false);
-              setErrorMessage('Payment cancelled by user.');
+              setErrorMessage('Payment window closed. You can retry payment anytime.');
             }
           }
         };
 
         const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', function (response) {
+          console.error('Razorpay payment failed:', response.error);
+          setIsSubmitting(false);
+          setErrorMessage(response.error?.description || 'Payment was declined or failed. Please try another UPI/Card method.');
+        });
         rzp.open();
       } else {
         setShowPaymentModal(true);
