@@ -1,5 +1,19 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-21 (Global Popup Image Overlay)
+
+### Task
+Implement a global promotional popup image (`popup.png`) that appears across the site whenever a user enters the site or refreshes the page.
+
+### Implemented Changes & Verification
+- **New Popup Component (`Popup.jsx`, `Popup.css`)**:
+  - Created a responsive overlay component with a close button and smooth fade/scale animations.
+  - Automatically triggers on page load.
+- **Global Integration (`App.jsx`)**:
+  - Imported and rendered `<Popup />` within the main layout to ensure site-wide availability.
+
+---
+
 ## 2026-09-21 (Official Domain Mailboxes, Open Graph SEO & Live Dispatch Verification)
 
 ### Task
