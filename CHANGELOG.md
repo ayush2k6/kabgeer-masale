@@ -1,6 +1,6 @@
 # Kabgeer Ji — Changelog
 
-## 2026-09-21 (Official Domain Mailboxes & Edge Function Deployment)
+## 2026-09-21 (Official Domain Mailboxes, Open Graph SEO & Live Dispatch Verification)
 
 ### Task
 1. Configure official main mailboxes:
@@ -10,9 +10,14 @@
 3. Update admin authentication portal (`AdminLoginPage.jsx`).
 4. Update Supabase Edge Functions (`send-order-email`) default `ADMIN_NOTIFICATION_EMAIL` and `reply_to` headers to `enquiry@kabgeermasala.com`.
 5. Deploy `send-order-email` edge function to Supabase Cloud.
+6. Fix Supabase secrets `ADMIN_NOTIFICATION_EMAIL=admin@kabgeermasala.com` & `SENDER_EMAIL=orders@kabgeermasala.com` and live-verify dispatch (Resend IDs `01a0c28a-6ebc-73bb-90a3-643ba8c36b37` & `01a0c28a-6d75-7045-8f0a-91051b86e655`).
+7. Implement comprehensive Open Graph, Twitter Cards, and SEO meta tags in `index.html` with preview cards for WhatsApp, Instagram, Facebook, and Twitter link sharing.
 
 ### Implemented Changes & Verification
-- **1. Storefront Contact Points (`ContactPage.jsx`, `Footer.jsx`)**:
+- **1. Open Graph & Social Share Preview Cards (`index.html`, `public/og-image.png`, `public/logo.png`)**:
+  - Configured `og:title`, `og:description`, `og:image`, `og:url`, `og:site_name`, `og:locale`, and Twitter large image cards.
+  - Added primary SEO title, meta description, keywords, author, robots, canonical URL, and apple-touch-icon.
+- **2. Storefront Contact Points (`ContactPage.jsx`, `Footer.jsx`)**:
   - `ContactPage.jsx`: Configured `mailto:enquiry@kabgeermasala.com`.
   - `Footer.jsx`: Configured `enquiry@kabgeermasala.com` as customer contact email.
 - **2. Admin Login (`AdminLoginPage.jsx`)**:

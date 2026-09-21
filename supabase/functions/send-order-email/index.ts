@@ -544,7 +544,9 @@ serve(async (req) => {
 
     const isTestingDomain = rawSenderEmail.includes('onboarding@resend.dev');
     const targetCustomerRecipient = isTestingDomain ? 'mailtoayusht@gmail.com' : order.customer_email;
-    const formattedFrom = isTestingDomain ? 'Kabgeer Masale <onboarding@resend.dev>' : rawSenderEmail;
+    const formattedFrom = isTestingDomain
+      ? 'Kabgeer Masale <onboarding@resend.dev>'
+      : (rawSenderEmail.includes('<') ? rawSenderEmail : `Kabgeer Masale <${rawSenderEmail}>`);
 
     // =========================================================================
     // CASE A: Status Update Notification (Shipped, Delivered, Cancelled)
@@ -665,7 +667,9 @@ serve(async (req) => {
     if (!order.admin_email_sent_at || forceResend) {
       const adminHtml = renderAdminEmailHtml(order, items || []);
       const targetAdminRecipient = isTestingDomain ? 'mailtoayusht@gmail.com' : rawAdminEmail;
-      const formattedAdminFrom = isTestingDomain ? 'Kabgeer System <onboarding@resend.dev>' : rawSenderEmail;
+      const formattedAdminFrom = isTestingDomain
+        ? 'Kabgeer System <onboarding@resend.dev>'
+        : (rawSenderEmail.includes('<') ? rawSenderEmail : `Kabgeer Alert <${rawSenderEmail}>`);
 
       if (!isSimulationMode) {
         try {
