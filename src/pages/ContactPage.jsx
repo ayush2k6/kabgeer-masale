@@ -52,7 +52,7 @@ const ContactPage = () => {
           <div className="contact-card">
             <div className="contact-page-card-icon"><Mail size={24} /></div>
             <h3>Email Us</h3>
-            <a href="mailto:olympic.kabgeer@gmail.com">olympic.kabgeer@gmail.com</a>
+            <a href="mailto:support@kabgeermasala.com">support@kabgeermasala.com</a>
           </div>
           <div className="contact-card">
             <div className="contact-page-card-icon"><Phone size={24} /></div>

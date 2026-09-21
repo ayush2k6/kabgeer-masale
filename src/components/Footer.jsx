@@ -141,7 +141,7 @@ const Footer = () => {
             </p>
             <p className="contact-item">
               <Mail size={15} className="contact-icon" />
-              <span>olympic.kabgeer@gmail.com</span>
+              <span>support@kabgeermasala.com</span>
             </p>
           </div>
         </div>

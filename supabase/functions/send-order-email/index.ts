@@ -492,8 +492,8 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
     const resendApiKey = Deno.env.get('RESEND_API_KEY') || '';
-    const rawSenderEmail = Deno.env.get('SENDER_EMAIL') || 'onboarding@resend.dev';
-    const rawAdminEmail = Deno.env.get('ADMIN_NOTIFICATION_EMAIL') || 'kabgeermasale@gmail.com';
+    const rawSenderEmail = Deno.env.get('SENDER_EMAIL') || 'Kabgeer Masale <orders@kabgeermasala.com>';
+    const rawAdminEmail = Deno.env.get('ADMIN_NOTIFICATION_EMAIL') || 'admin@kabgeermasala.com';
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -577,6 +577,7 @@ serve(async (req) => {
             body: JSON.stringify({
               from: formattedFrom,
               to: [targetCustomerRecipient],
+              reply_to: 'support@kabgeermasala.com',
               subject: subject,
               html: emailHtml
             })
@@ -626,6 +627,7 @@ serve(async (req) => {
             body: JSON.stringify({
               from: formattedFrom,
               to: [targetCustomerRecipient],
+              reply_to: 'support@kabgeermasala.com',
               subject: `Order Confirmed! #${order.display_order_id} — Kabgeer Masale`,
               html: customerHtml
             })

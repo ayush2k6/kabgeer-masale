@@ -60,7 +60,7 @@ const AdminLoginPage = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@kabgeerji.com"
+              placeholder="admin@kabgeermasala.com"
               autoComplete="username"
             />
           </div>
