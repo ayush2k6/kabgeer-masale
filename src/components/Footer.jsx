@@ -31,6 +31,13 @@ const YoutubeIcon = ({ size = 18 }) => (
   </svg>
 );
 
+const AmazonIcon = ({ size = 18 }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M13.68 18.06c-1.4 0-2.96-.25-4.63-.75-.88-.26-1.83-.64-2.83-1.12-.43-.21-.61-.71-.44-1.15.18-.46.7-.69 1.17-.49.92.39 1.8.74 2.62.98 1.55.45 2.99.68 4.27.68 2.75 0 5.08-1.09 6.93-3.23.37-.43 1.01-.47 1.44-.1.43.37.47 1.02.09 1.45-2.15 2.49-4.88 3.73-8.62 3.73zm8.42-1.48c-.43.35-.86.67-1.27.95-.54.38-1.3.47-1.81.14-.51-.32-.76-1.03-.56-1.63.24-.75.63-1.45 1.13-2.06.34-.4.95-.44 1.4-.07.31.26.63.5.94.74.32.23.52.6.52.99 0 .43-.23.81-.57 1.05l-.23.16v-.27z" />
+    <path d="M14.07 14.73c-1.22 0-2.31-.38-3.18-1.13-.85-.73-1.33-1.74-1.33-2.95 0-2.52 2.01-4.04 5.3-4.14v-.27c0-1.24-.87-1.87-2.61-1.87-1.45 0-2.82.4-3.79 1.09-.32.22-.76.13-1-.2l-.84-1.13c-.22-.3-.13-.73.19-.94 1.34-.87 3.32-1.39 5.56-1.39 1.9 0 3.25.47 4.02 1.39.79.93.97 2.45.97 4v3.66c0 .77.06 1.25.17 1.62.13.43.38.64.38.64.12.11.18.25.18.4 0 .34-.27.61-.61.61h-2.18c-.28 0-.52-.19-.58-.46-.11-.47-.15-.99-.13-1.52-.96 1.02-2.36 1.6-3.82 1.6zm.57-2.03c.89 0 1.72-.34 2.25-1.02.39-.5.54-1.09.54-1.77v-1.15c-1.89.09-3.23.51-3.23 1.83 0 .54.21 1.01.59 1.34.39.34.91.53 1.54.53z" />
+  </svg>
+);
+
 const Footer = () => {
   return (
     <footer className="footer-wrapper">
@@ -48,6 +55,7 @@ const Footer = () => {
             <a href="https://wa.me/8090086636" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><WhatsAppIcon size={18} /></a>
             <a href="https://www.instagram.com/kabgeermasala/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon size={18} /></a>
             <a href="https://www.youtube.com/@KabgeerMasala" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><YoutubeIcon size={18} /></a>
+            <a href="https://www.amazon.in/stores/Kabgeer/page/3CB7A6A7-3FAE-4F2A-AA0A-61D8DE8A5D85?lp_asin=B0CC5NMF1H&ref_=cm_sw_r_ud_ast_store_BEK9P3E003NV0QJ2N7P3&store_ref=bl_ast_dp_brandlogo_sto" target="_blank" rel="noopener noreferrer" aria-label="Amazon"><AmazonIcon size={18} /></a>
           </div>
         </div>
 
@@ -150,7 +158,7 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <div className="container bottom-inner">
-          <p>Copyright © 2026 Kabgeer Masale. All rights reserved.</p>
+          <p>Copyright © 2026 Kabgeer Masala. All rights reserved.</p>
           <p>Crafted with ❤️ in India</p>
         </div>
       </div>

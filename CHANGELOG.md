@@ -31,6 +31,25 @@
 
 ---
 
+## 2026-09-20 (Quick Masala Sections Horizontal Slider & Amazon Link)
+
+### Task
+1. Implement horizontal slide navigation for "Our Quick Non-Veg Masalas", "Our Quick Veg Masalas", and "Our Daily Essential Masalas" sections on mobile devices.
+2. Add Amazon store link next to the YouTube link in the footer.
+3. Polish B2B and sales inquiries on Contact page.
+
+### Implemented Changes & Verification
+- **Home Page (`HomePage.jsx`)**:
+  - Replaced static grid layouts with `home-product-slider` container.
+  - Added left/right Chevron navigation arrows.
+  - Added smooth scroll refs for `nonVegSliderRef`, `vegSliderRef`, and `dailySliderRef`.
+- **Footer Social Links (`Footer.jsx`)**:
+  - Added official Amazon link alongside WhatsApp, Instagram, and YouTube.
+- **Contact Page (`ContactPage.jsx`)**:
+  - Updated B2B enquiry bullet points (HoReCa Bulk Orders, Contract Manufacturers, Export Enquiry, Distributorship & Super Stockist Enquiry).
+
+---
+
 ## 2026-09-18 (Recipe Section Corrections & 5–7 Working Days Delivery Standard)
 
 ### Task

@@ -116,7 +116,7 @@ const AboutPage = () => {
                   <Phone size={24} className="company-info-icon" />
                   <div>
                     <strong>Phone No</strong>
-                    <p>+91 80900 86636<br />+91 96956 76611</p>
+                    <p>+91 80900 86636<br /></p>
                   </div>
                 </div>
                 <div className="company-info-item">
@@ -130,7 +130,7 @@ const AboutPage = () => {
                   <Mail size={24} className="company-info-icon" />
                   <div>
                     <strong>Email id</strong>
-                    <p>olympic.kabgeer@gmail.com</p>
+                    <p>enquiry@kabgeermasala.com</p>
                   </div>
                 </div>
                 <div className="company-info-item">

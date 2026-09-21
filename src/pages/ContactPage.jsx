@@ -121,9 +121,10 @@ const ContactPage = () => {
               <h3>Business Enquiries</h3>
               <p>Looking to partner with Kabgeer Masale ? We offer special pricing and support for B2B partners.</p>
               <ul className="business-list">
-                <li><CheckCircle size={20} /> Wholesale Partnerships</li>
-                <li><CheckCircle size={20} /> Distribution Rights</li>
-                <li><Package size={20} /> Corporate Bulk Orders</li>
+                <li><CheckCircle size={20} /> HoReCa Bulk Orders</li>
+                <li><CheckCircle size={20} /> Contract Manufactureres</li>
+                <li><Package size={20} /> Export Enquiry</li>
+                <li><Package size={20} /> Distributorship & Super Stockist Enquiry</li>
               </ul>
               <a href="https://wa.me/918090086636" target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
                 <WhatsAppIcon size={20} /> Connect with Sales
