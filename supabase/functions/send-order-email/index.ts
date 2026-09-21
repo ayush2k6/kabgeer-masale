@@ -577,7 +577,7 @@ serve(async (req) => {
             body: JSON.stringify({
               from: formattedFrom,
               to: [targetCustomerRecipient],
-              reply_to: 'support@kabgeermasala.com',
+              reply_to: 'enquiry@kabgeermasala.com',
               subject: subject,
               html: emailHtml
             })
@@ -627,7 +627,7 @@ serve(async (req) => {
             body: JSON.stringify({
               from: formattedFrom,
               to: [targetCustomerRecipient],
-              reply_to: 'support@kabgeermasala.com',
+              reply_to: 'enquiry@kabgeermasala.com',
               subject: `Order Confirmed! #${order.display_order_id} — Kabgeer Masale`,
               html: customerHtml
             })

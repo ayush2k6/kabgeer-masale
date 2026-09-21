@@ -1,5 +1,31 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-21 (Official Domain Mailboxes & Edge Function Deployment)
+
+### Task
+1. Configure official main mailboxes:
+   - External / Customer main mailbox: `enquiry@kabgeermasala.com` (replacing legacy placeholder `support@kabgeermasala.com`)
+   - Internal / Operations main mailbox: `admin@kabgeermasala.com`
+2. Update contact surfaces across storefront (`ContactPage.jsx`, `Footer.jsx`).
+3. Update admin authentication portal (`AdminLoginPage.jsx`).
+4. Update Supabase Edge Functions (`send-order-email`) default `ADMIN_NOTIFICATION_EMAIL` and `reply_to` headers to `enquiry@kabgeermasala.com`.
+5. Deploy `send-order-email` edge function to Supabase Cloud.
+
+### Implemented Changes & Verification
+- **1. Storefront Contact Points (`ContactPage.jsx`, `Footer.jsx`)**:
+  - `ContactPage.jsx`: Configured `mailto:enquiry@kabgeermasala.com`.
+  - `Footer.jsx`: Configured `enquiry@kabgeermasala.com` as customer contact email.
+- **2. Admin Login (`AdminLoginPage.jsx`)**:
+  - Configured placeholder to `admin@kabgeermasala.com`.
+- **3. Supabase Edge Functions (`send-order-email/index.ts`)**:
+  - Default `ADMIN_NOTIFICATION_EMAIL` configured to `admin@kabgeermasala.com`.
+  - Customer status update & confirmation emails configure `reply_to: 'enquiry@kabgeermasala.com'`.
+  - Deployed successfully to Supabase Cloud (`cfvopnzcqbtqcupdomto`).
+- **4. Build & Test Verification**:
+  - `npm run build`: **Passed cleanly in 2.32s (0 errors)**.
+
+---
+
 ## 2026-09-18 (Recipe Section Corrections & 5–7 Working Days Delivery Standard)
 
 ### Task
