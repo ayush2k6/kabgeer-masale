@@ -1,5 +1,20 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-21 (Montage Product Card Sizing Fix)
+
+### Task
+Fix uneven card sizes in the "Our Quick Non-Veg Masalas", "Our Quick Veg Masalas", and "Our Daily Essential Masalas" horizontal sliders, specifically noticeable on mobile views.
+
+### Implemented Changes & Verification
+- **MontageProductCard Layout (`MontageProductCard.css`)**:
+  - Added `height: 100%` to ensure cards stretch to the full height of their flex container.
+  - Applied `flex-grow: 1` to `.montage-card-info` and `margin-top: auto` to the action button to uniformly push buttons to the bottom edge.
+- **Home Page Slider Layout (`HomePage.css`)**:
+  - Added `display: flex; flex-direction: column;` to `.home-slider-card-item` to correctly pass the flex container height down to the child cards.
+- **Verification**: Verified identical card heights across all views for slider items.
+
+---
+
 ## 2026-09-21 (Global Popup Image Overlay)
 
 ### Task

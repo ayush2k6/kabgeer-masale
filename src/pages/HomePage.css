@@ -635,6 +635,8 @@
   min-width: 270px;
   max-width: 270px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .slider-bottom-cta {

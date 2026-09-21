@@ -9,6 +9,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   padding: 1.25rem;
+  height: 100%;
 }
 
 .montage-product-card:hover {
@@ -36,6 +37,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  flex-grow: 1;
 }
 
 .montage-product-title {
@@ -68,6 +70,7 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   width: 100%;
+  margin-top: auto;
 }
 
 .montage-card-btn:hover {
