@@ -61,7 +61,7 @@ Current Branch: v1-release / main (Deployed on Vercel)
 - ✅ **Trackon Courier Integration**: Full shipping architecture, isolated adapter interface (`TrackonCourierAdapter`), database audit table (`public.shipments`), AWB generation, tracking timeline lookup, cancellation handler, and non-blocking retry/idempotency protection (**DEVELOPMENT-COMPLETE / SIMULATION MODE ACTIVE**).
 - ✅ **Security & RLS Hardening**: Enforced strict RLS policies on all 8 tables, blocked direct client-side mutations on financial tables, added payload input sanitization (email regex, 6-digit Indian PIN code regex `/^[1-9][0-9]{5}$/`), and passed 5/5 security penetration tests.
 - ✅ **Comprehensive E2E QA**: Executed 8-step master regression suite (**100% PASS**), verified SPA client-side routing (`vercel.json`, `_redirects`), confirmed 267 asset paths (`/assets/products/...`), 0 linter errors, 0 build errors.
-- ✅ **UI/UX Polish**: Implemented mobile-friendly horizontal sliders for Quick Masala and Daily Essential sections on the Home Page.
+- ✅ **UI/UX Polish**: Implemented mobile-friendly horizontal sliders for Quick Masala and Daily Essential sections on the Home Page, and added a global popup image overlay upon site entry.
 - ✅ **Production Build & Git Deployment**: Clean Vite production build (`dist/`) and pushed code to `main` branch on GitHub (`https://github.com/ayush2k6/kabgeer-masale.git`).
 
 ---

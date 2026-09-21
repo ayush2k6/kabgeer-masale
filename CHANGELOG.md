@@ -1,5 +1,20 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-21 (Global Popup Image Overlay)
+
+### Task
+Implement a global popup image (`popup.png`) that appears across the site whenever a user enters the site or refreshes the page.
+
+### Implemented Changes & Verification
+- **New Popup Component (`Popup.jsx`, `Popup.css`)**:
+  - Created a responsive overlay component with a close button and smooth fade/scale animations.
+  - Automatically triggers on every page load via component mount.
+- **Global Integration (`App.jsx`)**:
+  - Imported and rendered `<Popup />` within the main layout to ensure site-wide availability.
+- **Verification**: Verified overlay displays successfully on page refresh with correct layout centering.
+
+---
+
 ## 2026-09-20 (Quick Masala Sections Horizontal Slider)
 
 ### Task

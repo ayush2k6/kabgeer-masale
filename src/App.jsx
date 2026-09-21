@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import Popup from './components/Popup';
 import './index.css';
 
 import HomePage from './pages/HomePage';
@@ -36,6 +37,7 @@ function App() {
         <Router>
           <>
             <ScrollToTop />
+            <Popup />
             <div className="app-container">
               <Header />
               <main className="main-content">
