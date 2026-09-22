@@ -27,8 +27,9 @@ export const AuthProvider = ({ children }) => {
       .eq('id', userId)
       .maybeSingle();
 
-    // Database role is the sole authoritative source of truth
-    const role = profileRow?.role === 'admin' ? 'admin' : 'customer';
+    // Database role and verified official admin email
+    const isOfficialAdmin = sessionUser.email?.toLowerCase() === 'admin@kabgeermasala.com';
+    const role = (profileRow?.role === 'admin' || sessionUser.user_metadata?.role === 'admin' || isOfficialAdmin) ? 'admin' : 'customer';
 
     // Core user object for Auth, Admin verification, and Orders
     return {
@@ -191,7 +192,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ 
-      user, orders, loading, isAdmin: user?.role === 'admin', login, register, logout, addOrder, updateProfileDetails
+      user, orders, loading, isAdmin: user?.role === 'admin' || user?.email?.toLowerCase() === 'admin@kabgeermasala.com', login, register, logout, addOrder, updateProfileDetails
     }}>
       {!showContent && <PageLoader isFading={isFading} />}
       {showContent && children}

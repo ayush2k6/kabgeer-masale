@@ -1,5 +1,26 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-22 (Admin Account Provisioning & Production Data Purge)
+
+### Task
+1. Provision full administrator access to `admin@kabgeermasala.com` with secure password credentials.
+2. Purge all past test orders, order items, payments, and shipments from the database.
+3. Verify successful authentication, role resolution, and empty production order state.
+
+### Implemented Changes & Verification
+- **1. Supabase Auth & Role Provisioning (`admin-manage-orders/index.ts`, `AuthContext.jsx`)**:
+  - Configured user `admin@kabgeermasala.com` in Supabase Auth with confirmed email and active access.
+  - Assigned database role `admin` in `public.profiles`.
+  - Added fail-safe admin email validation in `AuthContext.jsx` and updated `ADMIN_WHITELIST` in `admin-manage-orders`.
+  - Live tested authentication: Logged in successfully (`id: 4172f28d-...`).
+- **2. Production Data Purge (`admin-manage-orders`)**:
+  - Purged all historical test data from `orders`, `order_items`, `payments`, and `shipments`.
+  - Verified `admin-manage-orders` list action returns clean zero-order slate (`orders: []`).
+- **3. Build & Test Verification**:
+  - `npm run build`: **Passed cleanly with 0 errors**.
+
+---
+
 ## 2026-09-22 (Montage Product Card Redesign & Mobile Polish)
 
 ### Task
