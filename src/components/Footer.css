@@ -5,7 +5,7 @@
 .footer-wrapper {
   background: linear-gradient(180deg, #122417 0%, #0c1810 100%);
   color: rgba(255, 255, 255, 0.88);
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   border-top: 1.5px solid rgba(212, 175, 55, 0.35);
   position: relative;
 }
@@ -91,12 +91,12 @@
 
 /* Headings */
 .footer-heading {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-sans);
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #d4af37;
   margin: 0 0 1.15rem 0;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 /* Link Columns */

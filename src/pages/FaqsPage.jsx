@@ -33,7 +33,7 @@ const FaqsPage = () => {
           </div>
           <div className="faq-item">
             <h3 className="faq-question">How can I contact customer support?</h3>
-            <p className="faq-answer">You can reach us through our Contact Us page, WhatsApp, or email for any assistance regarding orders or products.</p>
+            <p className="faq-answer">You can reach us through our Bulk Enquiry page, WhatsApp, or email for any assistance regarding orders or products.</p>
           </div>
         </div>
       </div>

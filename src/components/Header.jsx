@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Search, ShoppingBag, X, ArrowUp, Home, Package, Sparkles, ChefHat } from 'lucide-react';
+import { Search, ShoppingBag, X, ArrowUp, Home, Package, Sparkles, ChefHat, Mail } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { PRODUCTS } from '../data/products';
 import CartDrawer from './CartDrawer';
@@ -148,6 +148,9 @@ const Header = () => {
               <NavLink to="/recipes" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
                 <ChefHat size={16} /> Recipes
               </NavLink>
+              <NavLink to="/contact" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
+                <Mail size={16} /> Bulk Enquiry
+              </NavLink>
             </nav>
 
             <div className="header-actions">
@@ -257,6 +260,10 @@ const Header = () => {
         <NavLink to="/recipes" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
           <ChefHat size={20} />
           <span>Recipes</span>
+        </NavLink>
+        <NavLink to="/contact" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+          <Mail size={20} />
+          <span>Bulk Enquiry</span>
         </NavLink>
       </nav>
 
