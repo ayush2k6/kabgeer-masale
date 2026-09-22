@@ -1172,11 +1172,18 @@
   }
 
   .home-slider-card-item {
-    min-width: 165px;
-    max-width: 165px;
+    min-width: 190px;
+    max-width: 190px;
   }
 
   .container {
-    padding: 0 10px;
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .home-slider-card-item {
+    min-width: 175px;
+    max-width: 175px;
   }
 }

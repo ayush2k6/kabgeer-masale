@@ -1,5 +1,26 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-22 (Montage Product Card Redesign & Mobile Polish)
+
+### Task
+Enhance the visual design, proportions, image display, typography, and mobile responsiveness for the Montage Product Cards used across the Quick Non-Veg, Quick Veg, and Daily Essential Masala horizontal sliders.
+
+### Implemented Changes & Verification
+- **1. Visual Design & Presentation (`MontageProductCard.jsx`, `MontageProductCard.css`)**:
+  - Replaced cramped image container with balanced 1:1 soft-cream framed background (`#fbf9f4`) and subtle border.
+  - Added dynamic discount badge (`-15%`) and weight badge (`50g`/`100g`).
+  - Added 5-star social proof rating snippet (`★ 5.0`).
+  - Formatted price with strike-through MRP for clear value presentation.
+  - Upgraded action button to single-line pill design with smooth elevation, prevent text wrapping, and added shopping cart icon.
+  - Cleaned typography using clean sans-serif system with 2-line title clamp.
+- **2. Mobile Responsiveness (`HomePage.css`)**:
+  - Increased mobile card width from cramped 165px to balanced 190px (and 175px on extra-small screens).
+  - Adjusted internal padding for touch targets and optimal content balance.
+- **3. Build & Test Verification**:
+  - `npm run build`: **Passed cleanly with 0 errors**.
+
+---
+
 ## 2026-09-21 (Montage Product Card Sizing Fix)
 
 ### Task
