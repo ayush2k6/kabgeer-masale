@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, MapPin, Send, ChevronDown, CheckCircle, Package } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, ChevronDown, CheckCircle, Package, X } from 'lucide-react';
 import './ContactPage.css';
 
 // WhatsApp Icon component
@@ -26,6 +26,15 @@ const FAQs = [
 
 const ContactPage = () => {
   const [activeFaq, setActiveFaq] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    enquiryType: 'bulk',
+    message: ''
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -33,6 +42,37 @@ const ContactPage = () => {
 
   const toggleFaq = (index) => {
     setActiveFaq(activeFaq === index ? null : index);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const enquiryLabels = {
+      general: 'General Query',
+      bulk: 'Bulk / Wholesale Enquiry',
+      feedback: 'Feedback / Suggestions'
+    };
+    const typeLabel = enquiryLabels[formData.enquiryType] || formData.enquiryType || 'General Query';
+    const text = `Hi Kabgeer Masale, I would like to make an enquiry.\n\n*Name:* ${formData.name}\n*Email:* ${formData.email}\n*Phone:* ${formData.phone || 'Not specified'}\n*Enquiry Type:* ${typeLabel}\n\n*Message:*\n${formData.message}`;
+    const encodedText = encodeURIComponent(text);
+    window.open(`https://wa.me/918090086636?text=${encodedText}`, '_blank');
+    setIsSubmitted(true);
+    setShowModal(true);
+  };
+
+  const handleReset = () => {
+    setIsSubmitted(false);
+    setShowModal(false);
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      enquiryType: 'bulk',
+      message: ''
+    });
   };
 
   return (
@@ -78,40 +118,98 @@ const ContactPage = () => {
           {/* Form */}
           <div className="contact-form-container">
             <h2>Send a Message</h2>
-            <form onSubmit={(e) => e.preventDefault()}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input type="text" placeholder="John Doe" required />
+            
+            {isSubmitted ? (
+              <div className="contact-success-card">
+                <div className="contact-success-icon">
+                  <CheckCircle size={52} />
                 </div>
-                <div className="form-group">
-                  <label>Email Address</label>
-                  <input type="email" placeholder="john@example.com" required />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Phone Number</label>
-                  <input type="tel" placeholder="+91 XXXXX XXXXX" />
-                </div>
-                <div className="form-group">
-                  <label>Enquiry Type</label>
-                  <select required className="form-select">
-                    <option value="" disabled selected>Select an option</option>
-                    <option value="general">General Query</option>
-                    <option value="bulk">Bulk / Wholesale Enquiry</option>
-                    <option value="feedback">Feedback / Suggestions</option>
-                  </select>
+                <h3>Thank You, {formData.name || 'Friend'}!</h3>
+                <p>Your message has been initiated via WhatsApp. Our team will review your requirements and respond promptly.</p>
+                <div className="contact-success-actions">
+                  <a
+                    href={`mailto:enquiry@kabgeermasala.com?subject=Enquiry from ${encodeURIComponent(formData.name)} (${encodeURIComponent(formData.enquiryType)})&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || 'N/A'}\nEnquiry Type: ${formData.enquiryType}\n\nMessage:\n${formData.message}`)}`}
+                    className="btn btn-secondary btn-email-fallback"
+                  >
+                    <Mail size={18} /> Also Send via Email
+                  </a>
+                  <button
+                    type="button"
+                    className="btn btn-outline-reset"
+                    onClick={handleReset}
+                  >
+                    Send Another Message
+                  </button>
                 </div>
               </div>
-              <div className="form-group">
-                <label>Message</label>
-                <textarea rows="5" placeholder="Write your message here..." required></textarea>
-              </div>
-              <button type="submit" className="btn btn-primary btn-submit">
-                Send Message <Send size={18} />
-              </button>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Full Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="John Doe"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Email Address</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="john@example.com"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Phone Number</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+91 XXXXX XXXXX"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Enquiry Type</label>
+                    <select
+                      name="enquiryType"
+                      value={formData.enquiryType}
+                      onChange={handleChange}
+                      required
+                      className="form-select"
+                    >
+                      <option value="bulk">Bulk / Wholesale Enquiry</option>
+                      <option value="general">General Query</option>
+                      <option value="feedback">Feedback / Suggestions</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Message</label>
+                  <textarea
+                    rows="5"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Write your message here..."
+                    required
+                  ></textarea>
+                </div>
+                <button type="submit" className="btn btn-primary btn-submit">
+                  Send Message <Send size={18} />
+                </button>
+              </form>
+            )}
           </div>
 
           {/* Side Content */}
@@ -167,6 +265,33 @@ const ContactPage = () => {
       <section className="contact-cta">
         <h2>Let's Bring Authentic Flavours<br />To <span>More Kitchens</span> Together</h2>
       </section>
+
+      {/* Enquiry Confirmation Popup Modal */}
+      {showModal && (
+        <div className="enquiry-modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="enquiry-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="enquiry-modal-close-btn" onClick={() => setShowModal(false)} aria-label="Close modal">
+              <X size={20} />
+            </button>
+            <div className="enquiry-modal-icon-wrap">
+              <CheckCircle size={54} />
+            </div>
+            <h3>Message Sent Successfully!</h3>
+            <p>
+              Thank you, <strong>{formData.name || 'Valued Customer'}</strong>! Your enquiry has been prepared and forwarded. Our team will review your message and respond promptly.
+            </p>
+            <div className="enquiry-modal-footer-actions">
+              <button
+                type="button"
+                className="btn btn-primary enquiry-modal-action-btn"
+                onClick={() => setShowModal(false)}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

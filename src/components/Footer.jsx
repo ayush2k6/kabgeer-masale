@@ -147,14 +147,14 @@ const Footer = () => {
         <div className="footer-links-group">
           <h4 className="footer-heading">BULK ENQUIRY</h4>
           <div className="footer-contact-info">
-            <p className="contact-item">
+            <a href="tel:+918090086636" className="contact-item">
               <Phone size={15} className="contact-icon" />
-              <span>+91 8090086636</span>
-            </p>
-            <p className="contact-item">
+              <span>+91 80900 86636</span>
+            </a>
+            <a href="mailto:enquiry@kabgeermasala.com" className="contact-item">
               <Mail size={15} className="contact-icon" />
               <span>enquiry@kabgeermasala.com</span>
-            </p>
+            </a>
           </div>
         </div>
 

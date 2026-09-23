@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, MapPin, CheckCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, CheckCircle, X } from 'lucide-react';
 import bannerImg from '../assets/banner.png';
 import './BulkEnquiryPage.css';
 
@@ -16,6 +16,8 @@ const BulkEnquiryPage = () => {
     quantity: '',
     message: ''
   });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -27,9 +29,22 @@ const BulkEnquiryPage = () => {
 
   const handleWhatsApp = (e) => {
     e.preventDefault();
-    const text = `Hi Kabgeer Masale, I'm interested in a bulk order.\n\nName: ${formData.name}\nBusiness: ${formData.businessName}\nExpected Quantity: ${formData.quantity}\nRequirements: ${formData.message}`;
+    const text = `Hi Kabgeer Masale, I'm interested in a bulk order.\n\n*Name:* ${formData.name}\n*Business:* ${formData.businessName}\n*Expected Quantity:* ${formData.quantity}\n*Requirements:* ${formData.message}`;
     const encodedText = encodeURIComponent(text);
     window.open(`https://wa.me/918090086636?text=${encodedText}`, '_blank');
+    setIsSubmitted(true);
+    setShowModal(true);
+  };
+
+  const handleReset = () => {
+    setIsSubmitted(false);
+    setShowModal(false);
+    setFormData({
+      name: '',
+      businessName: '',
+      quantity: '',
+      message: ''
+    });
   };
 
   return (
@@ -78,12 +93,12 @@ const BulkEnquiryPage = () => {
 
             <div className="contact-details">
               <h3>Direct Contact</h3>
-              <div className="contact-item">
+              <a href="tel:+918090086636" className="contact-item" style={{ textDecoration: 'none' }}>
                 <Phone size={18} /> <span>+91 80900 86636</span>
-              </div>
-              <div className="contact-item">
-                <Mail size={18} /> <span>olympic.kabgeer@gmail.com</span>
-              </div>
+              </a>
+              <a href="mailto:enquiry@kabgeermasala.com" className="contact-item" style={{ textDecoration: 'none' }}>
+                <Mail size={18} /> <span>enquiry@kabgeermasala.com</span>
+              </a>
               <div className="contact-item">
                 <MapPin size={18} /> <span>Kanpur, Uttar Pradesh, India</span>
               </div>
@@ -96,36 +111,101 @@ const BulkEnquiryPage = () => {
               <h3>Submit an Enquiry</h3>
               <p className="form-subtitle">Fill out the details below and connect with us instantly via WhatsApp.</p>
               
-              <form onSubmit={handleWhatsApp} className="bulk-form">
-                <div className="form-row">
-                  <div className="input-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="John Doe" />
+              {isSubmitted ? (
+                <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
+                  <div style={{ color: '#10B981', marginBottom: '1rem', display: 'inline-flex' }}>
+                    <CheckCircle size={48} />
                   </div>
-                  <div className="input-group">
-                    <label>Business Name</label>
-                    <input type="text" name="businessName" value={formData.businessName} onChange={handleChange} required placeholder="Restaurant / Catering Co." />
+                  <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
+                    Enquiry Forwarded!
+                  </h4>
+                  <p style={{ color: 'var(--color-text-light)', marginBottom: '1.5rem', fontSize: '0.95rem', lineHeight: '1.6' }}>
+                    Your bulk requirements have been formatted and directed to our sales desk. We'll connect with you shortly.
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '300px', margin: '0 auto' }}>
+                    <a
+                      href={`mailto:enquiry@kabgeermasala.com?subject=Bulk Enquiry from ${encodeURIComponent(formData.name)} (${encodeURIComponent(formData.businessName)})&body=${encodeURIComponent(`Name: ${formData.name}\nBusiness: ${formData.businessName}\nQuantity: ${formData.quantity}\nRequirements:\n${formData.message}`)}`}
+                      className="btn-whatsapp"
+                      style={{ backgroundColor: 'var(--color-primary)', textDecoration: 'none', padding: '0.8rem', fontSize: '0.95rem' }}
+                    >
+                      <Mail size={18} /> Also Email Us
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleReset}
+                      style={{
+                        background: 'transparent',
+                        border: '1px solid var(--color-border)',
+                        padding: '0.75rem',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        color: 'var(--color-primary)',
+                        fontWeight: '500'
+                      }}
+                    >
+                      Submit Another Enquiry
+                    </button>
                   </div>
                 </div>
-                
-                <div className="input-group">
-                  <label>Expected Monthly Quantity (kg)</label>
-                  <input type="text" name="quantity" value={formData.quantity} onChange={handleChange} required placeholder="e.g. 50 kg" />
-                </div>
-                
-                <div className="input-group">
-                  <label>Specific Requirements</label>
-                  <textarea name="message" rows="4" value={formData.message} onChange={handleChange} required placeholder="Tell us about your specific spice needs..."></textarea>
-                </div>
-                
-                <button type="submit" className="btn-whatsapp">
-                  <WhatsAppIcon size={20} /> Connect on WhatsApp
-                </button>
-              </form>
+              ) : (
+                <form onSubmit={handleWhatsApp} className="bulk-form">
+                  <div className="form-row">
+                    <div className="input-group">
+                      <label>Full Name</label>
+                      <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="John Doe" />
+                    </div>
+                    <div className="input-group">
+                      <label>Business Name</label>
+                      <input type="text" name="businessName" value={formData.businessName} onChange={handleChange} required placeholder="Restaurant / Catering Co." />
+                    </div>
+                  </div>
+                  
+                  <div className="input-group">
+                    <label>Expected Monthly Quantity (kg)</label>
+                    <input type="text" name="quantity" value={formData.quantity} onChange={handleChange} required placeholder="e.g. 50 kg" />
+                  </div>
+                  
+                  <div className="input-group">
+                    <label>Specific Requirements</label>
+                    <textarea name="message" rows="4" value={formData.message} onChange={handleChange} required placeholder="Tell us about your specific spice needs..."></textarea>
+                  </div>
+                  
+                  <button type="submit" className="btn-whatsapp">
+                    <WhatsAppIcon size={20} /> Connect on WhatsApp
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Enquiry Confirmation Popup Modal */}
+      {showModal && (
+        <div className="enquiry-modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="enquiry-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="enquiry-modal-close-btn" onClick={() => setShowModal(false)} aria-label="Close modal">
+              <X size={20} />
+            </button>
+            <div className="enquiry-modal-icon-wrap">
+              <CheckCircle size={54} />
+            </div>
+            <h3>Bulk Enquiry Forwarded!</h3>
+            <p>
+              Thank you, <strong>{formData.name || 'Valued Partner'}</strong>! Your bulk requirements have been prepared and directed to our sales team. We will review and reach out shortly.
+            </p>
+            <div className="enquiry-modal-footer-actions">
+              <button
+                type="button"
+                className="btn-whatsapp enquiry-modal-action-btn"
+                onClick={() => setShowModal(false)}
+              >
+                Got It, Thanks!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -236,3 +236,113 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 15px rgba(213, 173, 102, 0.2);
 }
+
+/* --- Enquiry Confirmation Modal Popup --- */
+.enquiry-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(10, 20, 13, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 1.5rem;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.enquiry-modal-card {
+  background: var(--color-white);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 16px;
+  max-width: 460px;
+  width: 100%;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  animation: modalScaleUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.enquiry-modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: all 0.2s ease;
+}
+
+.enquiry-modal-close-btn:hover {
+  background: rgba(212, 175, 55, 0.25);
+  transform: rotate(90deg);
+}
+
+.enquiry-modal-icon-wrap {
+  color: #10B981;
+  margin-bottom: 1.2rem;
+  display: inline-flex;
+}
+
+.enquiry-modal-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1.65rem;
+  color: var(--color-primary);
+  margin-bottom: 0.85rem;
+}
+
+.enquiry-modal-card p {
+  color: var(--color-text-light);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+}
+
+.enquiry-modal-footer-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.enquiry-modal-action-btn {
+  padding: 0.9rem 2.5rem !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  background-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  border: none !important;
+  cursor: pointer !important;
+  margin-top: 0 !important;
+  width: auto !important;
+  transition: all 0.25s ease !important;
+}
+
+.enquiry-modal-action-btn:hover {
+  background-color: var(--color-accent) !important;
+  color: var(--color-primary) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3) !important;
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+

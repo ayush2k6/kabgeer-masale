@@ -1,5 +1,29 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-23 (Contact & Bulk Enquiry Form Functionality)
+
+### Task
+1. Activate and make functional the "Send a Message" contact form on `/contact`.
+2. Connect WhatsApp direct messaging dispatch with clean formatting for name, email, phone, enquiry category, and message text.
+3. Provide interactive on-page success confirmation and fallback email trigger (`mailto:enquiry@kabgeermasala.com`).
+4. Update direct contact info links across `/contact`, `/bulk`, and Footer with verified email (`enquiry@kabgeermasala.com`) and phone (`+91 80900 86636`).
+
+### Implemented Changes & Verification
+- **1. Contact Form (`ContactPage.jsx`, `ContactPage.css`)**:
+  - Bound state handlers (`formData`, `handleChange`, `handleSubmit`, `handleReset`).
+  - Implemented automated message formulation and WhatsApp dispatch link (`https://wa.me/918090086636`).
+  - Added royal-themed confirmation modal popup dialog upon sending ("Message Sent Successfully!") with backdrop blur and auto/manual dismissal.
+  - Added on-page fallback action to send via email (`enquiry@kabgeermasala.com`).
+- **2. Bulk Partner Page (`BulkEnquiryPage.jsx`, `BulkEnquiryPage.css`)**:
+  - Added interactive "Bulk Enquiry Forwarded!" modal popup dialog upon clicking "Connect on WhatsApp".
+  - Updated contact email to `enquiry@kabgeermasala.com` and made direct phone/email contact rows clickable.
+- **3. Footer Contact Links (`Footer.jsx`, `Footer.css`)**:
+  - Made phone and email in the "BULK ENQUIRY" column clickable links with hover effects.
+- **4. Build & Test Verification**:
+  - `npm run build`: **Passed cleanly with 0 errors**.
+
+---
+
 ## 2026-09-23 (Header & Footer Navigation Polish)
 
 ### Task
