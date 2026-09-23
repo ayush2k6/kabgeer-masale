@@ -1,5 +1,24 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-23 (Header & Footer Navigation Polish)
+
+### Task
+1. Add "Bulk Enquiry" link to both desktop header navigation and mobile bottom navigation bar.
+2. Update footer typography (`--font-sans`, 700 weight, 1px letter spacing).
+3. Update official Amazon vector icon and footer column title to "BULK ENQUIRY".
+
+### Implemented Changes & Verification
+- **1. Navigation (`Header.jsx`, `Header.css`)**:
+  - Added Bulk Enquiry (`/contact`) link with `Mail` icon to main desktop navbar and mobile bottom navigation bar.
+- **2. Footer (`Footer.jsx`, `Footer.css`)**:
+  - Updated Amazon vector icon.
+  - Set footer headings to clean sans-serif typography.
+  - Replaced "CONTACT US" column heading with "BULK ENQUIRY".
+- **3. Build & Test Verification**:
+  - `npm run build`: **Passed cleanly with 0 errors**.
+
+---
+
 ## 2026-09-22 (Admin Account Provisioning & Production Data Purge)
 
 ### Task
