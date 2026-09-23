@@ -14,9 +14,9 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  // 1. Not logged in -> Redirect to standard login
+  // 1. Not logged in -> Redirect to admin login
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   // 2. Logged in, but not an admin -> Access Denied screen

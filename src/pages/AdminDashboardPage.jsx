@@ -58,7 +58,7 @@ const AdminDashboardPage = () => {
   const [statusUpdateMessage, setStatusUpdateMessage] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
 
-  // Fetch all orders from Supabase (with direct RLS & RPC fallback)
+  // Fetch all orders from Supabase (with direct RLS, Edge function & RPC fallback)
   const fetchAllOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -70,14 +70,24 @@ const AdminDashboardPage = () => {
         .select('*, order_items(*)')
         .order('created_at', { ascending: false });
 
-      if (!directErr && Array.isArray(directOrders) && directOrders.length > 0) {
+      if (!directErr && Array.isArray(directOrders)) {
         setOrders(directOrders);
         return;
       }
 
-      // 2. Try Supabase RPC get_all_orders_admin
+      // 2. Try Supabase Edge Function admin-manage-orders
+      const { data: edgeData, error: edgeErr } = await supabase.functions.invoke('admin-manage-orders', {
+        body: { action: 'list', adminEmail: user?.email || 'admin@kabgeermasala.com' }
+      });
+
+      if (!edgeErr && edgeData?.success && Array.isArray(edgeData?.orders)) {
+        setOrders(edgeData.orders);
+        return;
+      }
+
+      // 3. Try Supabase RPC get_all_orders_admin
       const { data: rpcOrders, error: rpcErr } = await supabase.rpc('get_all_orders_admin');
-      if (!rpcErr && Array.isArray(rpcOrders) && rpcOrders.length > 0) {
+      if (!rpcErr && Array.isArray(rpcOrders)) {
         const { data: allItems } = await supabase.from('order_items').select('*');
         const itemsByOrderId = {};
         (allItems || []).forEach(it => {
@@ -92,7 +102,7 @@ const AdminDashboardPage = () => {
       if (directOrders) {
         setOrders(directOrders);
       } else {
-        throw new Error(directErr?.message || rpcErr?.message || 'No orders found or permissions restricted.');
+        throw new Error(directErr?.message || edgeErr?.message || rpcErr?.message || 'Failed to fetch customer orders.');
       }
     } catch (err) {
       console.error('Error fetching admin orders:', err);
@@ -100,7 +110,7 @@ const AdminDashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchAllOrders();

@@ -47,8 +47,9 @@ function App() {
                     <Route path="/login" element={<Navigate to="/products" replace />} />
                     <Route path="/signup" element={<Navigate to="/products" replace />} />
                     <Route path="/profile" element={<Navigate to="/products" replace />} />
-                    <Route path="/account" element={<Navigate to="/products" replace />} />
                     <Route path="/admin/login" element={<AdminLoginPage />} />
+                    <Route path="/admin-login" element={<AdminLoginPage />} />
+                    <Route path="/adminlogin" element={<AdminLoginPage />} />
                     <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
                     <Route path="/admin/orders" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
                     <Route path="/recipes" element={<RecipesPage />} />
