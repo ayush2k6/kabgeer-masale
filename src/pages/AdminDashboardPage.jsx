@@ -759,13 +759,31 @@ const AdminDashboardPage = () => {
                           </span>
                         </td>
                         <td>
-                          <button
-                            type="button"
-                            className="btn-view-order"
-                            onClick={() => setSelectedOrder(order)}
-                          >
-                            View Details
-                          </button>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <button
+                              type="button"
+                              className="btn-view-order"
+                              onClick={() => setSelectedOrder(order)}
+                            >
+                              View Details
+                            </button>
+                            {order.order_status === 'Delivered' && (
+                              <button
+                                type="button"
+                                className={`chip-status-btn chip-review-btn ${order.review_email_sent_at ? 'sent' : ''}`}
+                                style={{ padding: '0.28rem 0.55rem', fontSize: '0.72rem', borderRadius: '5px' }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSendReviewEmail(order);
+                                }}
+                                disabled={sendingReviewEmail}
+                                title={order.review_email_sent_at ? `Review email sent on ${new Date(order.review_email_sent_at).toLocaleDateString('en-IN')}` : 'Send Google Review Email to Customer'}
+                              >
+                                <Star size={11} color="#ca8a04" fill={order.review_email_sent_at ? '#16a34a' : '#ca8a04'} />
+                                {order.review_email_sent_at ? 'Sent ✓' : 'Ask Review'}
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
@@ -867,7 +885,7 @@ const AdminDashboardPage = () => {
                   </div>
                 )}
 
-                {/* Quick Status Chips */}
+                {/* Quick Status Chips & Action Buttons */}
                 <div className="quick-status-chips">
                   {['Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(st => (
                     <button
@@ -880,6 +898,18 @@ const AdminDashboardPage = () => {
                       {st}
                     </button>
                   ))}
+
+                  {/* Top-Level "Ask for Review" Quick Action Chip */}
+                  <button
+                    type="button"
+                    className={`chip-status-btn chip-review-btn ${selectedOrder.review_email_sent_at ? 'sent' : ''}`}
+                    onClick={() => handleSendReviewEmail(selectedOrder)}
+                    disabled={sendingReviewEmail}
+                    title="1-Click Send Google Review Email to Customer"
+                  >
+                    <Star size={12} color="#ca8a04" fill={selectedOrder.review_email_sent_at ? '#16a34a' : '#ca8a04'} />
+                    {sendingReviewEmail ? 'Sending...' : selectedOrder.review_email_sent_at ? 'Review Sent ✓' : '⭐ Ask for Review'}
+                  </button>
                 </div>
 
                 <form onSubmit={handleUpdateStatus} className="status-update-control-box" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem' }}>

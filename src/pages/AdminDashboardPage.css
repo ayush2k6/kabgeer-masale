@@ -550,6 +550,29 @@
   border-color: #1a2f22;
 }
 
+.chip-review-btn {
+  background-color: #fefce8 !important;
+  color: #854d0e !important;
+  border-color: #fde047 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.3rem !important;
+  font-weight: 700 !important;
+}
+
+.chip-review-btn:hover:not(:disabled) {
+  background-color: #fef08a !important;
+  border-color: #eab308 !important;
+  color: #713f12 !important;
+  transform: translateY(-1px);
+}
+
+.chip-review-btn.sent {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+  border-color: #86efac !important;
+}
+
 /* Status Update Box */
 .status-update-control-box {
   display: flex;
