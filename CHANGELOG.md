@@ -1,5 +1,31 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-24 (Admin Review Request & Custom Email Communication Tool)
+
+### Task
+1. Implement 1-click manual "Send Review Request Email" directly in the Admin Panel Order Details Drawer.
+2. Design and deploy luxury royal-themed review email template (`renderReviewRequestEmailHtml`) with star ratings, ordered spice listings, Google Reviews link, and `KABGEER10` 10% refill reward coupon.
+3. Build direct Custom Email Composer inside the Admin Panel with 1-click presets (Review Request, Address Check, Shipping Update, VIP Refill Coupon, and Blank Custom note).
+4. Add database tracking columns `review_email_sent_at` and `custom_email_sent_at` to prevent duplicate emails and track historical dispatches.
+
+### Implemented Changes & Verification
+- **1. Serverless Edge Function (`send-order-email/index.ts`)**:
+  - Added `renderReviewRequestEmailHtml` with interactive 5-star ratings, direct Google Review link, and royal branding.
+  - Added `renderCustomMessageEmailHtml` wrapping arbitrary admin text inside official Kabgeer luxury email layout.
+  - Added request handlers for `emailType: 'review_request'` and `emailType: 'custom_message'`.
+  - Added database timestamp updates on `orders.review_email_sent_at` and `orders.custom_email_sent_at`.
+- **2. Admin Panel UI & State (`AdminDashboardPage.jsx`, `AdminDashboardPage.css`)**:
+  - Integrated dedicated "Customer Review Request" card with dispatch status badge (`✓ Sent [Date]` vs `Not Sent`).
+  - Added expandable "Direct Customer Email" composer with 5 one-click message presets.
+  - Added loading states, error handling, and green success confirmation banners with IST timestamps.
+- **3. Database Migration (`20260924000000_add_review_and_custom_email_tracking.sql`)**:
+  - Created schema migration adding `review_email_sent_at` and `custom_email_sent_at` to `public.orders`.
+- **4. Verification & Build**:
+  - `npm run build`: **Passed cleanly in 1.48s (0 errors)**.
+  - `npm run lint`: **Passed cleanly (0 errors)**.
+
+---
+
 ## 2026-09-23 (Contact & Bulk Enquiry Form Functionality)
 
 ### Task

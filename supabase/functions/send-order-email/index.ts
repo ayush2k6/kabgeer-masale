@@ -5,11 +5,14 @@ import { corsHeaders } from '../_shared/cors.ts';
 interface EmailPayload {
   orderId: string;
   forceResend?: boolean;
-  emailType?: 'confirmation' | 'status_update';
+  emailType?: 'confirmation' | 'status_update' | 'review_request' | 'custom_message';
   newStatus?: 'Pending' | 'Confirmed' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   awbNumber?: string;
   courierName?: string;
   cancellationReason?: string;
+  customSubject?: string;
+  customMessage?: string;
+  reviewLink?: string;
 }
 
 // Helper to format ISO timestamp to IST
@@ -482,6 +485,168 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
   `;
 }
 
+// 6. Customer Email HTML: Post-Delivery Review Request
+function renderReviewRequestEmailHtml(order: any, items: any[], customReviewUrl?: string): string {
+  const itemsRows = (items || []).map((item) => `
+    <tr>
+      <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #1a2f22; font-size: 13px;">
+        <strong>${item.product_name || 'Authentic Masala'}</strong> ${item.weight_pack ? `<span style="color: #64748b; font-size: 12px;">(${item.weight_pack})</span>` : ''}
+      </td>
+      <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; text-align: center; color: #334155; font-size: 13px;">
+        × ${item.quantity}
+      </td>
+    </tr>
+  `).join('');
+
+  const targetReviewUrl = customReviewUrl || Deno.env.get('GOOGLE_REVIEW_URL') || 'https://www.google.com/search?q=Kabgeer+Masale+Lucknow#lrd=0x0:0x0,3';
+
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>How was your culinary experience with Kabgeer Masale?</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #faf6f0; margin: 0; padding: 24px 12px;">
+      <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26, 47, 34, 0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+        
+        <!-- Header -->
+        <div style="background-color: #1a2f22; padding: 28px 24px; text-align: center; color: #ffffff;">
+          <h1 style="margin: 0; font-size: 22px; letter-spacing: 2px; font-weight: 700; color: #d4af37;">KABGEER MASALE</h1>
+          <p style="margin: 6px 0 0 0; font-size: 13px; color: #e2e8f0; letter-spacing: 0.5px;">Authentic Lucknowi Spices & Traditional Blends</p>
+        </div>
+        
+        <div style="padding: 28px 24px;">
+          <!-- Greeting Card -->
+          <div style="text-align: center; margin-bottom: 24px;">
+            <span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
+              👑 1-Week Culinary Check-In
+            </span>
+            <h2 style="color: #1a2f22; margin: 12px 0 6px 0; font-size: 20px;">How did your Awadhi cooking turn out, ${order.customer_name || 'Food Lover'}?</h2>
+            <p style="color: #64748b; font-size: 14px; margin: 0; line-height: 1.5;">
+              It has been a week since your royal spice package arrived. We hope the authentic aroma of Lucknow has brought rich flavors to your home!
+            </p>
+          </div>
+
+          <!-- Star Rating Component -->
+          <div style="background: #faf6f0; border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center; border: 1px solid rgba(26, 47, 34, 0.08);">
+            <div style="font-size: 13px; font-weight: 700; color: #1a2f22; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+              Tap to Rate Your Experience
+            </div>
+            <div style="margin-bottom: 16px;">
+              <a href="${targetReviewUrl}" target="_blank" style="text-decoration: none; font-size: 28px; color: #d4af37; letter-spacing: 6px;">
+                ★ ★ ★ ★ ★
+              </a>
+            </div>
+            <div>
+              <a href="${targetReviewUrl}" target="_blank" style="display: inline-block; background-color: #1a2f22; color: #d4af37; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 6px; text-decoration: none; border: 1px solid #d4af37; box-shadow: 0 2px 8px rgba(26, 47, 34, 0.15);">
+                ⭐ Leave a 1-Minute Review on Google →
+              </a>
+            </div>
+            <div style="font-size: 11px; color: #94a3b8; margin-top: 8px;">
+              (Takes less than 30 seconds • Directly on Google Maps)
+            </div>
+          </div>
+
+          <!-- Purchased Items -->
+          <h3 style="color: #1a2f22; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 10px 0; border-bottom: 2px solid #1a2f22; padding-bottom: 6px;">
+            Masalas in Your Order #${order.display_order_id}
+          </h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+            <tbody>
+              ${itemsRows}
+            </tbody>
+          </table>
+
+          <!-- Loyalty Reward Voucher Card -->
+          <div style="background: #fdfbf7; border: 2px dashed #d4af37; border-radius: 10px; padding: 18px; margin: 24px 0; text-align: center;">
+            <div style="font-size: 12px; color: #92400e; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;">
+              🎁 A Token of Royal Gratitude
+            </div>
+            <div style="font-size: 15px; font-weight: 700; color: #1a2f22; margin-bottom: 6px;">
+              Enjoy 10% OFF on Your Next Spice Refill
+            </div>
+            <p style="font-size: 13px; color: #64748b; margin: 0 0 12px 0;">
+              Use this special private coupon at checkout on <a href="https://kabgeermasala.com" style="color: #1a2f22; font-weight: 600;">kabgeermasala.com</a>:
+            </p>
+            <div style="font-size: 18px; font-weight: 800; font-family: monospace; color: #1a2f22; letter-spacing: 2px; background: #ffffff; padding: 8px 18px; border-radius: 6px; display: inline-block; border: 1px solid #d4af37;">
+              KABGEER10
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="margin-top: 32px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            <p style="margin: 0 0 6px 0;">Need recipes or have a question? Reply directly to this email or write to <a href="mailto:enquiry@kabgeermasala.com" style="color: #1a2f22; font-weight: 600; text-decoration: underline;">enquiry@kabgeermasala.com</a></p>
+            <p style="margin: 0;">&copy; ${new Date().getFullYear()} Kabgeer Masale. 100% Pure Lucknavi Heritage.</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// 7. Customer Email HTML: Custom Admin Message
+function renderCustomMessageEmailHtml(order: any, customSubject: string, customMessage: string): string {
+  const formattedBody = (customMessage || '')
+    .replace(/\n\n/g, '</p><p style="margin: 0 0 12px 0; line-height: 1.6; color: #334155; font-size: 14px;">')
+    .replace(/\n/g, '<br/>');
+
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>${customSubject || `Message Regarding Order #${order.display_order_id}`}</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #faf6f0; margin: 0; padding: 24px 12px;">
+      <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26, 47, 34, 0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+        
+        <!-- Header -->
+        <div style="background-color: #1a2f22; padding: 28px 24px; text-align: center; color: #ffffff;">
+          <h1 style="margin: 0; font-size: 22px; letter-spacing: 2px; font-weight: 700; color: #d4af37;">KABGEER MASALE</h1>
+          <p style="margin: 6px 0 0 0; font-size: 13px; color: #e2e8f0; letter-spacing: 0.5px;">Authentic Lucknowi Spices & Traditional Blends</p>
+        </div>
+        
+        <div style="padding: 28px 24px;">
+          <!-- Order Reference Badge -->
+          <div style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+            <span style="font-size: 13px; color: #64748b;">
+              Order: <strong style="color: #1a2f22; font-family: monospace;">#${order.display_order_id}</strong>
+            </span>
+            <span style="font-size: 12px; color: #94a3b8;">
+              Customer: <strong>${order.customer_name || 'Valued Customer'}</strong>
+            </span>
+          </div>
+
+          <!-- Message Body Container -->
+          <div style="background: #ffffff; padding: 12px 0 20px 0;">
+            <p style="margin: 0 0 12px 0; line-height: 1.6; color: #334155; font-size: 14px;">
+              ${formattedBody}
+            </p>
+          </div>
+
+          <!-- Direct Store Link -->
+          <div style="text-align: center; margin: 20px 0 12px 0;">
+            <a href="https://kabgeermasala.com" target="_blank" style="display: inline-block; background-color: #1a2f22; color: #d4af37; font-weight: 700; font-size: 13px; padding: 10px 24px; border-radius: 6px; text-decoration: none; border: 1px solid #d4af37;">
+              Visit Kabgeer Masale Store →
+            </a>
+          </div>
+
+          <!-- Footer -->
+          <div style="margin-top: 32px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            <p style="margin: 0 0 6px 0;">Have questions? Reply directly to this email or reach us at <a href="mailto:enquiry@kabgeermasala.com" style="color: #1a2f22; font-weight: 600; text-decoration: underline;">enquiry@kabgeermasala.com</a></p>
+            <p style="margin: 0;">&copy; ${new Date().getFullYear()} Kabgeer Masale. 100% Pure Lucknavi Heritage.</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 // MAIN HANDLER
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -498,7 +663,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const body: EmailPayload = await req.json();
-    const { orderId, forceResend, emailType, newStatus, awbNumber, courierName, cancellationReason } = body;
+    const { orderId, forceResend, emailType, newStatus, awbNumber, courierName, cancellationReason, customSubject, customMessage, reviewLink } = body;
 
     if (!orderId) {
       return new Response(
@@ -601,6 +766,135 @@ serve(async (req) => {
         JSON.stringify({
           success: true,
           statusType: statusToProcess,
+          displayOrderId: order.display_order_id,
+          customerEmailSent: customerSent,
+          isSimulationMode,
+          isTestingDomain,
+          customerResendResult
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // =========================================================================
+    // CASE C: Post-Delivery Review Request Email (emailType === 'review_request')
+    // =========================================================================
+    if (emailType === 'review_request') {
+      const subject = customSubject || `⭐ How did your Awadhi cooking turn out, ${order.customer_name || 'Food Lover'}?`;
+      const reviewHtml = renderReviewRequestEmailHtml(order, items || [], reviewLink);
+
+      if (reviewHtml && !isSimulationMode) {
+        try {
+          console.log(`Sending Review Request Email to '${targetCustomerRecipient}'...`);
+          const resendResp = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${resendApiKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              from: formattedFrom,
+              to: [targetCustomerRecipient],
+              reply_to: 'enquiry@kabgeermasala.com',
+              subject: subject,
+              html: reviewHtml
+            })
+          });
+
+          const respText = await resendResp.text();
+          console.log(`Resend Review Email HTTP ${resendResp.status}:`, respText);
+          try { customerResendResult = JSON.parse(respText); } catch (_) { customerResendResult = respText; }
+
+          if (resendResp.ok) {
+            customerSent = true;
+            await supabase
+              .from('orders')
+              .update({ review_email_sent_at: new Date().toISOString() })
+              .eq('id', order.id);
+          } else {
+            console.error('Resend Review Email Delivery Error:', respText);
+          }
+        } catch (e: any) {
+          console.error('Resend Review Email Exception:', e);
+          customerResendResult = { exception: e?.message };
+        }
+      } else if (reviewHtml) {
+        customerSent = true;
+        await supabase
+          .from('orders')
+          .update({ review_email_sent_at: new Date().toISOString() })
+          .eq('id', order.id);
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          emailType: 'review_request',
+          displayOrderId: order.display_order_id,
+          customerEmailSent: customerSent,
+          isSimulationMode,
+          isTestingDomain,
+          customerResendResult
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // =========================================================================
+    // CASE D: Custom Admin Message Email (emailType === 'custom_message')
+    // =========================================================================
+    if (emailType === 'custom_message') {
+      const subject = customSubject || `Regarding your Kabgeer Masale Order #${order.display_order_id}`;
+      const messageBody = customMessage || 'Thank you for shopping with Kabgeer Masale. We are reaching out regarding your order.';
+      const customHtml = renderCustomMessageEmailHtml(order, subject, messageBody);
+
+      if (customHtml && !isSimulationMode) {
+        try {
+          console.log(`Sending Custom Admin Email to '${targetCustomerRecipient}'...`);
+          const resendResp = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${resendApiKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              from: formattedFrom,
+              to: [targetCustomerRecipient],
+              reply_to: 'enquiry@kabgeermasala.com',
+              subject: subject,
+              html: customHtml
+            })
+          });
+
+          const respText = await resendResp.text();
+          console.log(`Resend Custom Message HTTP ${resendResp.status}:`, respText);
+          try { customerResendResult = JSON.parse(respText); } catch (_) { customerResendResult = respText; }
+
+          if (resendResp.ok) {
+            customerSent = true;
+            await supabase
+              .from('orders')
+              .update({ custom_email_sent_at: new Date().toISOString() })
+              .eq('id', order.id);
+          } else {
+            console.error('Resend Custom Message Delivery Error:', respText);
+          }
+        } catch (e: any) {
+          console.error('Resend Custom Message Exception:', e);
+          customerResendResult = { exception: e?.message };
+        }
+      } else if (customHtml) {
+        customerSent = true;
+        await supabase
+          .from('orders')
+          .update({ custom_email_sent_at: new Date().toISOString() })
+          .eq('id', order.id);
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          emailType: 'custom_message',
           displayOrderId: order.display_order_id,
           customerEmailSent: customerSent,
           isSimulationMode,

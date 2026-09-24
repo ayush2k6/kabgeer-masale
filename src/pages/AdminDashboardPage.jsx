@@ -20,7 +20,13 @@ import {
   Copy,
   Check,
   Phone,
-  Mail
+  Mail,
+  Star,
+  MessageSquare,
+  Send,
+  Sparkles,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import logo from '../assets/logo.png';
 import './AdminDashboardPage.css';
@@ -50,6 +56,12 @@ const AdminDashboardPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [resendingEmail, setResendingEmail] = useState(false);
+  const [sendingReviewEmail, setSendingReviewEmail] = useState(false);
+  const [sendingCustomEmail, setSendingCustomEmail] = useState(false);
+  const [showCustomEmailComposer, setShowCustomEmailComposer] = useState(false);
+  const [customEmailSubject, setCustomEmailSubject] = useState('');
+  const [customEmailMessage, setCustomEmailMessage] = useState('');
+  const [selectedPreset, setSelectedPreset] = useState('');
   const [newOrderStatus, setNewOrderStatus] = useState('');
   const [awbInput, setAwbInput] = useState('');
   const [courierInput, setCourierInput] = useState('Trackon');
@@ -125,6 +137,10 @@ const AdminDashboardPage = () => {
       setNotifyEmail(true);
       setCancellationReason('');
       setStatusUpdateMessage(null);
+      setShowCustomEmailComposer(false);
+      setCustomEmailSubject(`Regarding your Kabgeer Masale Order #${selectedOrder.display_order_id || selectedOrder.id}`);
+      setCustomEmailMessage(`Dear ${selectedOrder.customer_name || 'Customer'},\n\n`);
+      setSelectedPreset('');
     }
   }, [selectedOrder]);
 
@@ -321,6 +337,118 @@ const AdminDashboardPage = () => {
       });
     } finally {
       setResendingEmail(false);
+    }
+  };
+
+  // 1-Click Post-Delivery Review Request Email Dispatcher
+  const handleSendReviewEmail = async (order) => {
+    if (!order) return;
+    setSendingReviewEmail(true);
+    setStatusUpdateMessage(null);
+    try {
+      const { data: res, error: err } = await supabase.functions.invoke('send-order-email', {
+        body: {
+          orderId: order.id,
+          emailType: 'review_request',
+          forceResend: true
+        }
+      });
+      if (err) throw err;
+      const currentTimeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+      const nowIso = new Date().toISOString();
+
+      // Update local state
+      setOrders(prev => prev.map(o => o.id === order.id ? { ...o, review_email_sent_at: nowIso } : o));
+      setSelectedOrder(prev => prev && prev.id === order.id ? { ...prev, review_email_sent_at: nowIso } : prev);
+
+      setStatusUpdateMessage({
+        type: 'success',
+        headline: `✓ Review Request Email Sent!`,
+        emailDetails: `Dispatched to ${order.customer_email} at ${currentTimeStr} IST (Google Review link included)`
+      });
+    } catch (e) {
+      setStatusUpdateMessage({
+        type: 'error',
+        headline: 'Failed to send review email',
+        text: e.message
+      });
+    } finally {
+      setSendingReviewEmail(false);
+    }
+  };
+
+  // Preset Applicator for Custom Email Composer
+  const handleApplyPreset = (presetKey, order) => {
+    if (!order) return;
+    const customerName = order.customer_name || 'Customer';
+    const orderId = order.display_order_id || order.id;
+    setSelectedPreset(presetKey);
+
+    if (presetKey === 'review') {
+      setCustomEmailSubject(`⭐ How was your Awadhi cooking experience, ${customerName}?`);
+      setCustomEmailMessage(
+        `Dear ${customerName},\n\nIt has been a week since your royal spice order #${orderId} was delivered. We hope the authentic aromas of Lucknow have brought rich flavours to your dining table!\n\nWe would love to know how your dishes turned out. Please take a quick 30 seconds to share your review on Google.\n\nThank you for choosing Kabgeer Masale!`
+      );
+    } else if (presetKey === 'address') {
+      setCustomEmailSubject(`Address Clarification for Order #${orderId} — Kabgeer Masale`);
+      setCustomEmailMessage(
+        `Dear ${customerName},\n\nWe are preparing your spice parcel for order #${orderId}. Could you please confirm your complete street address, nearby landmark, and active phone number?\n\nThis will ensure our courier partner delivers your order without delay.`
+      );
+    } else if (presetKey === 'delivery_update') {
+      setCustomEmailSubject(`Shipping Update for Order #${orderId} — Kabgeer Masale`);
+      setCustomEmailMessage(
+        `Dear ${customerName},\n\nYour authentic spice order #${orderId} has been packed with care and is scheduled for courier dispatch.\n\nYou will receive your courier tracking number and updates shortly.`
+      );
+    } else if (presetKey === 'vip_offer') {
+      setCustomEmailSubject(`A Special Refill Gift for You, ${customerName} — Kabgeer Masale`);
+      setCustomEmailMessage(
+        `Dear ${customerName},\n\nThank you for being part of the Kabgeer family! As a token of our royal appreciation, please enjoy 10% OFF on your next order with coupon code: KABGEER10.\n\nVisit https://kabgeermasala.com to explore our complete collection of heritage spice blends.`
+      );
+    } else if (presetKey === 'custom') {
+      setCustomEmailSubject(`Regarding your Kabgeer Masale Order #${orderId}`);
+      setCustomEmailMessage(`Dear ${customerName},\n\n`);
+    }
+  };
+
+  // Custom Message Dispatcher
+  const handleSendCustomEmail = async (e) => {
+    if (e) e.preventDefault();
+    if (!selectedOrder || !customEmailSubject.trim() || !customEmailMessage.trim()) return;
+
+    setSendingCustomEmail(true);
+    setStatusUpdateMessage(null);
+
+    try {
+      const { data: res, error: err } = await supabase.functions.invoke('send-order-email', {
+        body: {
+          orderId: selectedOrder.id,
+          emailType: 'custom_message',
+          customSubject: customEmailSubject.trim(),
+          customMessage: customEmailMessage.trim(),
+          forceResend: true
+        }
+      });
+      if (err) throw err;
+      const currentTimeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+      const nowIso = new Date().toISOString();
+
+      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, custom_email_sent_at: nowIso } : o));
+      setSelectedOrder(prev => prev && prev.id === selectedOrder.id ? { ...prev, custom_email_sent_at: nowIso } : prev);
+
+      setStatusUpdateMessage({
+        type: 'success',
+        headline: `✓ Custom Email Successfully Sent!`,
+        emailDetails: `Dispatched to ${selectedOrder.customer_email} at ${currentTimeStr} IST`
+      });
+      setShowCustomEmailComposer(false);
+    } catch (e) {
+      setStatusUpdateMessage({
+        type: 'error',
+        headline: 'Failed to send custom email',
+        text: e.message
+      });
+    } finally {
+      setSendingCustomEmail(false);
     }
   };
 
@@ -881,7 +1009,7 @@ const AdminDashboardPage = () => {
                   <div style={{ marginTop: '0.65rem', padding: '0.65rem 0.8rem', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#166534' }}>
                       <CheckCircle2 size={15} color="#16a34a" />
-                      <span><strong>Email Status:</strong> {selectedOrder.order_status} notification active</span>
+                      <span><strong>Fulfillment Alert:</strong> {selectedOrder.order_status} notification</span>
                     </div>
                     <button
                       type="button"
@@ -900,11 +1028,168 @@ const AdminDashboardPage = () => {
                         alignItems: 'center',
                         gap: '0.25rem'
                       }}
-                      title="Re-send email notification to customer"
+                      title="Re-send status email notification to customer"
                     >
                       <RotateCw size={11} className={resendingEmail ? 'animate-spin' : ''} />
-                      {resendingEmail ? 'Sending...' : 'Resend Email'}
+                      {resendingEmail ? 'Sending...' : 'Resend Alert'}
                     </button>
+                  </div>
+
+                  {/* Review Request & Custom Email Communication Tools */}
+                  <div className="admin-email-tools-container">
+                    
+                    {/* 1. Review Request Tool Card */}
+                    <div className="email-tool-card email-tool-card-review">
+                      <div className="email-tool-header">
+                        <div className="email-tool-title">
+                          <Star size={14} color="#d4af37" fill="#d4af37" />
+                          <span>Customer Review Request</span>
+                        </div>
+                        {selectedOrder.review_email_sent_at ? (
+                          <span className="email-tool-badge-sent">
+                            ✓ Sent {new Date(selectedOrder.review_email_sent_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                          </span>
+                        ) : (
+                          <span className="email-tool-badge-pending">
+                            Not Sent
+                          </span>
+                        )}
+                      </div>
+
+                      <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '0 0 0.6rem 0', lineHeight: '1.4' }}>
+                        Sends royal 1-week review check-in email with star ratings, Google Reviews link, and 10% refill coupon.
+                      </p>
+
+                      <button
+                        type="button"
+                        disabled={sendingReviewEmail}
+                        onClick={() => handleSendReviewEmail(selectedOrder)}
+                        className="btn-send-review-email"
+                        title="Send Google Review Request Email"
+                      >
+                        <RotateCw size={12} className={sendingReviewEmail ? 'animate-spin' : ''} style={{ display: sendingReviewEmail ? 'inline' : 'none' }} />
+                        <Sparkles size={13} style={{ display: sendingReviewEmail ? 'none' : 'inline' }} />
+                        {sendingReviewEmail 
+                          ? 'Dispatching Review Email...' 
+                          : selectedOrder.review_email_sent_at 
+                            ? 'Resend Review Request Email' 
+                            : 'Send Review Request Email'}
+                      </button>
+                    </div>
+
+                    {/* 2. Custom Email Composer Tool */}
+                    <div className="email-tool-card">
+                      <div className="email-tool-header" style={{ marginBottom: showCustomEmailComposer ? '0.5rem' : '0' }}>
+                        <div className="email-tool-title">
+                          <MessageSquare size={14} color="#0284c7" />
+                          <span>Direct Customer Email</span>
+                        </div>
+                        {selectedOrder.custom_email_sent_at && !showCustomEmailComposer && (
+                          <span className="email-tool-badge-sent">
+                            ✓ Last Sent {new Date(selectedOrder.custom_email_sent_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                          </span>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowCustomEmailComposer(prev => !prev)}
+                        className="btn-toggle-composer"
+                      >
+                        <span>{showCustomEmailComposer ? 'Close Composer' : '✉️ Compose Custom Message'}</span>
+                        {showCustomEmailComposer ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </button>
+
+                      {showCustomEmailComposer && (
+                        <form onSubmit={handleSendCustomEmail} style={{ marginTop: '0.65rem' }}>
+                          <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#64748b', marginBottom: '0.2rem' }}>
+                            Quick Presets:
+                          </div>
+                          <div className="composer-presets-row">
+                            <button
+                              type="button"
+                              className={`preset-chip-btn ${selectedPreset === 'review' ? 'active' : ''}`}
+                              onClick={() => handleApplyPreset('review', selectedOrder)}
+                            >
+                              ⭐ Review Request
+                            </button>
+                            <button
+                              type="button"
+                              className={`preset-chip-btn ${selectedPreset === 'address' ? 'active' : ''}`}
+                              onClick={() => handleApplyPreset('address', selectedOrder)}
+                            >
+                              📍 Address Check
+                            </button>
+                            <button
+                              type="button"
+                              className={`preset-chip-btn ${selectedPreset === 'delivery_update' ? 'active' : ''}`}
+                              onClick={() => handleApplyPreset('delivery_update', selectedOrder)}
+                            >
+                              🚚 Shipping Update
+                            </button>
+                            <button
+                              type="button"
+                              className={`preset-chip-btn ${selectedPreset === 'vip_offer' ? 'active' : ''}`}
+                              onClick={() => handleApplyPreset('vip_offer', selectedOrder)}
+                            >
+                              🎁 10% VIP Coupon
+                            </button>
+                            <button
+                              type="button"
+                              className={`preset-chip-btn ${selectedPreset === 'custom' ? 'active' : ''}`}
+                              onClick={() => handleApplyPreset('custom', selectedOrder)}
+                            >
+                              ✍️ Blank Custom
+                            </button>
+                          </div>
+
+                          <div style={{ marginTop: '0.5rem' }}>
+                            <label style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, display: 'block' }}>Email Subject</label>
+                            <input
+                              type="text"
+                              value={customEmailSubject}
+                              onChange={(e) => setCustomEmailSubject(e.target.value)}
+                              placeholder="e.g. Regarding your Order..."
+                              className="composer-input-field"
+                              required
+                            />
+                          </div>
+
+                          <div style={{ marginTop: '0.5rem' }}>
+                            <label style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, display: 'block' }}>Message Text (Wrapped in Royal Template)</label>
+                            <textarea
+                              value={customEmailMessage}
+                              onChange={(e) => setCustomEmailMessage(e.target.value)}
+                              placeholder="Type your custom note or message to the customer..."
+                              className="composer-textarea"
+                              rows={4}
+                              required
+                            />
+                          </div>
+
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                            <button
+                              type="button"
+                              onClick={() => setShowCustomEmailComposer(false)}
+                              className="preset-chip-btn"
+                              style={{ padding: '0.45rem 0.8rem' }}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="submit"
+                              disabled={sendingCustomEmail || !customEmailSubject.trim() || !customEmailMessage.trim()}
+                              className="btn-send-custom-submit"
+                            >
+                              <RotateCw size={12} className={sendingCustomEmail ? 'animate-spin' : ''} style={{ display: sendingCustomEmail ? 'inline' : 'none' }} />
+                              <Send size={12} style={{ display: sendingCustomEmail ? 'none' : 'inline' }} />
+                              {sendingCustomEmail ? 'Sending Email...' : 'Send Custom Email'}
+                            </button>
+                          </div>
+                        </form>
+                      )}
+                    </div>
+
                   </div>
                 </div>
               </div>

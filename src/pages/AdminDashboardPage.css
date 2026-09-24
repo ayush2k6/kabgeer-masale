@@ -678,3 +678,211 @@
   color: #0f172a;
   margin: 0.5rem 0 0.25rem 0;
 }
+
+/* 6. Review Request & Custom Email Communication Tools */
+.admin-email-tools-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.email-tool-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.email-tool-card-review {
+  background: linear-gradient(135deg, #fdfbf7 0%, #faf6f0 100%);
+  border: 1px solid #fde68a;
+}
+
+.email-tool-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.email-tool-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a2f22;
+}
+
+.email-tool-badge-sent {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #15803d;
+  background-color: #dcfce7;
+  padding: 0.2rem 0.55rem;
+  border-radius: 12px;
+  border: 1px solid #86efac;
+}
+
+.email-tool-badge-pending {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #92400e;
+  background-color: #fef3c7;
+  padding: 0.2rem 0.55rem;
+  border-radius: 12px;
+  border: 1px solid #fde68a;
+}
+
+.btn-send-review-email {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background-color: #1a2f22;
+  color: #d4af37;
+  border: 1px solid #d4af37;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(26, 47, 34, 0.15);
+}
+
+.btn-send-review-email:hover:not(:disabled) {
+  background-color: #14241a;
+  color: #fde047;
+  border-color: #fde047;
+  transform: translateY(-1px);
+}
+
+.btn-send-review-email:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-toggle-composer {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background-color: #f8fafc;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-composer:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.composer-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0 0.5rem 0;
+}
+
+.preset-chip-btn {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.preset-chip-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.preset-chip-btn.active {
+  background-color: #1a2f22;
+  color: #d4af37;
+  border-color: #1a2f22;
+}
+
+.composer-input-field {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.82rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #1e293b;
+  margin-top: 0.35rem;
+  outline: none;
+}
+
+.composer-input-field:focus {
+  border-color: #1a2f22;
+  box-shadow: 0 0 0 2px rgba(26, 47, 34, 0.12);
+}
+
+.composer-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100px;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #1e293b;
+  margin-top: 0.35rem;
+  resize: vertical;
+  outline: none;
+}
+
+.composer-textarea:focus {
+  border-color: #1a2f22;
+  box-shadow: 0 0 0 2px rgba(26, 47, 34, 0.12);
+}
+
+.btn-send-custom-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background-color: #0284c7;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.btn-send-custom-submit:hover:not(:disabled) {
+  background-color: #0369a1;
+}
+
+.btn-send-custom-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
