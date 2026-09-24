@@ -498,7 +498,13 @@ function renderReviewRequestEmailHtml(order: any, items: any[], customReviewUrl?
     </tr>
   `).join('');
 
-  const targetReviewUrl = customReviewUrl || Deno.env.get('GOOGLE_REVIEW_URL') || 'https://www.google.com/search?q=Kabgeer+Masale+Lucknow#lrd=0x0:0x0,3';
+  const defaultWhatsappMsg = encodeURIComponent(`Hi Kabgeer Masale! Here is my review & cooking feedback for Order #${order.display_order_id || order.id}: `);
+  const defaultWhatsappUrl = `https://wa.me/918090086636?text=${defaultWhatsappMsg}`;
+  
+  const targetReviewUrl = customReviewUrl || Deno.env.get('GOOGLE_REVIEW_URL') || defaultWhatsappUrl;
+  const isWhatsApp = targetReviewUrl.includes('wa.me');
+  const buttonLabel = isWhatsApp ? '💬 Share Your Review on WhatsApp →' : '⭐ Leave a 1-Minute Review on Google →';
+  const subtextLabel = isWhatsApp ? '(Opens direct chat with our culinary team • Feel free to share photos!)' : '(Takes less than 30 seconds • Directly on Google Maps)';
 
   return `
     <!DOCTYPE html>
@@ -541,11 +547,11 @@ function renderReviewRequestEmailHtml(order: any, items: any[], customReviewUrl?
             </div>
             <div>
               <a href="${targetReviewUrl}" target="_blank" style="display: inline-block; background-color: #1a2f22; color: #d4af37; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 6px; text-decoration: none; border: 1px solid #d4af37; box-shadow: 0 2px 8px rgba(26, 47, 34, 0.15);">
-                ⭐ Leave a 1-Minute Review on Google →
+                ${buttonLabel}
               </a>
             </div>
             <div style="font-size: 11px; color: #94a3b8; margin-top: 8px;">
-              (Takes less than 30 seconds • Directly on Google Maps)
+              ${subtextLabel}
             </div>
           </div>
 
