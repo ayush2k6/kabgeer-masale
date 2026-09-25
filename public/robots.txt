@@ -1,0 +1,13 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin-login
+Disallow: /adminlogin
+Disallow: /checkout
+Disallow: /order-success
+
+# Sitemaps
+Sitemap: https://www.kabgeermasala.com/sitemap.xml
+Sitemap: https://kabgeermasala.com/sitemap.xml

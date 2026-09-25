@@ -1,17 +1,23 @@
 # Kabgeer Ji — Changelog
 
-## 2026-09-25 (Google Search Console Site Verification)
+## 2026-09-25 (Google Search Console Site Verification, Sitemap & Robots.txt)
 
 ### Task
-Add Google Search Console site verification HTML file (`googleb29978cd7e99e156.html`) and HTML meta tag for domain ownership verification.
+1. Add Google Search Console site verification HTML file (`googleb29978cd7e99e156.html`) and HTML meta tag for domain ownership verification.
+2. Generate and deploy standard XML Sitemap (`public/sitemap.xml`) indexing all 37 public routes (home, catalogue, bundle builder, recipes, info pages, and all 25 individual spice product detail pages).
+3. Generate and deploy search engine crawler rules (`public/robots.txt`) with sitemap references and admin route protections.
 
 ### Implemented Changes & Verification
 - **1. Static Verification File (`public/googleb29978cd7e99e156.html`)**:
   - Created root-accessible static HTML file with verification string `google-site-verification: googleb29978cd7e99e156.html`.
 - **2. HTML Meta Tag (`index.html`)**:
   - Added `<meta name="google-site-verification" content="googleb29978cd7e99e156" />` to `<head>`.
-- **3. Build & Test Verification**:
-  - `npm run build`: **Passed cleanly with 0 errors**.
+- **3. XML Sitemap (`public/sitemap.xml`)**:
+  - Fully mapped 12 static storefront routes + 25 product detail pages with change frequencies and priorities.
+- **4. Crawler Directives (`public/robots.txt`)**:
+  - Allowed public discovery while shielding administrative paths (`/admin`, `/checkout`, `/order-success`).
+- **5. Build & Test Verification**:
+  - `npm run build`: **Passed cleanly in 1.45s with 0 errors**.
 
 ---
 
