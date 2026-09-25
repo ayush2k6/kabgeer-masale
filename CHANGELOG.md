@@ -1,5 +1,20 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-25 (Google Search Console Site Verification)
+
+### Task
+Add Google Search Console site verification HTML file (`googleb29978cd7e99e156.html`) and HTML meta tag for domain ownership verification.
+
+### Implemented Changes & Verification
+- **1. Static Verification File (`public/googleb29978cd7e99e156.html`)**:
+  - Created root-accessible static HTML file with verification string `google-site-verification: googleb29978cd7e99e156.html`.
+- **2. HTML Meta Tag (`index.html`)**:
+  - Added `<meta name="google-site-verification" content="googleb29978cd7e99e156" />` to `<head>`.
+- **3. Build & Test Verification**:
+  - `npm run build`: **Passed cleanly with 0 errors**.
+
+---
+
 ## 2026-09-24 (Admin Review Request & Custom Email Communication Tool)
 
 ### Task
