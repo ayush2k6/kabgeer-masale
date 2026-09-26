@@ -1,5 +1,21 @@
 # Kabgeer Ji — Changelog
 
+## 2026-09-26 (Schema.org JSON-LD Structured Data for Google Sitelinks & Knowledge Graph)
+
+### Task
+1. Implement Schema.org JSON-LD Structured Data in `index.html` to qualify for Google Sitelinks (Left-hand direct sub-page links) and Knowledge Graph association.
+2. Structure schema with `@graph` containing `Organization` (Brand, Logo, ContactPoint, Socials, Address), `WebSite` (with Sitelinks Searchbox `SearchAction`), and `ItemList` (`SiteNavigationElement` mapping 6 primary storefront routes).
+
+### Implemented Changes & Verification
+- **1. Schema.org JSON-LD (`index.html`)**:
+  - `Organization`: Registered brand "Kabgeer Masale", official logo, customer care phone (`+91-80900-86636`), support email, location, and official social handles (YouTube, Instagram, WhatsApp).
+  - `WebSite`: Configured site entity with Sitelinks Searchbox pointing to catalogue search.
+  - `SiteNavigationElement`: Structured navigational hierarchy for Catalogue (`/products`), Spice Bundle Builder (`/bundle`), Master Recipes (`/recipes`), About Us (`/about`), and Contact / Bulk Enquiries (`/contact`).
+- **2. Build & Test Verification**:
+  - `npm run build`: **Passed cleanly in 1.48s with 0 errors**.
+
+---
+
 ## 2026-09-25 (Google Search Console Site Verification, Sitemap & Robots.txt)
 
 ### Task

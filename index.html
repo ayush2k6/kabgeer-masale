@@ -40,6 +40,116 @@
     <meta name="twitter:description" content="Authentic heritage masalas from the royal kitchens of Lucknow. Hand-curated spice blends with zero artificial preservatives." />
     <meta name="twitter:image" content="https://www.kabgeermasala.com/og-image.png" />
     <meta name="twitter:image:alt" content="Kabgeer Masale" />
+
+    <!-- Schema.org JSON-LD Structured Data for Google Sitelinks & Knowledge Graph -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://www.kabgeermasala.com/#organization",
+          "name": "Kabgeer Masale",
+          "url": "https://www.kabgeermasala.com",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.kabgeermasala.com/logo.png",
+            "caption": "Kabgeer Masale Logo"
+          },
+          "image": "https://www.kabgeermasala.com/og-image.png",
+          "description": "Authentic royal Lucknowi and Awadhi spices and traditional blends crafted with pure natural ingredients.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Lucknow",
+            "addressRegion": "Uttar Pradesh",
+            "addressCountry": "IN"
+          },
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "telephone": "+91-80900-86636",
+              "contactType": "customer support",
+              "email": "enquiry@kabgeermasala.com",
+              "areaServed": "IN",
+              "availableLanguage": ["English", "Hindi"]
+            }
+          ],
+          "sameAs": [
+            "https://www.youtube.com/@KabgeerMasala",
+            "https://www.instagram.com/kabgeermasala",
+            "https://wa.me/918090086636"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.kabgeermasala.com/#website",
+          "url": "https://www.kabgeermasala.com",
+          "name": "Kabgeer Masale",
+          "description": "Authentic Royal Lucknowi & Awadhi Spices",
+          "publisher": {
+            "@id": "https://www.kabgeermasala.com/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://www.kabgeermasala.com/products?search={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "ItemList",
+          "@id": "https://www.kabgeermasala.com/#sitelinks",
+          "name": "Kabgeer Masale Main Sections",
+          "itemListElement": [
+            {
+              "@type": "SiteNavigationElement",
+              "position": 1,
+              "name": "Masala Catalogue",
+              "description": "Explore 25 authentic Awadhi and royal Lucknowi spice blends.",
+              "url": "https://www.kabgeermasala.com/products"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 2,
+              "name": "Special Bundle Offer",
+              "description": "Build your own spice bundle and unlock 10% OFF + 2 FREE mini boxes.",
+              "url": "https://www.kabgeermasala.com/bundle"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 3,
+              "name": "Master Recipes",
+              "description": "Discover traditional Awadhi royal recipes including Biryani, Nihari, and Kebabs.",
+              "url": "https://www.kabgeermasala.com/recipes"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 4,
+              "name": "About Us",
+              "description": "The heritage story of Kabgeer Masale and Olympic Foods and Essentials.",
+              "url": "https://www.kabgeermasala.com/about"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 5,
+              "name": "Bulk & B2B Orders",
+              "description": "HoReCa bulk spices, distributor and export enquiries.",
+              "url": "https://www.kabgeermasala.com/contact"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 6,
+              "name": "Contact Us",
+              "description": "Get in touch via WhatsApp or email with Kabgeer Masale support.",
+              "url": "https://www.kabgeermasala.com/contact"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
