@@ -26,19 +26,45 @@ const CataloguePage = () => {
     setSearchQuery(q);
   }, [location.search]);
 
+  const checkVeg = (product) => {
+    if (product.tags?.includes('Non-Veg')) return false;
+    if (product.tags?.includes('Veg')) return true;
+    
+    const vn = product.vegNonveg?.toLowerCase() || '';
+    return vn.includes('veg') && !vn.includes('non');
+  };
+  
+  const checkNonVeg = (product) => {
+    if (product.tags?.includes('Non-Veg')) return true;
+    if (product.tags?.includes('Veg')) return false;
+    
+    const vn = product.vegNonveg?.toLowerCase() || '';
+    return vn.includes('non');
+  };
+
   const categoryCounts = useMemo(() => {
-    const counts = { 'All Masalas': PRODUCTS.length };
+    const counts = { 'All Masalas': PRODUCTS.length, 'Veg': 0, 'Non-Veg': 0 };
     CATEGORIES.forEach(cat => {
       if (cat !== 'All Masalas') {
         counts[cat] = PRODUCTS.filter(p => p.category === cat).length;
       }
     });
+    
+    counts['Veg'] = PRODUCTS.filter(p => checkVeg(p)).length;
+    counts['Non-Veg'] = PRODUCTS.filter(p => checkNonVeg(p)).length;
+    
     return counts;
   }, []);
 
+  const DISPLAY_FILTERS = [...CATEGORIES, 'Veg', 'Non-Veg'];
+
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter(product => {
-      const matchesCategory = activeCategory === 'All Masalas' || product.category === activeCategory;
+      let matchesCategory = product.category === activeCategory;
+      if (activeCategory === 'All Masalas') matchesCategory = true;
+      else if (activeCategory === 'Veg') matchesCategory = checkVeg(product);
+      else if (activeCategory === 'Non-Veg') matchesCategory = checkNonVeg(product);
+
       const q = searchQuery.trim().toLowerCase();
       let matchesSearch = !q;
       
@@ -100,7 +126,7 @@ const CataloguePage = () => {
         {/* Category Pill Tabs Scroll */}
         <div className="catalogue-category-tabs-wrapper">
           <div className="catalogue-category-tabs">
-            {CATEGORIES.map(category => {
+            {DISPLAY_FILTERS.map(category => {
               const count = categoryCounts[category] || 0;
               const isActive = activeCategory === category;
               return (

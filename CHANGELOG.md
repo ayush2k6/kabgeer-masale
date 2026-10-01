@@ -1,5 +1,31 @@
 # Kabgeer Ji — Changelog
 
+## 2026-10-01 (Veg & Non-Veg Filters on Build Your Bundle)
+
+### Task
+Add 'Veg' and 'Non-Veg' category filters to the Build Your Bundle page.
+
+### Implemented Changes & Verification
+- **BuildBundlePage (`BuildBundlePage.jsx`)**:
+  - Dynamically extended the filters list with `Veg` and `Non-Veg` appended to the default curated `CATEGORIES`.
+  - Implemented real-time item counting based on product `tags` and fallback matching on `vegNonveg` metadata keys.
+  - Safely verified the `useMemo` filter function to switch contexts successfully between traditional categories and dietary categories.
+  - Fixed a logic bug where `Veg` filters showed non-veg items due to incorrect `vegNonveg: 'Veg / Vegan'` placeholder metadata in `products.js`, prioritizing `tags` to strictly enforce the dietary boundaries.
+- **CataloguePage (`CataloguePage.jsx`)**:
+  - Mirrored the `Veg` and `Non-Veg` sorting logic and filter tabs onto the main products catalog page for consistency across the site.
+
+## 2026-10-01 (Bundle Item MOQ Update)
+
+### Task
+Set the Minimum Order Quantity (MOQ) to 1 for products added from the "Build Your Bundle" page.
+
+### Implemented Changes & Verification
+- **Cart Context (`CartContext.jsx`)**:
+  - Modified `addToCart` and `updateQuantity` to conditionally allow a minimum quantity of 1 if the product is marked as a bundle item (`isBundleItem: true`). Standard products retain an MOQ of 2.
+  - Verified logic without breaking standard non-bundle checkout logic.
+
+---
+
 ## 2026-09-26 (Schema.org JSON-LD Structured Data for Google Sitelinks & Knowledge Graph)
 
 ### Task

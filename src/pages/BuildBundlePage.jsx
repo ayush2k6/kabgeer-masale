@@ -11,22 +11,46 @@ const BuildBundlePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const checkVeg = (product) => {
+    if (product.tags?.includes('Non-Veg')) return false;
+    if (product.tags?.includes('Veg')) return true;
+    
+    const vn = product.vegNonveg?.toLowerCase() || '';
+    return vn.includes('veg') && !vn.includes('non');
+  };
+  
+  const checkNonVeg = (product) => {
+    if (product.tags?.includes('Non-Veg')) return true;
+    if (product.tags?.includes('Veg')) return false;
+    
+    const vn = product.vegNonveg?.toLowerCase() || '';
+    return vn.includes('non');
+  };
+
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter(product => {
-      const matchesCategory = activeCategory === 'All Masalas' || product.category === activeCategory;
-      return matchesCategory;
+      if (activeCategory === 'All Masalas') return true;
+      if (activeCategory === 'Veg') return checkVeg(product);
+      if (activeCategory === 'Non-Veg') return checkNonVeg(product);
+      return product.category === activeCategory;
     });
   }, [activeCategory]);
 
   const categoryCounts = useMemo(() => {
-    const counts = { 'All Masalas': PRODUCTS.length };
+    const counts = { 'All Masalas': PRODUCTS.length, 'Veg': 0, 'Non-Veg': 0 };
     CATEGORIES.forEach(cat => {
       if (cat !== 'All Masalas') {
         counts[cat] = PRODUCTS.filter(p => p.category === cat).length;
       }
     });
+    
+    counts['Veg'] = PRODUCTS.filter(p => checkVeg(p)).length;
+    counts['Non-Veg'] = PRODUCTS.filter(p => checkNonVeg(p)).length;
+    
     return counts;
   }, []);
+
+  const DISPLAY_FILTERS = [...CATEGORIES, 'Veg', 'Non-Veg'];
 
   return (
     <div className="build-bundle-page-wrapper">
@@ -63,7 +87,7 @@ const BuildBundlePage = () => {
           {/* Category Filter Tabs */}
           <div className="bundle-filters-wrapper">
             <div className="bundle-filters-scroll">
-              {CATEGORIES.map(category => {
+              {DISPLAY_FILTERS.map(category => {
                 const count = categoryCounts[category] || 0;
                 const isActive = activeCategory === category;
                 return (

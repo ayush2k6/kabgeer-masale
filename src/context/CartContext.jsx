@@ -51,7 +51,8 @@ export const CartProvider = ({ children }) => {
         );
       }
       
-      const initialQty = Math.max(2, addQty);
+      const minQty = product.isBundleItem ? 1 : 2;
+      const initialQty = Math.max(minQty, addQty);
       return [...prev, { ...product, cartItemId: targetCartItemId, quantity: initialQty }];
     });
     showToast(`${product.name} (${weight}) added to your spice box!`);
@@ -62,15 +63,19 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (cartItemId, newQuantity) => {
-    if (newQuantity < 2) {
-      removeFromCart(cartItemId);
-      return;
-    }
-    setCartItems(prev => 
-      prev.map(item => 
+    setCartItems(prev => {
+      const itemToUpdate = prev.find(item => (item.cartItemId || item.id) === cartItemId);
+      if (!itemToUpdate) return prev;
+      
+      const minQty = itemToUpdate.isBundleItem ? 1 : 2;
+      if (newQuantity < minQty) {
+        return prev.filter(item => (item.cartItemId || item.id) !== cartItemId);
+      }
+      
+      return prev.map(item => 
         (item.cartItemId || item.id) === cartItemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
+      );
+    });
   };
 
   const getCartTotal = () => {

@@ -26,6 +26,9 @@ Current Branch: v1-release / main (Deployed on Vercel)
 | Part 3.6.3 | Remote Security Migration Verification | ✅ COMPLETE & LIVE VERIFIED |
 | V1 UI/UX Polish | UI/UX Consistency, Sans-Serif System, Checkout Corrections & Validation | ✅ COMPLETE & VERIFIED |
 | SEO & Sitelinks | Google Search Console verification, sitemap.xml, robots.txt, Schema.org JSON-LD | ✅ COMPLETE & VERIFIED |
+| Bundle MOQ | Minimum Order Quantity set to 1 for Bundle items | ✅ COMPLETE |
+| Bundle Filters | Added Veg & Non-Veg dietary filters on Build Your Bundle page | ✅ COMPLETE |
+| Catalogue Filters | Added Veg & Non-Veg dietary filters on main Products Catalogue page | ✅ COMPLETE |
 
 
 ---
