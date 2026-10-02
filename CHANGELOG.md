@@ -1,5 +1,23 @@
 # Kabgeer Ji — Changelog
 
+## 2026-10-02 (Fix Navbar Overlapping Admin Order Details Drawer)
+
+### Task
+Fix storefront navigation header overlapping and hiding the top of the Admin Order Details drawer when clicking "View Details".
+
+### Implemented Changes & Verification
+- **Route-Aware Layout Isolation (`App.jsx`)**:
+  - Encapsulated routing in `AppContent` with `useLocation()`.
+  - Suppressed consumer `<Header />`, `<Footer />`, and marketing `<Popup />` on all admin routes (`/admin`, `/admin/orders`, `/admin/login`, etc.).
+  - The Admin portal now exclusively renders its dedicated executive header (`.admin-navbar`), eliminating dual-navbar stacking.
+- **Admin Order Drawer Z-Index & Elevation (`AdminDashboardPage.css`)**:
+  - Elevated `.admin-drawer-backdrop` to `z-index: 99999` and `.admin-drawer-panel` to `z-index: 100000`.
+  - Added smooth slide-in animation (`adminDrawerSlideIn`) and sticky header shadow (`z-index: 30`).
+- **Build Verification**:
+  - `npm run build`: **Passed cleanly in 2.16s with 0 errors**.
+
+---
+
 ## 2026-10-02 (Admin Panel Order Drawer UI Polish & Task Confirmation Tick Feedback)
 
 ### Task

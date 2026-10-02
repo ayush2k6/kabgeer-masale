@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
@@ -30,48 +30,58 @@ const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
 const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 import AdminRoute from './components/AdminRoute';
 
+const AppContent = () => {
+  const location = useLocation();
+  const pathname = location.pathname.toLowerCase();
+  const isAdminRoute = pathname.startsWith('/admin');
+
+  return (
+    <>
+      <ScrollToTop />
+      {!isAdminRoute && <Popup />}
+      <div className={isAdminRoute ? 'admin-app-root' : 'app-container'}>
+        {!isAdminRoute && <Header />}
+        <main className={isAdminRoute ? 'admin-main-wrapper' : 'main-content'}>
+          <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', fontSize: '1.2rem', color: 'var(--color-primary)' }}>Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<Navigate to="/products" replace />} />
+              <Route path="/signup" element={<Navigate to="/products" replace />} />
+              <Route path="/profile" element={<Navigate to="/products" replace />} />
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/admin-login" element={<AdminLoginPage />} />
+              <Route path="/adminlogin" element={<AdminLoginPage />} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+              <Route path="/admin/orders" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+              <Route path="/recipes" element={<RecipesPage />} />
+              <Route path="/products" element={<CataloguePage />} />
+              <Route path="/product/:id" element={<ProductPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/order-success" element={<OrderSuccessPage />} />
+              <Route path="/bundle" element={<BuildBundlePage />} />
+              <Route path="/bulk" element={<BulkEnquiryPage />} />
+              <Route path="/faqs" element={<FaqsPage />} />
+              <Route path="/shipping" element={<ShippingPage />} />
+              <Route path="/returns" element={<ReturnsPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+            </Routes>
+          </Suspense>
+        </main>
+        {!isAdminRoute && <Footer />}
+      </div>
+    </>
+  );
+};
+
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
-          <>
-            <ScrollToTop />
-            <Popup />
-            <div className="app-container">
-              <Header />
-              <main className="main-content">
-                <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', fontSize: '1.2rem', color: 'var(--color-primary)' }}>Loading...</div>}>
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/login" element={<Navigate to="/products" replace />} />
-                    <Route path="/signup" element={<Navigate to="/products" replace />} />
-                    <Route path="/profile" element={<Navigate to="/products" replace />} />
-                    <Route path="/admin/login" element={<AdminLoginPage />} />
-                    <Route path="/admin-login" element={<AdminLoginPage />} />
-                    <Route path="/adminlogin" element={<AdminLoginPage />} />
-                    <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
-                    <Route path="/admin/orders" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
-                    <Route path="/recipes" element={<RecipesPage />} />
-                    <Route path="/products" element={<CataloguePage />} />
-                    <Route path="/product/:id" element={<ProductPage />} />
-                    <Route path="/checkout" element={<CheckoutPage />} />
-                    <Route path="/order-success" element={<OrderSuccessPage />} />
-                    <Route path="/bundle" element={<BuildBundlePage />} />
-                    <Route path="/bulk" element={<BulkEnquiryPage />} />
-                    <Route path="/faqs" element={<FaqsPage />} />
-                    <Route path="/shipping" element={<ShippingPage />} />
-                    <Route path="/returns" element={<ReturnsPage />} />
-                    <Route path="/privacy" element={<PrivacyPage />} />
-                    <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/contact" element={<ContactPage />} />
-                  </Routes>
-                </Suspense>
-              </main>
-              <Footer />
-            </div>
-          </>
+          <AppContent />
         </Router>
       </CartProvider>
     </AuthProvider>

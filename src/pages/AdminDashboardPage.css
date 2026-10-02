@@ -412,26 +412,52 @@
   border: 1px solid #bae6fd;
 }
 
+/* Admin Route Root Wrappers */
+.admin-app-root {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.admin-main-wrapper {
+  width: 100%;
+  min-height: 100vh;
+}
+
 /* 6. Order Details Drawer / Modal */
 .admin-drawer-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(2px);
-  z-index: 100;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 99999;
   display: flex;
   justify-content: flex-end;
 }
 
 .admin-drawer-panel {
   width: 100%;
-  max-width: 600px;
+  max-width: 620px;
   background-color: #ffffff;
-  height: 100%;
+  height: 100vh;
+  max-height: 100vh;
   overflow-y: auto;
-  box-shadow: -6px 0 30px rgba(0, 0, 0, 0.18);
+  box-shadow: -8px 0 36px rgba(0, 0, 0, 0.22);
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 100000;
+  animation: adminDrawerSlideIn 0.25s ease-out;
+}
+
+@keyframes adminDrawerSlideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .admin-drawer-header {
@@ -440,10 +466,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f8fafc;
+  background-color: #ffffff;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 30;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .admin-drawer-header h3 {
@@ -464,10 +491,11 @@
   cursor: pointer;
   padding: 0.4rem;
   border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
 .btn-drawer-close:hover {
-  background-color: #e2e8f0;
+  background-color: #f1f5f9;
   color: #0f172a;
 }
 
