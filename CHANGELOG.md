@@ -1,5 +1,25 @@
 # Kabgeer Ji — Changelog
 
+## 2026-10-02 (Admin Panel Order Drawer UI Polish & Task Confirmation Tick Feedback)
+
+### Task
+1. Improve the UI and layout of the Order Details Drawer in the Admin Dashboard.
+2. Separate fulfillment stage pills from secondary actions to prevent awkward wrapping.
+3. Add prominent task completion confirmation alert banner with green checkmark/tick icon, detailed email dispatch status, and IST timestamp.
+4. Add tactile green checkmark feedback (`✓ Done!`) on buttons for status update, review request email, custom email, and alert resend.
+5. Add direct inline WhatsApp button for customer communication fallback.
+
+### Implemented Changes & Verification
+- **Admin Dashboard UI (`AdminDashboardPage.jsx`, `AdminDashboardPage.css`)**:
+  - `actionSuccessKey`: Tracks which action completed to render temporary tactile checkmarks on buttons.
+  - `drawer-task-alert`: Prominent green success card displaying checkmark badge, task completion headline, itemized email dispatch info, and tracking info.
+  - `fulfillment-pipeline-chips`: Clean horizontal 5-stage fulfillment pipeline with active check indicators.
+  - Upgraded styling for courier/AWB cards, cancellation reason box, review request card, and custom email composer.
+- **Build Verification**:
+  - `npm run build`: **Passed cleanly in 1.48s with 0 errors**.
+
+---
+
 ## 2026-10-01 (Veg & Non-Veg Filters on Build Your Bundle)
 
 ### Task

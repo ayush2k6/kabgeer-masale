@@ -517,19 +517,145 @@
 .btn-copy-small:hover {
   background-color: #f1f5f9;
   color: #0f172a;
+/* Drawer Fulfillment Card & Controls */
+.drawer-fulfillment-card {
+  background-color: #faf6f0;
+  border: 1px solid rgba(26, 47, 34, 0.15) !important;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(26, 47, 34, 0.04);
 }
 
-/* Quick Status Chips */
-.quick-status-chips {
+/* Prominent Task Completion / Confirmation Alert Banner */
+.drawer-task-alert {
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.95rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
   display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.75rem;
+  flex-direction: column;
+  gap: 0.45rem;
+  animation: fadeInDown 0.25s ease-out;
 }
 
-.chip-status-btn {
-  padding: 0.35rem 0.7rem;
-  border-radius: 20px;
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.drawer-task-alert.alert-success {
+  background-color: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  color: #065f46;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.08);
+}
+
+.drawer-task-alert.alert-error {
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+.alert-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.alert-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.alert-icon-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #d1fae5;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.alert-icon-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fee2e2;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.btn-close-alert {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-close-alert:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+  color: #0f172a;
+}
+
+.alert-detail-pill {
+  font-size: 0.78rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.email-detail-pill {
+  background-color: rgba(5, 150, 105, 0.12);
+  color: #065f46;
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.tracking-detail-pill {
+  background-color: rgba(2, 132, 199, 0.1);
+  color: #0369a1;
+  border: 1px solid rgba(2, 132, 199, 0.2);
+}
+
+/* Fulfillment Pipeline Stage Chips */
+.fulfillment-pipeline-wrapper {
+  margin-bottom: 0.85rem;
+}
+
+.fulfillment-pipeline-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
+}
+
+.fulfillment-pipeline-chips {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.pipeline-chip-btn {
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
   font-size: 0.78rem;
   font-weight: 600;
   border: 1px solid #cbd5e1;
@@ -537,77 +663,266 @@
   color: #475569;
   cursor: pointer;
   transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
-.chip-status-btn:hover:not(:disabled) {
+.pipeline-chip-btn:hover:not(:disabled) {
   background-color: #f1f5f9;
   color: #0f172a;
+  border-color: #94a3b8;
 }
 
-.chip-status-btn.active {
+.pipeline-chip-btn.selected {
   background-color: #1a2f22;
   color: #ffffff;
   border-color: #1a2f22;
 }
 
-.chip-review-btn {
-  background-color: #fefce8 !important;
-  color: #854d0e !important;
-  border-color: #fde047 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 0.3rem !important;
-  font-weight: 700 !important;
+.pipeline-chip-btn.current-active {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 1px #16a34a;
 }
 
-.chip-review-btn:hover:not(:disabled) {
-  background-color: #fef08a !important;
-  border-color: #eab308 !important;
-  color: #713f12 !important;
-  transform: translateY(-1px);
+.pipeline-chip-btn.chip-cancelled.selected {
+  background-color: #991b1b;
+  border-color: #991b1b;
 }
 
-.chip-review-btn.sent {
-  background-color: #dcfce7 !important;
-  color: #166534 !important;
-  border-color: #86efac !important;
+.pipeline-active-tick {
+  color: #16a34a;
 }
 
-/* Status Update Box */
+.pipeline-chip-btn.selected .pipeline-active-tick {
+  color: #86efac;
+}
+
+/* Status Select & Update Action Box */
 .status-update-control-box {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.75rem;
+}
+
+.status-select-action-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 .status-select-input {
   flex: 1;
-  padding: 0.65rem 0.85rem;
+  padding: 0.6rem 0.8rem;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
   font-family: inherit;
   font-weight: 600;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.status-select-input:focus {
+  border-color: #1a2f22;
+  outline: none;
 }
 
 .btn-save-status {
-  padding: 0.65rem 1.25rem;
+  padding: 0.6rem 1.15rem;
   background-color: #1a2f22;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.88rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .btn-save-status:hover:not(:disabled) {
   background-color: #264230;
+  transform: translateY(-1px);
 }
 
 .btn-save-status:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Tactile Green Success State for Buttons */
+.btn-success-state {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  border-color: #16a34a !important;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25) !important;
+}
+
+/* Shipping Details Card */
+.drawer-shipping-fields-card {
+  padding: 0.75rem 0.85rem;
+  background-color: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.drawer-shipping-fields-header {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #0369a1;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.drawer-shipping-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.drawer-input-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  display: block;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+}
+
+.drawer-select-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.82rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.drawer-text-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.82rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.monospace-input {
+  font-family: monospace;
+  font-weight: 600;
+}
+
+/* Cancellation Reason Card */
+.drawer-cancellation-card {
+  padding: 0.65rem 0.8rem;
+  background-color: #fef2f2;
+  border-radius: 6px;
+  border: 1px solid #fca5a5;
+}
+
+.cancellation-input {
+  border-color: #fca5a5 !important;
+}
+
+/* Email Checkbox */
+.drawer-email-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  color: #334155;
+  margin-top: 0.15rem;
+}
+
+.custom-checkbox-input {
+  cursor: pointer;
+  accent-color: #16a34a;
+  width: 15px;
+  height: 15px;
+}
+
+.custom-checkbox-label {
+  cursor: pointer;
+  user-select: none;
+}
+
+.highlight-email {
+  color: #0369a1;
+  font-weight: 600;
+}
+
+.drawer-payment-footnote {
+  font-size: 0.74rem;
+  color: #64748b;
+  margin: 0.6rem 0 0 0;
+  line-height: 1.4;
+}
+
+/* Inline WhatsApp Button */
+.btn-whatsapp-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #86efac;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.btn-whatsapp-inline:hover {
+  background-color: #dcfce7;
+  color: #166534;
+  border-color: #4ade80;
+}
+
+/* Fulfillment Alert Banner */
+.drawer-fulfillment-alert-banner {
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.8rem;
+  background-color: #f0fdf4;
+  border-radius: 6px;
+  border: 1px solid #bbf7d0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.btn-resend-alert {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background-color: #ffffff;
+  border: 1px solid #86efac;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #15803d;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.15s ease;
+}
+
+.btn-resend-alert:hover:not(:disabled) {
+  background-color: #dcfce7;
+  border-color: #4ade80;
+}
+
+.btn-resend-alert:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
