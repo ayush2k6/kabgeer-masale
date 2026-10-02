@@ -859,9 +859,11 @@ const AdminDashboardPage = () => {
               
               {/* Fulfillment Status Update Section */}
               <div className="drawer-section drawer-fulfillment-card">
-                <div className="drawer-section-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Update Fulfillment Status</span>
-                  <span className={`status-pill ${getStatusClass(selectedOrder.order_status)}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.65rem' }}>
+                <div className="drawer-section-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 700, letterSpacing: '0.5px', color: '#1a2f22' }}>
+                    UPDATE FULFILLMENT STATUS
+                  </span>
+                  <span className={`status-pill ${getStatusClass(selectedOrder.order_status)}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.65rem', fontWeight: 700 }}>
                     Active: {selectedOrder.order_status}
                   </span>
                 </div>
@@ -909,7 +911,6 @@ const AdminDashboardPage = () => {
 
                 {/* 1. Fulfillment Pipeline Stages (Clean Horizontal Pills) */}
                 <div className="fulfillment-pipeline-wrapper">
-                  <div className="fulfillment-pipeline-label">Quick Stage Selection:</div>
                   <div className="fulfillment-pipeline-chips">
                     {['Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(st => {
                       const isSelected = newOrderStatus === st;
@@ -930,39 +931,8 @@ const AdminDashboardPage = () => {
                   </div>
                 </div>
 
-                {/* 2. Status Dropdown & Update Button Form */}
+                {/* 2. Contextual Shipping / Cancellation Inputs & Submit Button */}
                 <form onSubmit={handleUpdateStatus} className="status-update-control-box">
-                  <div className="status-select-action-row">
-                    <select
-                      value={newOrderStatus}
-                      onChange={(e) => setNewOrderStatus(e.target.value)}
-                      className="status-select-input"
-                    >
-                      {ORDER_STATUS_OPTIONS.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                    
-                    <button
-                      type="submit"
-                      className={`btn-save-status ${actionSuccessKey === 'status_updated' ? 'btn-success-state' : ''}`}
-                      disabled={updatingStatus}
-                    >
-                      {updatingStatus ? (
-                        <>
-                          <RotateCw size={14} className="animate-spin" />
-                          <span>Updating...</span>
-                        </>
-                      ) : actionSuccessKey === 'status_updated' ? (
-                        <>
-                          <Check size={15} />
-                          <span>Updated & Notified ✓</span>
-                        </>
-                      ) : (
-                        <span>Update & Notify</span>
-                      )}
-                    </button>
-                  </div>
 
                   {/* Shipping & AWB Details Box (When Shipped or Processing) */}
                   {(newOrderStatus === 'Shipped' || selectedOrder.order_status === 'Shipped') && (
@@ -1030,6 +1000,30 @@ const AdminDashboardPage = () => {
                       </label>
                     </div>
                   )}
+
+                  {/* Prominent Action Button */}
+                  <button
+                    type="submit"
+                    className={`btn-save-status-full ${actionSuccessKey === 'status_updated' ? 'btn-success-state' : ''}`}
+                    disabled={updatingStatus}
+                  >
+                    {updatingStatus ? (
+                      <>
+                        <RotateCw size={15} className="animate-spin" />
+                        <span>Updating Fulfillment Status...</span>
+                      </>
+                    ) : actionSuccessKey === 'status_updated' ? (
+                      <>
+                        <Check size={16} />
+                        <span>Fulfillment Updated & Customer Notified ✓</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={15} />
+                        <span>Update Status to '{newOrderStatus}' & Notify</span>
+                      </>
+                    )}
+                  </button>
                 </form>
 
                 <p className="drawer-payment-footnote">
