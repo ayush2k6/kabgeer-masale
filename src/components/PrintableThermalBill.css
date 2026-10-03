@@ -1,9 +1,10 @@
 /* ==========================================================================
-   PRINTABLE THERMAL BILL & COMMERCIAL INVOICE STYLES
-   Optimized for 4"x6" (100x150mm) Thermal Roll Printers & Standard A4/A5
+   PRINTABLE THERMAL BILL & OFFICIAL TAX INVOICE STYLES
+   Format 1: 4"x6" (100mm x 150mm) Thermal Roll Sticker (Delivery Parcels)
+   Format 2: Official Commercial Tax Invoice (Olympic Foods and Essentials)
    ========================================================================== */
 
-/* 1. Modal Overlay & Header (Screen Only) */
+/* 1. Modal Overlay & Interactive Controls (Screen Only) */
 .thermal-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -21,10 +22,10 @@
 .thermal-modal-panel {
   background-color: #f1f5f9;
   width: 100%;
-  max-width: 900px;
-  height: 92vh;
+  max-width: 960px;
+  height: 94vh;
   border-radius: 12px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -33,7 +34,7 @@
 
 .thermal-modal-header {
   background-color: #ffffff;
-  padding: 1rem 1.5rem;
+  padding: 0.85rem 1.5rem;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
@@ -50,16 +51,16 @@
 
 .thermal-modal-title h3 {
   font-family: var(--font-heading, serif);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: #0f172a;
   margin: 0;
   font-weight: 700;
 }
 
 .thermal-modal-title p {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #64748b;
-  margin: 0.15rem 0 0 0;
+  margin: 0.1rem 0 0 0;
 }
 
 .thermal-controls-right {
@@ -143,7 +144,7 @@
 /* Quick Edit Bar */
 .thermal-quick-edit-bar {
   background-color: #ffffff;
-  padding: 0.75rem 1.5rem;
+  padding: 0.65rem 1.5rem;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
@@ -165,7 +166,7 @@
 }
 
 .quick-edit-input {
-  padding: 0.4rem 0.65rem;
+  padding: 0.35rem 0.6rem;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   font-size: 0.82rem;
@@ -197,17 +198,17 @@
 .thermal-preview-scrollable {
   flex: 1;
   overflow-y: auto;
-  padding: 2rem;
+  padding: 2rem 1.5rem;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background-color: #64748b;
+  background-color: #475569;
 }
 
 .printable-bill-wrapper {
   background-color: #ffffff;
   color: #000000;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
 }
 
@@ -215,18 +216,18 @@
 .printable-bill-wrapper.mode-thermal-4x6 {
   width: 100mm;
   min-height: 150mm;
-  padding: 3mm 4mm;
+  padding: 3mm;
   font-family: Arial, Helvetica, sans-serif;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 /* Mode: A4 Invoice */
 .printable-bill-wrapper.mode-invoice-a4 {
   width: 210mm;
   min-height: 297mm;
-  padding: 12mm 15mm;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  border-radius: 4px;
+  padding: 10mm 12mm;
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 2px;
 }
 
 /* ==========================================================================
@@ -237,14 +238,14 @@
   width: 100%;
   border: 1.5px solid #000000;
   box-sizing: border-box;
-  font-size: 8.5pt;
-  line-height: 1.25;
+  font-size: 8pt;
+  line-height: 1.2;
   color: #000000;
 }
 
 .t-row {
   border-bottom: 1.5px solid #000000;
-  padding: 2.5mm 3mm;
+  padding: 2mm 2.5mm;
   box-sizing: border-box;
 }
 
@@ -265,24 +266,29 @@
 }
 
 .t-company-name {
-  font-size: 13pt;
+  font-size: 10pt;
   font-weight: 900;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   color: #000000;
   line-height: 1.1;
 }
 
 .t-tagline {
-  font-size: 7.5pt;
+  font-size: 8.5pt;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
   margin-top: 1px;
 }
 
 .t-origin-city {
-  font-size: 7pt;
-  color: #222222;
+  font-size: 6.8pt;
+  color: #111111;
+  margin-top: 1px;
+}
+
+.t-credentials-line {
+  font-size: 6.5pt;
+  color: #000000;
   margin-top: 1px;
 }
 
@@ -295,23 +301,23 @@
 }
 
 .t-courier-name {
-  font-size: 11pt;
+  font-size: 10pt;
   font-weight: 900;
   letter-spacing: 0.5px;
   border: 1.5px solid #000000;
-  padding: 1px 6px;
+  padding: 1px 5px;
   background-color: #000000;
   color: #ffffff;
 }
 
 .t-payment-pill {
-  font-size: 7.5pt;
+  font-size: 7pt;
   font-weight: 900;
-  padding: 2px 5px;
-  margin-top: 2px;
+  padding: 2px 4px;
+  margin-top: 1px;
   border: 1px solid #000000;
   text-align: center;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
 .pill-prepaid {
@@ -327,14 +333,14 @@
 /* Barcode Section */
 .t-barcode-section {
   text-align: center;
-  padding: 2mm 3mm;
+  padding: 1.5mm 2.5mm;
 }
 
 .t-barcode-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 8pt;
+  font-size: 7.5pt;
   margin-bottom: 2px;
 }
 
@@ -344,54 +350,54 @@
 
 .t-order-id-val {
   font-weight: 900;
-  font-size: 9.5pt;
+  font-size: 9pt;
   letter-spacing: 0.5px;
 }
 
 .t-date-val {
-  font-size: 7pt;
+  font-size: 6.8pt;
   color: #222222;
 }
 
 .barcode-text-caption {
   font-family: monospace;
-  font-size: 7.5pt;
+  font-size: 7pt;
   font-weight: 700;
   letter-spacing: 1px;
   margin-top: 1px;
 }
 
 .t-awb-subtext {
-  font-size: 7.5pt;
-  margin-top: 2px;
+  font-size: 7.2pt;
+  margin-top: 1px;
   letter-spacing: 0.3px;
 }
 
 /* SHIP TO Box */
 .t-ship-to-box {
   background-color: #ffffff;
-  padding: 3mm 3.5mm;
+  padding: 2.5mm 3mm;
 }
 
 .t-box-title {
-  font-size: 8pt;
+  font-size: 7.5pt;
   font-weight: 900;
   letter-spacing: 0.5px;
   border-bottom: 1px dashed #000000;
-  padding-bottom: 2px;
-  margin-bottom: 3px;
-}
-
-.t-customer-name {
-  font-size: 11pt;
-  font-weight: 900;
-  color: #000000;
+  padding-bottom: 1px;
   margin-bottom: 2px;
 }
 
+.t-customer-name {
+  font-size: 10.5pt;
+  font-weight: 900;
+  color: #000000;
+  margin-bottom: 1px;
+}
+
 .t-address-line {
-  font-size: 8.5pt;
-  line-height: 1.25;
+  font-size: 8pt;
+  line-height: 1.2;
   color: #000000;
 }
 
@@ -401,53 +407,53 @@
   gap: 4px;
   background-color: #000000;
   color: #ffffff;
-  padding: 3px 8px;
-  margin: 4px 0 2px 0;
+  padding: 2px 7px;
+  margin: 3px 0 2px 0;
   border: 1px solid #000000;
 }
 
 .pincode-label {
-  font-size: 8.5pt;
+  font-size: 8pt;
   font-weight: 700;
 }
 
 .pincode-number {
-  font-size: 13pt;
+  font-size: 12pt;
   font-weight: 900;
   letter-spacing: 1.5px;
   font-family: monospace, sans-serif;
 }
 
 .t-contact-row {
-  margin-top: 3px;
-  font-size: 8.5pt;
+  margin-top: 2px;
+  font-size: 8pt;
 }
 
 /* Items Section */
 .t-items-section {
-  padding: 2mm 3mm;
+  padding: 1.5mm 2.5mm;
 }
 
 .t-items-header {
   display: flex;
   justify-content: space-between;
-  font-size: 7.5pt;
+  font-size: 7pt;
   font-weight: 900;
   border-bottom: 1px solid #000000;
-  padding-bottom: 2px;
+  padding-bottom: 1px;
   margin-bottom: 2px;
 }
 
 .t-items-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5px;
+  gap: 1px;
 }
 
 .t-item-line {
   display: flex;
   justify-content: space-between;
-  font-size: 7.5pt;
+  font-size: 7pt;
 }
 
 .t-item-name {
@@ -476,12 +482,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2mm 3mm;
+  padding: 1.5mm 2.5mm;
   background-color: #ffffff;
 }
 
 .t-totals-grid {
-  font-size: 7.5pt;
+  font-size: 7pt;
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -502,16 +508,16 @@
 }
 
 .t-total-val {
-  font-size: 11pt;
+  font-size: 10.5pt;
   font-weight: 900;
 }
 
 /* Return Footer */
 .t-return-footer {
-  font-size: 6.5pt;
-  line-height: 1.25;
+  font-size: 6.2pt;
+  line-height: 1.2;
   background-color: #ffffff;
-  padding: 2mm 3mm;
+  padding: 1.5mm 2.5mm;
 }
 
 .t-return-title {
@@ -520,284 +526,305 @@
 }
 
 .t-return-details {
-  color: #111111;
+  color: #000000;
 }
 
 .t-fssai-stamp {
   font-size: 5.5pt;
   font-weight: 700;
-  margin-top: 3px;
-  border-top: 1px dashed #444444;
-  padding-top: 2px;
+  margin-top: 2px;
+  border-top: 1px dashed #000000;
+  padding-top: 1px;
   text-align: center;
   letter-spacing: 0.2px;
 }
 
 /* ==========================================================================
-   3. A4 COMMERCIAL TAX INVOICE & PACKING SLIP
+   3. A4 COMMERCIAL TAX INVOICE (AUTHENTIC OFE / KABGEER FORMAT)
    ========================================================================== */
 .invoice-a4-card {
   width: 100%;
-  color: #0f172a;
+  border: 1.5px solid #000000;
+  box-sizing: border-box;
+  font-size: 8.5pt;
+  line-height: 1.25;
+  color: #000000;
 }
 
-.inv-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1.5rem;
+.inv-top-bar {
+  text-align: center;
+  border-bottom: 1.5px solid #000000;
+  padding: 3px 0;
+  background-color: #ffffff;
 }
 
-.inv-brand-box {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.inv-logo {
-  height: 60px;
-  object-fit: contain;
-}
-
-.inv-brand-title {
-  font-family: var(--font-heading, serif);
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #1a2f22;
+.inv-main-heading {
+  font-size: 11pt;
+  font-weight: 900;
+  letter-spacing: 1px;
   margin: 0;
-  line-height: 1.1;
+  color: #000000;
 }
 
-.inv-brand-sub {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #b45309;
-  margin-bottom: 0.35rem;
+.inv-seller-banner {
+  padding: 6px 12px;
+  text-align: center;
+  background-color: #ffffff;
 }
 
-.inv-address-line {
-  font-size: 0.8rem;
-  color: #475569;
-  line-height: 1.35;
-}
-
-.inv-meta-box {
-  text-align: right;
-}
-
-.inv-badge-type {
-  display: inline-block;
-  background-color: #1a2f22;
-  color: #d4af37;
-  font-weight: 800;
-  font-size: 0.82rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: 4px;
+.inv-company-title {
+  font-size: 14pt;
+  font-weight: 900;
   letter-spacing: 0.5px;
-  margin-bottom: 0.5rem;
+  color: #000000;
 }
 
-.inv-meta-table {
-  font-size: 0.82rem;
-  border-collapse: collapse;
-  margin-left: auto;
-}
-
-.inv-meta-table td {
-  padding: 2px 4px;
-}
-
-.inv-tag-prepaid {
+.inv-company-address {
+  font-size: 8pt;
   font-weight: 700;
-  color: #15803d;
-  background-color: #dcfce7;
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 0.75rem;
-}
-
-.inv-tag-cod {
-  font-weight: 700;
-  color: #991b1b;
-  background-color: #fee2e2;
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 0.75rem;
-}
-
-.inv-divider {
-  height: 1.5px;
-  background: linear-gradient(90deg, #1a2f22 0%, #d4af37 50%, #1a2f22 100%);
-  margin: 1rem 0 1.25rem 0;
-}
-
-/* Parties Grid */
-.inv-parties-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  margin-bottom: 1.25rem;
-}
-
-.inv-party-card {
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.inv-party-header {
-  background-color: #f1f5f9;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #334155;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  border-bottom: 1px solid #cbd5e1;
-}
-
-.inv-party-body {
-  padding: 0.75rem;
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: #334155;
-}
-
-.inv-cust-name {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 2px;
-}
-
-/* Table */
-.inv-items-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.82rem;
-  margin-bottom: 1.25rem;
-}
-
-.inv-items-table th {
-  background-color: #1a2f22;
-  color: #ffffff;
-  padding: 0.55rem 0.75rem;
-  font-weight: 700;
-  text-align: left;
-  font-size: 0.78rem;
-  letter-spacing: 0.3px;
-}
-
-.inv-items-table td {
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid #e2e8f0;
-  vertical-align: middle;
-}
-
-.inv-items-table tbody tr:nth-child(even) {
-  background-color: #f8fafc;
-}
-
-.inv-item-subtext {
-  font-size: 0.7rem;
-  color: #64748b;
   margin-top: 1px;
 }
 
-/* Summary Grid */
-.inv-footer-summary-grid {
+.inv-company-contact {
+  font-size: 7.5pt;
+  margin-top: 1px;
+}
+
+.inv-company-brand-badge {
+  font-size: 8.5pt;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+.inv-legal-row {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1.5px solid #000000;
+  border-bottom: 1.5px solid #000000;
+  padding: 3px 12px;
+  font-size: 8pt;
+  font-weight: 900;
+  background-color: #ffffff;
+}
+
+.inv-meta-three-col {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: 1.15fr 1.15fr 1fr;
+  border-bottom: 1.5px solid #000000;
 }
 
-.inv-amount-words-box {
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 0.75rem;
-  background-color: #f8fafc;
+.inv-col-buyer,
+.inv-col-delivery,
+.inv-col-invoice-meta {
+  padding: 6px 8px;
+  box-sizing: border-box;
+  font-size: 8pt;
 }
 
-.inv-words-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
+.inv-col-buyer {
+  border-right: 1.5px solid #000000;
+}
+
+.inv-col-delivery {
+  border-right: 1.5px solid #000000;
+}
+
+.inv-col-heading {
+  font-weight: 900;
+  font-style: italic;
+  text-decoration: underline;
+  margin-bottom: 3px;
+  font-size: 8.5pt;
+}
+
+.inv-buyer-name {
+  font-weight: 900;
+  font-size: 9pt;
+  margin-bottom: 1px;
+}
+
+.inv-meta-keyvalue {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 7.8pt;
+}
+
+.inv-meta-keyvalue td {
+  padding: 1.5px 2px;
+  vertical-align: top;
+}
+
+.inv-origin-dest-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1.5px solid #000000;
+  background-color: #ffffff;
+}
+
+.inv-origin-box,
+.inv-dest-box {
+  padding: 3px 8px;
+  display: flex;
+  flex-direction: column;
+  font-size: 7.5pt;
+}
+
+.inv-origin-box {
+  border-right: 1.5px solid #000000;
+}
+
+.inv-origin-box strong,
+.inv-dest-box strong {
+  font-size: 9pt;
+  font-weight: 900;
+}
+
+/* Official Tax Table */
+.inv-table-official {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8pt;
+}
+
+.inv-table-official th {
+  background-color: #ffffff;
+  color: #000000;
+  border-bottom: 1.5px solid #000000;
+  border-right: 1px solid #000000;
+  padding: 4px 4px;
+  font-weight: 900;
+  font-size: 7.5pt;
+}
+
+.inv-table-official th:last-child {
+  border-right: none;
+}
+
+.inv-table-official td {
+  border-bottom: 1px solid #000000;
+  border-right: 1px solid #000000;
+  padding: 4px 4px;
+  vertical-align: middle;
+}
+
+.inv-table-official td:last-child {
+  border-right: none;
+}
+
+.inv-tfoot-row td {
+  border-top: 1.5px solid #000000;
+  border-bottom: 1.5px solid #000000;
+  padding: 4px 4px;
+  font-weight: 900;
+}
+
+.inv-words-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 5px 12px;
+  border-bottom: 1.5px solid #000000;
+  font-size: 8.5pt;
+  background-color: #ffffff;
+}
+
+.inv-words-label {
+  font-weight: 900;
+  color: #000000;
+}
+
+.inv-words-string {
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+/* Bottom Grid: Bank, Terms & Sign */
+.inv-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+}
+
+.inv-bank-terms-col {
+  padding: 6px 10px;
+  border-right: 1.5px solid #000000;
+  font-size: 7.5pt;
+}
+
+.inv-bank-title {
+  font-weight: 900;
+  text-decoration: underline;
   margin-bottom: 2px;
 }
 
-.inv-words-val {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #1a2f22;
-  font-style: italic;
-  margin-bottom: 0.5rem;
+.inv-bank-table {
+  border-collapse: collapse;
+  font-size: 7.5pt;
+  margin-bottom: 6px;
 }
 
-.inv-declaration-box {
-  font-size: 0.72rem;
-  color: #64748b;
-  line-height: 1.35;
-  border-top: 1px dashed #cbd5e1;
-  padding-top: 0.4rem;
+.inv-bank-table td {
+  padding: 1px 3px;
 }
 
-.inv-totals-box {
+.inv-terms-title {
+  font-weight: 900;
+  text-decoration: underline;
+  margin-bottom: 2px;
+}
+
+.inv-terms-list {
+  margin: 0;
+  padding-left: 14px;
+  font-size: 6.8pt;
+  line-height: 1.25;
+}
+
+.inv-terms-list li {
+  margin-bottom: 1px;
+}
+
+.inv-signatory-col {
+  padding: 6px 8px;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-}
-
-.inv-tot-row {
-  display: flex;
   justify-content: space-between;
-  padding: 2px 0;
-  color: #475569;
-}
-
-.inv-final-total-row {
-  border-top: 2px solid #1a2f22;
-  margin-top: 0.35rem;
-  padding-top: 0.5rem;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #1a2f22;
-}
-
-/* Sign Row */
-.inv-sign-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  border-top: 1px solid #e2e8f0;
-  padding-top: 1.25rem;
-  margin-top: 1rem;
-}
-
-.inv-signature-col {
   text-align: center;
-  min-width: 180px;
 }
 
-.inv-for-company {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #1a2f22;
-  margin-bottom: 2.5rem;
+.inv-sign-for {
+  font-size: 7.5pt;
+  font-weight: 900;
+  text-align: right;
+  margin-bottom: 10px;
 }
 
-.inv-sign-line {
-  border-bottom: 1px solid #0f172a;
-  margin-bottom: 4px;
+.inv-sign-space {
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.inv-auth-title {
-  font-size: 0.72rem;
-  color: #64748b;
+.inv-digital-sign-stamp {
+  border: 1.5px dashed #000000;
+  padding: 4px 10px;
+  display: flex;
+  flex-direction: column;
+  font-size: 8pt;
+  font-weight: 900;
+}
+
+.inv-digital-sign-stamp small {
+  font-size: 6.5pt;
   font-weight: 600;
+}
+
+.inv-sign-auth-label {
+  font-size: 7.5pt;
+  font-weight: 900;
+  text-align: right;
+  border-top: 1px solid #000000;
+  padding-top: 2px;
 }
 
 /* ==========================================================================
@@ -810,7 +837,6 @@
     size: auto;
   }
 
-  /* Hide everything in the body except our modal container */
   body {
     background: #ffffff !important;
     color: #000000 !important;
@@ -878,14 +904,14 @@
   #printable-thermal-bill.mode-thermal-4x6 {
     width: 100mm !important;
     min-height: 150mm !important;
-    padding: 2mm 3mm !important;
+    padding: 2mm !important;
     page-break-after: avoid !important;
   }
 
   #printable-thermal-bill.mode-invoice-a4 {
     width: 100% !important;
     max-width: 210mm !important;
-    padding: 8mm 10mm !important;
+    padding: 4mm 6mm !important;
     page-break-after: avoid !important;
   }
 }

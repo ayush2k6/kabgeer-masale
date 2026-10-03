@@ -18,7 +18,7 @@ const CODE39_MAP = {
   '/': '010100010', '+': '010001010', '%': '000101010', '*': '010010100'
 };
 
-export const SvgBarcode = ({ value, height = 40, showText = true }) => {
+export const SvgBarcode = ({ value, height = 36, showText = true }) => {
   if (!value) return null;
   const cleanVal = String(value).toUpperCase().replace(/[^0-9A-Z\-\. \$\/\+\%]/g, '');
   const encodedStr = `*${cleanVal}*`;
@@ -72,14 +72,14 @@ export const SvgBarcode = ({ value, height = 40, showText = true }) => {
 // Convert number to Indian currency words
 const numberToWordsIndian = (num) => {
   const n = Math.round(Number(num) || 0);
-  if (n === 0) return 'Zero Rupees Only';
-  const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-  const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  if (n === 0) return 'RUPEES ZERO ONLY';
+  const a = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+  const b = ['', '', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
 
   const convertLessThanOneThousand = (num) => {
     let s = '';
     if (num >= 100) {
-      s += a[Math.floor(num / 100)] + ' Hundred ';
+      s += a[Math.floor(num / 100)] + ' HUNDRED ';
       num %= 100;
     }
     if (num >= 20) {
@@ -98,12 +98,12 @@ const numberToWordsIndian = (num) => {
   let remainder = n % 1000;
   let result = '';
 
-  if (crore) result += convertLessThanOneThousand(crore) + 'Crore ';
-  if (lakh) result += convertLessThanOneThousand(lakh) + 'Lakh ';
-  if (thousand) result += convertLessThanOneThousand(thousand) + 'Thousand ';
+  if (crore) result += convertLessThanOneThousand(crore) + 'CRORE ';
+  if (lakh) result += convertLessThanOneThousand(lakh) + 'LAKH ';
+  if (thousand) result += convertLessThanOneThousand(thousand) + 'THOUSAND ';
   if (remainder) result += convertLessThanOneThousand(remainder);
 
-  return `Rupees ${result.trim()} Only`;
+  return `RUPEES ${result.trim()} ONLY`;
 };
 
 const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
@@ -115,7 +115,16 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
 
   const displayOrderId = order.display_order_id || order.id || 'KAB-ORDER';
   const isPrepaid = String(order.payment_status || '').toLowerCase() === 'paid';
+  
   const formattedDate = order.created_at
+    ? new Date(order.created_at).toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+    : new Date().toLocaleDateString('en-IN');
+
+  const formattedDateTime = order.created_at
     ? new Date(order.created_at).toLocaleDateString('en-IN', {
         day: '2-digit',
         month: 'short',
@@ -123,7 +132,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
         hour: '2-digit',
         minute: '2-digit'
       })
-    : new Date().toLocaleDateString('en-IN');
+    : new Date().toLocaleString('en-IN');
 
   const addr = order.shipping_address || {};
   const customerName = `${addr.firstName || order.customer_name || 'Customer'} ${addr.lastName || ''}`.trim();
@@ -133,9 +142,16 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
   const totalAmount = Number(order.total_amount) || 0;
   const subtotal = Number(order.subtotal) || totalAmount;
   const discount = Number(order.discount) || 0;
-  const tax = Number(order.tax) || 0;
   const shippingFee = Number(order.shipping_fee) || 0;
   const totalQty = items.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
+
+  // Accurate GST breakdown (5% inclusive on spices)
+  const isIntraState = String(addr.state || '').toLowerCase().includes('uttar pradesh') || String(addr.state || '').toLowerCase() === 'up';
+  const taxableSubtotal = (totalAmount - shippingFee) / 1.05;
+  const totalGst = (totalAmount - shippingFee) - taxableSubtotal;
+  const cgstAmount = isIntraState ? totalGst / 2 : 0;
+  const sgstAmount = isIntraState ? totalGst / 2 : 0;
+  const igstAmount = !isIntraState ? totalGst : 0;
 
   const handleTriggerPrint = () => {
     window.print();
@@ -150,8 +166,8 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
           <div className="thermal-modal-title">
             <Printer size={20} color="#1a2f22" />
             <div>
-              <h3>Print Order Bill & Shipping Label</h3>
-              <p>Ready for pasting onto parcels (4"x6" Thermal Sticker or A4 Tax Invoice)</p>
+              <h3>Production Ready Order Bill & Shipping Label</h3>
+              <p>Official Olympic Foods and Essentials / Kabgeer Format</p>
             </div>
           </div>
 
@@ -164,7 +180,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                 onClick={() => setPrintFormat('thermal')}
                 title="Direct Thermal 4x6 inch Sticker Label"
               >
-                <Tag size={14} /> 4"x6" Thermal Sticker
+                <Tag size={14} /> 🏷️ 4"x6" Thermal Sticker
               </button>
               <button
                 type="button"
@@ -172,7 +188,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                 onClick={() => setPrintFormat('invoice')}
                 title="Full A4 Commercial Tax Invoice"
               >
-                <FileText size={14} /> A4 Tax Invoice & Slip
+                <FileText size={14} /> 📄 A4 Tax Invoice
               </button>
             </div>
 
@@ -218,7 +234,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
           </div>
 
           <div className="quick-edit-item">
-            <label>AWB / Tracking Number:</label>
+            <label>AWB / Consignment No.:</label>
             <input
               type="text"
               placeholder="e.g. TRK-LKO-123456"
@@ -249,12 +265,16 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                  ========================================================= */
               <div className="thermal-4x6-card">
                 
-                {/* 1. Header with Brand & Routing Barcode */}
+                {/* 1. Header with Brand, Seller Entity & Credentials */}
                 <div className="t-row t-header">
                   <div className="t-brand-col">
-                    <div className="t-company-name">KABGEER MASALE</div>
-                    <div className="t-tagline">Authentic Royal Lucknowi Spices</div>
-                    <div className="t-origin-city">Lucknow, UP - 226001, India</div>
+                    <div className="t-company-name">OLYMPIC FOODS AND ESSENTIALS</div>
+                    <div className="t-tagline">Brand: <strong>KABGEER MASALE</strong></div>
+                    <div className="t-origin-city">Kanpur / Lucknow, U.P. - 208010 • Ph: 8090086636</div>
+                    <div className="t-credentials-line">
+                      <span>GSTIN: <strong>09DZXPM8025C1ZV</strong></span>
+                      <span> | FSSAI: <strong>12723045000296</strong></span>
+                    </div>
                   </div>
                   <div className="t-courier-badge-col">
                     <div className="t-courier-name">{courierName.toUpperCase()}</div>
@@ -264,22 +284,22 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                   </div>
                 </div>
 
-                {/* 2. Order ID & Main Barcode */}
+                {/* 2. Order ID, Barcode & Routing */}
                 <div className="t-row t-barcode-section">
                   <div className="t-barcode-meta">
-                    <span className="t-meta-label">ORDER ID:</span>
+                    <span className="t-meta-label">ORDER / INVOICE NO:</span>
                     <span className="t-order-id-val">#{displayOrderId}</span>
                     <span className="t-date-val">{formattedDate}</span>
                   </div>
-                  <SvgBarcode value={awbNumber || displayOrderId} height={36} />
+                  <SvgBarcode value={awbNumber || displayOrderId} height={34} />
                   {awbNumber && (
                     <div className="t-awb-subtext">
-                      AWB / CONSIGNMENT: <strong>{awbNumber}</strong>
+                      AWB / CONSIGNMENT NO: <strong>{awbNumber}</strong>
                     </div>
                   )}
                 </div>
 
-                {/* 3. SHIP TO / Consignee Destination Box (Primary focus for delivery agent) */}
+                {/* 3. SHIP TO / Consignee Destination Box */}
                 <div className="t-row t-ship-to-box">
                   <div className="t-box-title">DELIVER TO / SHIP TO:</div>
                   <div className="t-customer-name">{customerName.toUpperCase()}</div>
@@ -309,12 +329,12 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                   </div>
                 </div>
 
-                {/* 4. Manifest / Items Breakdown */}
+                {/* 4. Manifest / Items Breakdown with HSN */}
                 <div className="t-row t-items-section">
                   <div className="t-items-header">
-                    <span>ITEM DESCRIPTION ({items.length} PKTS, {totalQty} PCS)</span>
+                    <span>ITEM DESCRIPTION (HSN: 09109990)</span>
                     <span>QTY</span>
-                    <span>PRICE</span>
+                    <span>AMOUNT</span>
                   </div>
                   <div className="t-items-list">
                     {items.map((it, idx) => (
@@ -332,78 +352,120 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                 {/* 5. Financial Summary Box */}
                 <div className="t-row t-totals-section">
                   <div className="t-totals-grid">
-                    <div className="t-subtotal">Subtotal: ₹{subtotal.toFixed(0)}</div>
-                    {discount > 0 && <div className="t-discount">Discount: -₹{discount.toFixed(0)}</div>}
+                    <div className="t-subtotal">Taxable Value: ₹{taxableSubtotal.toFixed(0)}</div>
+                    <div className="t-gst">GST (5% Inclusive): ₹{totalGst.toFixed(0)}</div>
                     <div className="t-shipping">Shipping: {shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(0)}`}</div>
                   </div>
                   <div className="t-grand-total">
-                    <span className="t-total-label">NET AMOUNT:</span>
+                    <span className="t-total-label">TOTAL PAID:</span>
                     <span className="t-total-val">₹{totalAmount.toFixed(0)}</span>
                   </div>
                 </div>
 
-                {/* 6. Return Address & Seller Details */}
+                {/* 6. Return Address & Official Registered Details */}
                 <div className="t-row t-return-footer">
                   <div className="t-return-title">IF UNDELIVERED, PLEASE RETURN TO:</div>
                   <div className="t-return-details">
-                    <strong>KABGEER MASALE</strong> (Olympic Foods & Essentials)<br />
-                    Lucknow, Uttar Pradesh - 226001, India<br />
-                    Customer Support: <strong>+91-80900-86636</strong> | enquiry@kabgeermasala.com
+                    <strong>OLYMPIC FOODS AND ESSENTIALS</strong> (Brand: <strong>KABGEER</strong>)<br />
+                    Plot No 664K, Tadbagiya, Wajidpur, Jajmau, Kanpur, U.P. - 208010<br />
+                    Phone: <strong>8090086636 / 9619696507</strong> | MSME: UDYAM-UP-43-0057977
                   </div>
                   <div className="t-fssai-stamp">
-                    ✓ 100% PURE & NATURAL AWADHI SPICES • PACKED UNDER STRICT HYGIENIC CONDITIONS
+                    ✓ FSSAI NO: 12723045000296 • 100% PURE & NATURAL AWADHI SPICES • GST INCLUSIVE
                   </div>
                 </div>
 
               </div>
             ) : (
               /* =========================================================
-                 2. FULL A4 COMMERCIAL TAX INVOICE & PACKING SLIP
+                 2. FULL A4 COMMERCIAL TAX INVOICE (OFFICIAL OFE/KABGEER FORMAT)
                  ========================================================= */
               <div className="invoice-a4-card">
                 
-                {/* Invoice Top Header */}
-                <div className="inv-header">
-                  <div className="inv-brand-box">
-                    <img src={logo} alt="Kabgeer Masale" className="inv-logo" />
-                    <div>
-                      <h1 className="inv-brand-title">KABGEER MASALE</h1>
-                      <div className="inv-brand-sub">Crafted by Olympic Foods and Essentials</div>
-                      <div className="inv-address-line">Heritage Lucknowi Spice Blends & Gourmet Formulations</div>
-                      <div className="inv-address-line">Lucknow, Uttar Pradesh - 226001, India</div>
-                      <div className="inv-address-line">Customer Care: +91-80900-86636 | Email: enquiry@kabgeermasala.com</div>
-                      <div className="inv-address-line">Website: www.kabgeermasala.com</div>
+                {/* Invoice Top Title */}
+                <div className="inv-top-bar">
+                  <h2 className="inv-main-heading">TAX INVOICE</h2>
+                </div>
+
+                {/* Seller & Header Box */}
+                <div className="inv-seller-banner">
+                  <div className="inv-seller-brand">
+                    <div className="inv-company-title">OLYMPIC FOODS AND ESSENTIALS</div>
+                    <div className="inv-company-address">
+                      Plot No 664K, TADBAGIYA, WAJIDPUR, JAJMAU, KANPUR, U.P. - 208010
+                    </div>
+                    <div className="inv-company-contact">
+                      Phone no. - 8090086636 / 9619696507 | MSME No.: UDYAM-UP-43-0057977
+                    </div>
+                    <div className="inv-company-brand-badge">
+                      Brand: <strong>KABGEER</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* GSTIN & FSSAI Sub-Bar */}
+                <div className="inv-legal-row">
+                  <div><strong>GSTIN - 09DZXPM8025C1ZV</strong></div>
+                  <div><strong>FSSAI No - 12723045000296</strong></div>
+                </div>
+
+                {/* Buyer & Invoice Meta 3-Column Grid */}
+                <div className="inv-meta-three-col">
+                  {/* Buyer */}
+                  <div className="inv-col-buyer">
+                    <div className="inv-col-heading">Buyer:</div>
+                    <div className="inv-col-content">
+                      <div className="inv-buyer-name">{customerName}</div>
+                      <div>{addr.address || 'Address on file'}</div>
+                      {addr.apartment && <div>{addr.apartment}</div>}
+                      <div>{addr.city ? `${addr.city}, ` : ''}{addr.state || ''} - <strong>{addr.pinCode || '—'}</strong></div>
+                      <div>{addr.country || 'India'}</div>
+                      <div>Mob: <strong>{customerPhone}</strong></div>
+                      <div>Email: {customerEmail}</div>
                     </div>
                   </div>
 
-                  <div className="inv-meta-box">
-                    <div className="inv-badge-type">TAX INVOICE / PACKING SLIP</div>
-                    <table className="inv-meta-table">
+                  {/* Delivery */}
+                  <div className="inv-col-delivery">
+                    <div className="inv-col-heading">Delivery Destination:</div>
+                    <div className="inv-col-content">
+                      <div className="inv-buyer-name">{customerName}</div>
+                      <div>{addr.address || 'Address on file'}</div>
+                      {addr.apartment && <div>{addr.apartment}</div>}
+                      <div>{addr.city ? `${addr.city}, ` : ''}{addr.state || ''} - <strong>{addr.pinCode || '—'}</strong></div>
+                      <div>Courier: <strong>{courierName}</strong></div>
+                      {awbNumber && <div>AWB No: <strong>{awbNumber}</strong></div>}
+                    </div>
+                  </div>
+
+                  {/* Invoice Meta Table */}
+                  <div className="inv-col-invoice-meta">
+                    <table className="inv-meta-keyvalue">
                       <tbody>
                         <tr>
                           <td><strong>Invoice No:</strong></td>
-                          <td>#{displayOrderId}</td>
+                          <td className="monospace">OFE/{displayOrderId}</td>
                         </tr>
                         <tr>
-                          <td><strong>Date:</strong></td>
+                          <td><strong>Bill Date:</strong></td>
                           <td>{formattedDate}</td>
                         </tr>
                         <tr>
-                          <td><strong>Payment:</strong></td>
-                          <td>
-                            <span className={isPrepaid ? 'inv-tag-prepaid' : 'inv-tag-cod'}>
-                              {isPrepaid ? 'PAID ONLINE (Razorpay)' : 'CASH ON DELIVERY'}
-                            </span>
-                          </td>
+                          <td><strong>Time:</strong></td>
+                          <td>{formattedDateTime.split(',')[1] || ''}</td>
                         </tr>
                         <tr>
-                          <td><strong>Courier:</strong></td>
-                          <td>{courierName}</td>
+                          <td><strong>Term of Payment:</strong></td>
+                          <td>
+                            <strong style={{ color: isPrepaid ? '#15803d' : '#b91c1c' }}>
+                              {isPrepaid ? 'PREPAID (ONLINE RAZORPAY)' : 'CASH ON DELIVERY'}
+                            </strong>
+                          </td>
                         </tr>
-                        {awbNumber && (
+                        {order.razorpay_order_id && (
                           <tr>
-                            <td><strong>AWB No:</strong></td>
-                            <td className="monospace">{awbNumber}</td>
+                            <td><strong>Gateway ID:</strong></td>
+                            <td className="monospace" style={{ fontSize: '0.72rem' }}>{order.razorpay_order_id}</td>
                           </tr>
                         )}
                       </tbody>
@@ -411,129 +473,143 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                   </div>
                 </div>
 
-                <div className="inv-divider" />
-
-                {/* Addresses Row */}
-                <div className="inv-parties-grid">
-                  <div className="inv-party-card">
-                    <div className="inv-party-header">
-                      <MapPin size={13} />
-                      <span>BILL TO / SHIP TO (CONSIGNEE)</span>
-                    </div>
-                    <div className="inv-party-body">
-                      <div className="inv-cust-name">{customerName}</div>
-                      <div>{addr.address || 'Address provided on order'}</div>
-                      {addr.apartment && <div>{addr.apartment}</div>}
-                      <div>{addr.city ? `${addr.city}, ` : ''}{addr.state || ''} - <strong>{addr.pinCode || '—'}</strong></div>
-                      <div>{addr.country || 'India'}</div>
-                      <div style={{ marginTop: '4px' }}><strong>Phone:</strong> {customerPhone}</div>
-                      <div><strong>Email:</strong> {customerEmail}</div>
-                    </div>
+                {/* Country of Origin & Destination Bar */}
+                <div className="inv-origin-dest-bar">
+                  <div className="inv-origin-box">
+                    <span>Country Of Origin</span>
+                    <strong>INDIA</strong>
                   </div>
-
-                  <div className="inv-party-card">
-                    <div className="inv-party-header">
-                      <Package size={13} />
-                      <span>DISPATCH & DISPATCHER DETAILS</span>
-                    </div>
-                    <div className="inv-party-body">
-                      <div><strong>Seller:</strong> Olympic Foods and Essentials</div>
-                      <div><strong>Brand:</strong> Kabgeer Masale</div>
-                      <div><strong>Dispatch Hub:</strong> Lucknow Central Hub, UP</div>
-                      <div><strong>Category:</strong> Spices, Condiments & Seasonings</div>
-                      <div><strong>Nature of Goods:</strong> 100% Pure Vegetarian Lucknowi Spices</div>
-                      <div style={{ marginTop: '6px' }}>
-                        <SvgBarcode value={awbNumber || displayOrderId} height={28} showText={false} />
-                      </div>
-                    </div>
+                  <div className="inv-dest-box">
+                    <span>Destination</span>
+                    <strong>{(addr.city || 'INDIA').toUpperCase()}</strong>
                   </div>
                 </div>
 
-                {/* Itemized Table */}
-                <table className="inv-items-table">
+                {/* Official Tax Invoice Table */}
+                <table className="inv-table-official">
                   <thead>
                     <tr>
-                      <th style={{ width: '40px' }}>#</th>
-                      <th>Product Description & Spice Formulation</th>
+                      <th style={{ width: '35px', textAlign: 'center' }}>S. No</th>
+                      <th>Item Description & Spice Formulation</th>
                       <th style={{ width: '80px', textAlign: 'center' }}>HSN Code</th>
-                      <th style={{ width: '60px', textAlign: 'center' }}>Qty</th>
-                      <th style={{ width: '90px', textAlign: 'right' }}>Unit Rate</th>
-                      <th style={{ width: '100px', textAlign: 'right' }}>Total (₹)</th>
+                      <th style={{ width: '60px', textAlign: 'center' }}>MRP (Rs.)</th>
+                      <th style={{ width: '45px', textAlign: 'center' }}>QTY</th>
+                      <th style={{ width: '70px', textAlign: 'right' }}>Rate (₹)</th>
+                      <th style={{ width: '80px', textAlign: 'right' }}>Taxable Rate</th>
+                      <th style={{ width: '70px', textAlign: 'right' }}>{isIntraState ? 'GST (5%)' : 'IGST (5%)'}</th>
+                      <th style={{ width: '85px', textAlign: 'right' }}>Amount (₹)</th>
                     </tr>
                   </thead>
                   <tbody>
                     {items.map((item, index) => {
-                      const unitPrice = Number(item.unit_price) || 0;
-                      const itemTotal = Number(item.total_price) || (unitPrice * item.quantity);
+                      const itemTotal = Number(item.total_price) || (Number(item.unit_price) * item.quantity);
+                      const unitRate = Number(item.unit_price) || (itemTotal / item.quantity);
+                      const itemTaxable = itemTotal / 1.05;
+                      const itemGst = itemTotal - itemTaxable;
+
                       return (
                         <tr key={item.id || index}>
                           <td style={{ textAlign: 'center' }}>{index + 1}</td>
                           <td>
                             <strong>{item.product_name}</strong>
-                            <div className="inv-item-subtext">Authentic Heritage Recipe • 100% Pure</div>
                           </td>
-                          <td style={{ textAlign: 'center' }} className="monospace">0910</td>
-                          <td style={{ textAlign: 'center', fontWeight: 600 }}>{item.quantity}</td>
-                          <td style={{ textAlign: 'right' }}>₹{unitPrice.toFixed(2)}</td>
-                          <td style={{ textAlign: 'right', fontWeight: 600 }}>₹{itemTotal.toFixed(2)}</td>
+                          <td style={{ textAlign: 'center' }} className="monospace">09109990</td>
+                          <td style={{ textAlign: 'center' }}>{unitRate.toFixed(0)}</td>
+                          <td style={{ textAlign: 'center', fontWeight: 700 }}>{item.quantity}</td>
+                          <td style={{ textAlign: 'right' }}>{(unitRate / 1.05).toFixed(2)}</td>
+                          <td style={{ textAlign: 'right' }}>{itemTaxable.toFixed(2)}</td>
+                          <td style={{ textAlign: 'right' }}>{itemGst.toFixed(2)}</td>
+                          <td style={{ textAlign: 'right', fontWeight: 700 }}>{itemTotal.toFixed(2)}</td>
                         </tr>
                       );
                     })}
+
+                    {shippingFee > 0 && (
+                      <tr>
+                        <td style={{ textAlign: 'center' }}>{items.length + 1}</td>
+                        <td><strong>Express Courier Shipping & Packaging Fee</strong></td>
+                        <td style={{ textAlign: 'center' }} className="monospace">996812</td>
+                        <td style={{ textAlign: 'center' }}>{shippingFee.toFixed(0)}</td>
+                        <td style={{ textAlign: 'center' }}>1</td>
+                        <td style={{ textAlign: 'right' }}>{(shippingFee / 1.05).toFixed(2)}</td>
+                        <td style={{ textAlign: 'right' }}>{(shippingFee / 1.05).toFixed(2)}</td>
+                        <td style={{ textAlign: 'right' }}>{(shippingFee - (shippingFee / 1.05)).toFixed(2)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700 }}>{shippingFee.toFixed(2)}</td>
+                      </tr>
+                    )}
                   </tbody>
+                  <tfoot>
+                    <tr className="inv-tfoot-row">
+                      <td colSpan={4} style={{ textAlign: 'right', fontWeight: 700 }}>Total</td>
+                      <td style={{ textAlign: 'center', fontWeight: 700 }}>{totalQty + (shippingFee > 0 ? 1 : 0)}</td>
+                      <td></td>
+                      <td style={{ textAlign: 'right', fontWeight: 700 }}>{taxableSubtotal.toFixed(2)}</td>
+                      <td style={{ textAlign: 'right', fontWeight: 700 }}>{totalGst.toFixed(2)}</td>
+                      <td style={{ textAlign: 'right', fontWeight: 900, fontSize: '0.95rem' }}>{totalAmount.toFixed(0)}</td>
+                    </tr>
+                  </tfoot>
                 </table>
 
-                {/* Totals & Words Row */}
-                <div className="inv-footer-summary-grid">
-                  <div className="inv-amount-words-box">
-                    <div className="inv-words-title">AMOUNT IN WORDS:</div>
-                    <div className="inv-words-val">{numberToWordsIndian(totalAmount)}</div>
-                    
-                    <div className="inv-declaration-box">
-                      <strong>Declaration:</strong> We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.
-                    </div>
-                  </div>
-
-                  <div className="inv-totals-box">
-                    <div className="inv-tot-row">
-                      <span>Subtotal (Items):</span>
-                      <span>₹{subtotal.toFixed(2)}</span>
-                    </div>
-                    {discount > 0 && (
-                      <div className="inv-tot-row" style={{ color: '#15803d' }}>
-                        <span>Discount Applied:</span>
-                        <span>-₹{discount.toFixed(2)}</span>
-                      </div>
-                    )}
-                    {tax > 0 && (
-                      <div className="inv-tot-row">
-                        <span>GST / Taxes:</span>
-                        <span>+₹{tax.toFixed(2)}</span>
-                      </div>
-                    )}
-                    <div className="inv-tot-row">
-                      <span>Shipping & Handling:</span>
-                      <span>{shippingFee === 0 ? 'FREE' : `+₹${shippingFee.toFixed(2)}`}</span>
-                    </div>
-                    <div className="inv-tot-row inv-final-total-row">
-                      <span>Grand Total:</span>
-                      <span>₹{totalAmount.toFixed(2)}</span>
-                    </div>
-                  </div>
+                {/* Total Amount in Words Bar */}
+                <div className="inv-words-bar">
+                  <div className="inv-words-label">Total Amount In Words:</div>
+                  <div className="inv-words-string">{numberToWordsIndian(totalAmount)}</div>
                 </div>
 
-                {/* Signatory & Quality Stamp */}
-                <div className="inv-sign-row">
-                  <div className="inv-terms-col">
-                    <div style={{ fontWeight: 700, marginBottom: '2px' }}>Thank you for choosing Kabgeer Masale!</div>
-                    <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                      For queries, bulk supply, or culinary feedback, WhatsApp us at <strong>+91-80900-86636</strong>.
+                {/* Bank Details & Terms Grid */}
+                <div className="inv-bottom-grid">
+                  <div className="inv-bank-terms-col">
+                    {/* Bank Details */}
+                    <div className="inv-bank-box">
+                      <div className="inv-bank-title">Company's Bank Details:</div>
+                      <table className="inv-bank-table">
+                        <tbody>
+                          <tr>
+                            <td>A/c Holder's Name</td>
+                            <td>: <strong>OLYMPIC FOODS AND ESSENTIALS</strong></td>
+                          </tr>
+                          <tr>
+                            <td>Bank Name</td>
+                            <td>: <strong>UCO BANK</strong></td>
+                          </tr>
+                          <tr>
+                            <td>A/c No.</td>
+                            <td>: <strong className="monospace">16310510001257</strong></td>
+                          </tr>
+                          <tr>
+                            <td>IFSC</td>
+                            <td>: <strong className="monospace">UCBA0001631</strong></td>
+                          </tr>
+                          <tr>
+                            <td>Branch</td>
+                            <td>: <strong>DEFENCE COLONY</strong></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Terms & Conditions */}
+                    <div className="inv-terms-box">
+                      <div className="inv-terms-title">Terms and conditions:</div>
+                      <ol className="inv-terms-list">
+                        <li>ALL PRODUCTS HAVE GST INCLUSIVE OF 5%</li>
+                        <li>GARLIC POWDER IS AN EXEMPTED CATEGORY WITH 0% GST TAX RATE</li>
+                        <li>ALL DISPUTES SUBJECT TO KANPUR JURISDICTION ONLY.</li>
+                        <li>ANY DEFECT WILL BE ACCEPTED WITHIN 7 DAYS OF BILL DATE.</li>
+                      </ol>
                     </div>
                   </div>
 
-                  <div className="inv-signature-col">
-                    <div className="inv-for-company">For KABGEER MASALE</div>
-                    <div className="inv-sign-line" />
-                    <div className="inv-auth-title">Authorized Signatory</div>
+                  {/* Signatory Box */}
+                  <div className="inv-signatory-col">
+                    <div className="inv-sign-for">Signature: FOR OLYMPIC FOODS AND ESSENTIALS</div>
+                    <div className="inv-sign-space">
+                      <div className="inv-digital-sign-stamp">
+                        <span>Olympic Foods & Essentials</span>
+                        <small>Authorized Signatory</small>
+                      </div>
+                    </div>
+                    <div className="inv-sign-auth-label">AUTHORIZED SIGNATORY</div>
                   </div>
                 </div>
 
