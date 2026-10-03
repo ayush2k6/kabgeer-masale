@@ -26,9 +26,11 @@ import {
   Send,
   Sparkles,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Printer
 } from 'lucide-react';
 import logo from '../assets/logo.png';
+import PrintableThermalBill from '../components/PrintableThermalBill';
 import './AdminDashboardPage.css';
 
 const ORDER_STATUS_OPTIONS = [
@@ -70,6 +72,7 @@ const AdminDashboardPage = () => {
   const [statusUpdateMessage, setStatusUpdateMessage] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
   const [actionSuccessKey, setActionSuccessKey] = useState(null);
+  const [printingOrder, setPrintingOrder] = useState(null);
 
   // Fetch all orders from Supabase (with direct RLS, Edge function & RPC fallback)
   const fetchAllOrders = useCallback(async () => {
@@ -776,6 +779,18 @@ const AdminDashboardPage = () => {
                             >
                               View Details
                             </button>
+                            <button
+                              type="button"
+                              className="btn-action-print"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPrintingOrder(order);
+                              }}
+                              title="Print 4x6 Thermal Delivery Label or A4 Tax Invoice"
+                            >
+                              <Printer size={13} />
+                              <span>Bill / Label</span>
+                            </button>
                             {order.order_status === 'Delivered' && (
                               <button
                                 type="button"
@@ -844,14 +859,25 @@ const AdminDashboardPage = () => {
                   Placed on {new Date(selectedOrder.created_at).toLocaleString('en-IN')}
                 </span>
               </div>
-              <button
-                type="button"
-                className="btn-drawer-close"
-                onClick={() => setSelectedOrder(null)}
-                aria-label="Close details"
-              >
-                <X size={20} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="btn-drawer-print-bill"
+                  onClick={() => setPrintingOrder(selectedOrder)}
+                  title="Print Thermal Shipping Label / Tax Invoice"
+                >
+                  <Printer size={14} />
+                  <span>Print Bill / Label</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-drawer-close"
+                  onClick={() => setSelectedOrder(null)}
+                  aria-label="Close details"
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             {/* Drawer Body */}
@@ -1393,6 +1419,20 @@ const AdminDashboardPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* 6. Production & Deliverable Ready Bill / Thermal Shipping Label Modal */}
+      {printingOrder && (
+        <PrintableThermalBill
+          order={printingOrder}
+          onClose={() => setPrintingOrder(null)}
+          onUpdateShipping={(courier, awb) => {
+            if (selectedOrder && (selectedOrder.id === printingOrder.id)) {
+              setCourierInput(courier);
+              setAwbInput(awb);
+            }
+          }}
+        />
       )}
 
     </div>

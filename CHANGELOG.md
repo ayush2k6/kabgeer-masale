@@ -1,5 +1,32 @@
 # Kabgeer Ji — Changelog
 
+## 2026-10-03 (Deliverable-Ready 4x6 Thermal Shipping Bills & A4 Commercial Tax Invoices)
+
+### Task
+Implement a full production and deliverable-ready billing system in the Admin Dashboard with:
+1. Direct 4"x6" (100mm × 150mm) adhesive thermal sticker labels formatted for direct thermal roll printers (Rollo, Zebra, TSC, TVS, Xprinter, etc.) to paste onto parcel delivery boxes.
+2. Standard A4/A5 commercial tax invoices and packing slips.
+3. Native vector Code 39 barcode generator for Order ID / AWB.
+4. Comprehensive company details (Kabgeer Masale, Olympic Foods & Essentials, Lucknow origin, support contact, FSSAI compliance, return address).
+5. Prominent PREPAID / COD distinction so delivery couriers never make cash collection errors.
+6. Print preview modal with format toggles and dedicated print buttons on table rows and within the order details drawer.
+
+### Implemented Changes & Verification
+- **Printable Component (`PrintableThermalBill.jsx`, `PrintableThermalBill.css`)**:
+  - `SvgBarcode`: Zero-dependency, pure SVG Code 39 barcode generator for ultra-crisp 203/300 DPI thermal printing.
+  - `numberToWordsIndian`: Converts total amount into Indian currency words for official invoices.
+  - Format 1 (4"x6" Thermal Sticker): High-contrast monochrome layout with brand header, courier badge, barcode, SHIP TO box with large bold PIN code, contact phone, manifest item breakdown, and return address.
+  - Format 2 (A4 Commercial Tax Invoice): Royal presentation with logo, HSN codes (0910), tax breakdown, terms, and authorized signatory.
+  - `@media print`: Complete print stylesheet that isolates `#printable-thermal-bill` and hides all dashboard navigation, modals, and toolbars.
+- **Admin Dashboard Integration (`AdminDashboardPage.jsx`, `AdminDashboardPage.css`)**:
+  - Added "Bill / Label" action button (`btn-action-print`) to every row in the Orders Table.
+  - Added "Print Bill / Label" button (`btn-drawer-print-bill`) to the Order Details Drawer header.
+  - Interactive modal with live format switching and inline courier/AWB editing.
+- **Build Verification**:
+  - `npm run build`: **Passed cleanly in 4.28s with 0 errors**.
+
+---
+
 ## 2026-10-02 (Fix Navbar Overlapping Admin Order Details Drawer)
 
 ### Task

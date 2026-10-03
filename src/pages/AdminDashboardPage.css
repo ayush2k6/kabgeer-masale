@@ -390,6 +390,50 @@
   border-color: #1a2f22;
 }
 
+.btn-action-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 0.75rem;
+  background-color: #ffffff;
+  color: #1a2f22;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-action-print:hover {
+  background-color: #f8fafc;
+  border-color: #1a2f22;
+  color: #1a2f22;
+}
+
+.btn-drawer-print-bill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #1a2f22;
+  color: #d4af37;
+  border: 1px solid #1a2f22;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-drawer-print-bill:hover {
+  background-color: #264230;
+  color: #fef08a;
+  transform: translateY(-1px);
+}
+
 /* Badges */
 .badge-customer-type {
   display: inline-block;
