@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
-import { corsHeaders } from '../_shared/cors.ts';
+import { corsHeaders, getCorsHeaders } from '../_shared/cors.ts';
 
 const ADMIN_WHITELIST = [
   'admin@kabgeermasala.com',
@@ -10,6 +10,8 @@ const ADMIN_WHITELIST = [
 ];
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -20,28 +22,29 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 1. Verify caller authorization
-    let callerEmail = '';
-    const authHeader = req.headers.get('Authorization');
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.replace('Bearer ', '');
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (user?.email) {
-        callerEmail = user.email.toLowerCase();
-      }
-    }
-
     const body = await req.json().catch(() => ({}));
-    if (!callerEmail && body.adminEmail) {
-      callerEmail = String(body.adminEmail).toLowerCase().trim();
-    }
-
     const action = body.action || 'list';
 
-    // Allow setup_admin_user with secure passkey or direct internal trigger
+    // Allow setup_admin_user ONLY with pre-shared administrative setup passkey configured in environment
+    const setupPasskey = req.headers.get('X-Admin-Setup-Key') || body.setupSecret;
+    const requiredSetupKey = Deno.env.get('ADMIN_SETUP_SECRET');
+
     if (action === 'setup_admin_user') {
+      if (!requiredSetupKey || !setupPasskey || setupPasskey !== requiredSetupKey) {
+        return new Response(
+          JSON.stringify({ error: 'Forbidden: Administrative setup key is unconfigured or invalid.' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       const email = (body.email || 'admin@kabgeermasala.com').trim().toLowerCase();
-      const password = body.password || 'Areej1935?@';
+      const password = body.password;
+      if (!password || typeof password !== 'string' || password.length < 8) {
+        return new Response(
+          JSON.stringify({ error: 'Bad Request: A password of at least 8 characters is required.' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
       // 1. Check if user already exists in auth
       const { data: usersData, error: listErr } = await supabase.auth.admin.listUsers();
@@ -98,14 +101,41 @@ serve(async (req) => {
       );
     }
 
-    const isAuthorized = 
-      ADMIN_WHITELIST.includes(callerEmail) || 
-      callerEmail.startsWith('admin') ||
-      callerEmail.includes('tanmay');
-
-    if (!isAuthorized && callerEmail) {
+    // For all other administrative operations, enforce strict JWT authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized. Admin role required.' }),
+        JSON.stringify({ error: 'Unauthorized: Missing or invalid Authorization header.' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '').trim();
+    const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
+
+    if (authErr || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: Invalid or expired session token.' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const callerEmail = (user.email || '').toLowerCase().trim();
+
+    // Verify admin role in database profiles or authorized administrator list
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    const isAuthorized =
+      profile?.role === 'admin' ||
+      ADMIN_WHITELIST.includes(callerEmail);
+
+    if (!isAuthorized) {
+      return new Response(
+        JSON.stringify({ error: 'Forbidden: Administrator privileges required.' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -205,36 +235,15 @@ serve(async (req) => {
       );
     }
 
-    // 4. Action: Clear all test data / orders / shipments / payments
+    // 4. Action: Guard against legacy destructive purge requests
     if (action === 'clear_all_orders' || action === 'reset_all_data') {
-      try {
-        await supabase.from('order_items').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        await supabase.from('payments').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        await supabase.from('shipments').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        const { error: delOrdersErr } = await supabase.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-
-        if (body.clearNonAdminProfiles) {
-          await supabase.from('profiles').delete().neq('role', 'admin');
-        }
-
-        if (delOrdersErr) {
-          console.error('Error clearing orders:', delOrdersErr);
-          return new Response(
-            JSON.stringify({ error: delOrdersErr.message }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        return new Response(
-          JSON.stringify({ success: true, message: 'All test order data and records purged successfully.' }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      } catch (purgeErr: any) {
-        return new Response(
-          JSON.stringify({ error: purgeErr.message }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
+      return new Response(
+        JSON.stringify({
+          error: 'Destructive data purge operations have been permanently disabled and removed from production.',
+          code: 'OPERATION_PERMANENTLY_DISABLED'
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     return new Response(

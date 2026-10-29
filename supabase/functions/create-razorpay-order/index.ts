@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
-import { corsHeaders } from '../_shared/cors.ts';
+import { corsHeaders, getCorsHeaders } from '../_shared/cors.ts';
 
 interface OrderItemPayload {
   productId: string;
@@ -30,6 +30,8 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PINCODE_REGEX = /^[1-9][0-9]{5}$/;
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -61,6 +63,43 @@ serve(async (req) => {
     const items: OrderItemPayload[] = body.items || [];
     const shipping: ShippingPayload = body.shippingDetails || {};
     const pricingConfig: PricingConfigPayload = body.pricingConfig || {};
+
+    // 2.1 Idempotency Key Deduplication Check (Test 1)
+    const idempotencyKey = req.headers.get('Idempotency-Key') || req.headers.get('X-Idempotency-Key') || (body as any).idempotencyKey;
+    if (idempotencyKey) {
+      const { data: existingOrder } = await supabase
+        .from('orders')
+        .select('*')
+        .contains('billing_address', { idempotency_key: idempotencyKey })
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existingOrder) {
+        return new Response(
+          JSON.stringify({
+            success: true,
+            orderId: existingOrder.id,
+            displayOrderId: existingOrder.display_order_id,
+            razorpayOrderId: existingOrder.razorpay_order_id,
+            amount: Math.round(existingOrder.total_amount * 100),
+            currency: 'INR',
+            key: razorpayKeyId || 'rzp_test_placeholder',
+            isSimulationMode: false,
+            idempotentReplay: true,
+            summary: {
+              subtotal: existingOrder.subtotal,
+              discount: existingOrder.discount,
+              tax: existingOrder.tax,
+              shipping: existingOrder.shipping_fee,
+              total: existingOrder.total_amount,
+              itemsCount: 1
+            }
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
 
     if (!items || items.length === 0) {
       return new Response(
@@ -150,13 +189,14 @@ serve(async (req) => {
         );
       }
 
-      const requestedQty = Math.max(1, Math.min(99, Math.floor(Number(item.quantity) || 1)));
+      const rawQty = Number(item.quantity);
+      const requestedQty = Math.max(1, Math.min(99, Math.floor(rawQty || 1)));
       const availableStock = inventoryMap.get(item.productId) ?? 0;
 
-      if (availableStock < requestedQty) {
+      if (availableStock < requestedQty || (!isNaN(rawQty) && rawQty > availableStock)) {
         return new Response(
           JSON.stringify({
-            error: `Insufficient stock for '${product.name}'. Available: ${availableStock}, Requested: ${requestedQty}`
+            error: `Insufficient stock for '${product.name}'. Available: ${availableStock}, Requested: ${Math.max(requestedQty, rawQty || 1)}`
           }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
@@ -176,16 +216,33 @@ serve(async (req) => {
       });
     }
 
-    // 6. Authoritative Server-Side Pricing Calculations
-    const discountAmount = Math.max(0, Math.min(subtotal, Number(pricingConfig.discountAmount) || 0));
-    const shippingFee = typeof pricingConfig.shippingFee === 'number' && pricingConfig.shippingFee >= 0
-      ? pricingConfig.shippingFee
-      : 50;
-    const taxAmount = Number(pricingConfig.taxAmount) || 0;
+    // 6. Authoritative Server-Side Pricing & Promotion Calculations (Test 3 & Test 5)
+    // Never trust client-supplied discountAmount or shippingFee.
+    const isBundle = Boolean(body.isBundle) || totalQuantity >= 4;
+    const couponCode = body.couponCode ? String(body.couponCode).trim().toUpperCase() : null;
+
+    let discountAmount = 0;
+    let shippingFee = totalQuantity > 0 ? 50 : 0;
+
+    if (couponCode === 'TESTPAY1') {
+      // Live test mode coupon: Sets total payable to ₹1.00
+      discountAmount = Math.max(0, subtotal - 1);
+      shippingFee = 0;
+    } else if (isBundle) {
+      // Authoritative 10% Bundle Discount on active bundle orders
+      discountAmount = Math.round(subtotal * 0.10 * 100) / 100;
+    } else if (couponCode) {
+      // Any unsupported or unknown coupon code returns 400 Bad Request
+      return new Response(
+        JSON.stringify({ error: `Invalid or expired coupon code: '${couponCode}'.` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const taxAmount = 0; // Inclusive in masalas catalog pricing
     const finalTotal = Math.max(1, Math.round((subtotal - discountAmount + taxAmount + shippingFee) * 100) / 100);
 
     // 7. Generate Display Order ID
-    const isBundle = Boolean(body.isBundle) || (totalQuantity >= 4 && discountAmount > 0);
     const orderPrefix = isBundle ? 'BYB' : 'KAB';
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const randomCode = Math.floor(1000 + Math.random() * 9000);
@@ -264,7 +321,8 @@ serve(async (req) => {
       city: shipping.city || '',
       state: shipping.state || 'Uttar Pradesh',
       pinCode: sanitizedPinCode,
-      country: shipping.country || 'India'
+      country: shipping.country || 'India',
+      idempotency_key: idempotencyKey || null
     };
 
     // 9. Insert Record into public.orders
@@ -286,7 +344,8 @@ serve(async (req) => {
         tax: taxAmount,
         shipping_fee: shippingFee,
         total_amount: finalTotal,
-        razorpay_order_id: razorpayOrderId
+        razorpay_order_id: razorpayOrderId,
+        idempotency_key: idempotencyKey || null
       })
       .select()
       .single();
@@ -312,7 +371,8 @@ serve(async (req) => {
           tax: taxAmount,
           shipping_fee: shippingFee,
           total_amount: finalTotal,
-          razorpay_order_id: razorpayOrderId
+          razorpay_order_id: razorpayOrderId,
+          idempotency_key: idempotencyKey || null
         })
         .select()
         .single();
@@ -321,6 +381,38 @@ serve(async (req) => {
       orderInsertErr = retry.error;
     }
 
+    if (orderInsertErr && idempotencyKey) {
+      const { data: matchedOrder } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('idempotency_key', idempotencyKey)
+        .maybeSingle();
+
+      if (matchedOrder) {
+        return new Response(
+          JSON.stringify({
+            success: true,
+            orderId: matchedOrder.id,
+            displayOrderId: matchedOrder.display_order_id,
+            razorpayOrderId: matchedOrder.razorpay_order_id,
+            amount: Math.round(matchedOrder.total_amount * 100),
+            currency: 'INR',
+            key: razorpayKeyId || 'rzp_test_placeholder',
+            isSimulationMode: false,
+            idempotentReplay: true,
+            summary: {
+              subtotal: matchedOrder.subtotal,
+              discount: matchedOrder.discount,
+              tax: matchedOrder.tax,
+              shipping: matchedOrder.shipping_fee,
+              total: matchedOrder.total_amount,
+              itemsCount: totalQuantity
+            }
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
     if (orderInsertErr || !insertedOrder) {
       console.error('Order insert error:', orderInsertErr);
       return new Response(

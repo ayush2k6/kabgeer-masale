@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
-import { corsHeaders } from '../_shared/cors.ts';
+import { corsHeaders, getCorsHeaders } from '../_shared/cors.ts';
+import { verifyInternalOrAdminCaller } from '../_shared/internalAuth.ts';
 
 interface SheetsPayload {
   orderId: string;
@@ -8,7 +9,8 @@ interface SheetsPayload {
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+    const corsHeaders = getCorsHeaders(req);
+    if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
@@ -19,6 +21,15 @@ serve(async (req) => {
     const spreadsheetId = Deno.env.get('GOOGLE_SPREADSHEET_ID') || '';
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Verify internal service role or administrative caller credentials
+    const authResult = await verifyInternalOrAdminCaller(req, supabase);
+    if (!authResult.authorized) {
+      return new Response(
+        JSON.stringify({ error: authResult.errorMessage || 'Unauthorized' }),
+        { status: authResult.statusCode, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const body: SheetsPayload = await req.json();
     const { orderId, forceSync } = body;

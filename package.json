@@ -8,6 +8,10 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "node security-tests/run-all-tests.mjs",
+    "test:security": "node security-tests/run-all-tests.mjs",
+    "test:regression": "node security-tests/test-urgent-security-regression.mjs",
+    "test:load": "node security-tests/test-load-and-concurrency.mjs",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },

@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
-import { corsHeaders } from '../_shared/cors.ts';
+import { corsHeaders, getCorsHeaders } from '../_shared/cors.ts';
+import { verifyInternalOrAdminCaller } from '../_shared/internalAuth.ts';
 
 interface EmailPayload {
   orderId: string;
@@ -24,6 +25,41 @@ function formatToIST(isoDate?: string): string {
   } catch (_) {
     return 'Recent';
   }
+}
+
+// Security Helper: Strictly escape all untrusted user-controlled strings for HTML contexts
+function escapeHtml(str: any): string {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getSafeOrder(order: any) {
+  const shipping = order?.shipping_address || {};
+  return {
+    id: order?.id,
+    displayOrderId: escapeHtml(order?.display_order_id || ''),
+    customerName: escapeHtml(order?.customer_name || 'Valued Customer'),
+    customerEmail: escapeHtml(order?.customer_email || ''),
+    customerPhone: escapeHtml(order?.customer_phone || ''),
+    customerType: escapeHtml(order?.customer_type || 'Customer'),
+    totalAmount: order?.total_amount,
+    subtotal: order?.subtotal,
+    discount: order?.discount,
+    createdAt: order?.created_at,
+    shippingAddress: escapeHtml(shipping.address || ''),
+    shippingApartment: escapeHtml(shipping.apartment || ''),
+    shippingCity: escapeHtml(shipping.city || ''),
+    shippingState: escapeHtml(shipping.state || 'Uttar Pradesh'),
+    shippingPinCode: escapeHtml(shipping.pinCode || ''),
+    trackonAwb: escapeHtml(order?.trackon_awb || ''),
+    shiprocketAwb: escapeHtml(order?.shiprocket_awb || ''),
+    courierPartner: escapeHtml(order?.courier_partner || '')
+  };
 }
 
 // Helper: Common Items Table Generator
@@ -76,6 +112,7 @@ function renderFinancialTable(order: any): string {
 
 // 1. Customer Email HTML: Order Confirmation
 function renderCustomerEmailHtml(order: any, items: any[]): string {
+  const safe = getSafeOrder(order);
   const itemsRows = renderItemsRows(items);
   const financialTable = renderFinancialTable(order);
   const shipping = order.shipping_address || {};
@@ -87,7 +124,7 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
     <head>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>Order Confirmation #${order.display_order_id}</title>
+      <title>Order Confirmation #${safe.displayOrderId}</title>
     </head>
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #faf6f0; margin: 0; padding: 24px 12px;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26, 47, 34, 0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
@@ -102,7 +139,7 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
             <span style="display: inline-block; background-color: #dcfce7; color: #16a34a; font-weight: 700; font-size: 13px; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
               ✓ Order Confirmed & Paid
             </span>
-            <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Thank you for your order, ${order.customer_name}!</h2>
+            <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Thank you for your order, ${safe.customerName}!</h2>
             <p style="color: #64748b; font-size: 14px; margin: 0;">Your aromatic spices are freshly prepared and being packed for dispatch.</p>
           </div>
           
@@ -110,7 +147,7 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 4px 0; color: #64748b;"><strong>Order ID:</strong></td>
-                <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #1a2f22; font-family: monospace;">${order.display_order_id}</td>
+                <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #1a2f22; font-family: monospace;">${safe.displayOrderId}</td>
               </tr>
               <tr>
                 <td style="padding: 4px 0; color: #64748b;"><strong>Placed On:</strong></td>
@@ -146,10 +183,10 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
             Delivery Address
           </h3>
           <div style="background: #f8fafc; border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.6; color: #334155; border: 1px solid #e2e8f0;">
-            <strong>${order.customer_name}</strong><br/>
-            ${shipping.address || ''}${shipping.apartment ? ', ' + shipping.apartment : ''}<br/>
-            ${shipping.city || ''}, ${shipping.state || 'Uttar Pradesh'} - ${shipping.pinCode || ''}<br/>
-            <strong>Mobile:</strong> ${order.customer_phone || ''}
+            <strong>${safe.customerName}</strong><br/>
+            ${safe.shippingAddress}${safe.shippingApartment ? ', ' + safe.shippingApartment : ''}<br/>
+            ${safe.shippingCity}, ${safe.shippingState} - ${safe.shippingPinCode}<br/>
+            <strong>Mobile:</strong> ${safe.customerPhone}
           </div>
 
           <div style="margin-top: 32px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
@@ -165,10 +202,10 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
 
 // 2. Customer Email HTML: Order Shipped / In Transit
 function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?: string): string {
+  const safe = getSafeOrder(order);
   const itemsRows = renderItemsRows(items);
-  const shipping = order.shipping_address || {};
-  const trackingNumber = awb || order.trackon_awb || order.shiprocket_awb || 'Generated';
-  const courierPartnerName = courier || order.courier_partner || 'Trackon Courier';
+  const trackingNumber = escapeHtml(awb || safe.trackonAwb || safe.shiprocketAwb || 'Generated');
+  const courierPartnerName = escapeHtml(courier || safe.courierPartner || 'Trackon Courier');
   const trackingLink = `https://trackon.in/`;
 
   return `
@@ -177,7 +214,7 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
     <head>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>Order Shipped #${order.display_order_id}</title>
+      <title>Order Shipped #${safe.displayOrderId}</title>
     </head>
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #faf6f0; margin: 0; padding: 24px 12px;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26, 47, 34, 0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
@@ -192,7 +229,7 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
             <span style="display: inline-block; background-color: #e0f2fe; color: #0284c7; font-weight: 700; font-size: 13px; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
               🚚 Order Shipped & In Transit
             </span>
-            <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Great news, ${order.customer_name}!</h2>
+            <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Great news, ${safe.customerName}!</h2>
             <p style="color: #64748b; font-size: 14px; margin: 0;">Your spice package has been packed with care and handed over to the courier partner.</p>
           </div>
           
@@ -241,7 +278,7 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
             Delivering To
           </h3>
           <div style="background: #f8fafc; border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.6; color: #334155; border: 1px solid #e2e8f0;">
-            <strong>${order.customer_name}</strong><br/>
+            <strong>${safe.customerName}</strong><br/>
             ${shipping.address || ''}${shipping.apartment ? ', ' + shipping.apartment : ''}<br/>
             ${shipping.city || ''}, ${shipping.state || 'Uttar Pradesh'} - ${shipping.pinCode || ''}<br/>
             <strong>Mobile:</strong> ${order.customer_phone || ''}
@@ -260,6 +297,7 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
 
 // 3. Customer Email HTML: Order Delivered
 function renderDeliveredEmailHtml(order: any, items: any[]): string {
+  const safe = getSafeOrder(order);
   const itemsRows = renderItemsRows(items);
 
   return `
@@ -268,7 +306,7 @@ function renderDeliveredEmailHtml(order: any, items: any[]): string {
     <head>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>Order Delivered #${order.display_order_id}</title>
+      <title>Order Delivered #${safe.displayOrderId}</title>
     </head>
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #faf6f0; margin: 0; padding: 24px 12px;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26, 47, 34, 0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
@@ -284,7 +322,7 @@ function renderDeliveredEmailHtml(order: any, items: any[]): string {
               🎉 Delivered Successfully
             </span>
             <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Your Royal Spices Have Arrived!</h2>
-            <p style="color: #64748b; font-size: 14px; margin: 0;">Order #${order.display_order_id} has been successfully delivered to your doorstep.</p>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">Order #${safe.displayOrderId} has been successfully delivered to your doorstep.</p>
           </div>
           
           <div style="background: #faf6f0; border-radius: 10px; padding: 20px; margin: 24px 0; text-align: center; border: 1px solid rgba(26, 47, 34, 0.08);">
@@ -335,6 +373,8 @@ function renderDeliveredEmailHtml(order: any, items: any[]): string {
 
 // 4. Customer Email HTML: Order Cancelled
 function renderCancelledEmailHtml(order: any, items: any[], reason?: string): string {
+  const safe = getSafeOrder(order);
+  const safeReason = escapeHtml(reason || '');
   const itemsRows = renderItemsRows(items);
 
   return `
@@ -343,7 +383,7 @@ function renderCancelledEmailHtml(order: any, items: any[], reason?: string): st
     <head>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>Order Cancelled #${order.display_order_id}</title>
+      <title>Order Cancelled #${safe.displayOrderId}</title>
     </head>
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #faf6f0; margin: 0; padding: 24px 12px;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26, 47, 34, 0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
@@ -358,8 +398,8 @@ function renderCancelledEmailHtml(order: any, items: any[], reason?: string): st
             <span style="display: inline-block; background-color: #fee2e2; color: #dc2626; font-weight: 700; font-size: 13px; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
               Order Cancelled
             </span>
-            <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Notice Regarding Order #${order.display_order_id}</h2>
-            <p style="color: #64748b; font-size: 14px; margin: 0;">Your order has been cancelled ${reason ? `due to: <em>${reason}</em>` : 'as requested'}.</p>
+            <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Notice Regarding Order #${safe.displayOrderId}</h2>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">Your order has been cancelled ${safeReason ? `due to: <em>${safeReason}</em>` : 'as requested'}.</p>
           </div>
           
           <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 13px; color: #991b1b; line-height: 1.5;">
@@ -420,13 +460,13 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
     <head>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>New Order Alert #${order.display_order_id}</title>
+      <title>New Order Alert #${safe.displayOrderId}</title>
     </head>
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #f1f5f9; margin: 0; padding: 20px 10px;">
       <div style="max-width: 620px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 24px; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         
         <div style="background-color: #16a34a; color: white; padding: 14px 18px; border-radius: 6px; font-weight: 700; font-size: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-          <span>📦 NEW PAID ORDER: #${order.display_order_id}</span>
+          <span>📦 NEW PAID ORDER: #${safe.displayOrderId}</span>
           <span style="font-size: 14px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px;">₹${Number(order.total_amount).toFixed(2)}</span>
         </div>
 
@@ -434,7 +474,7 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
         <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; background: #f8fafc; border-radius: 6px; padding: 12px; border: 1px solid #e2e8f0;">
           <tr>
             <td style="padding: 6px 12px; color: #64748b;"><strong>Order ID:</strong></td>
-            <td style="padding: 6px 12px; font-weight: 700; font-family: monospace;">${order.display_order_id}</td>
+            <td style="padding: 6px 12px; font-weight: 700; font-family: monospace;">${safe.displayOrderId}</td>
           </tr>
           <tr>
             <td style="padding: 6px 12px; color: #64748b;"><strong>Received At:</strong></td>
@@ -442,15 +482,15 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
           </tr>
           <tr>
             <td style="padding: 6px 12px; color: #64748b;"><strong>Customer:</strong></td>
-            <td style="padding: 6px 12px; font-weight: 600;">${order.customer_name} (${order.customer_type || 'Customer'})</td>
+            <td style="padding: 6px 12px; font-weight: 600;">${safe.customerName} (${safe.customerType})</td>
           </tr>
           <tr>
             <td style="padding: 6px 12px; color: #64748b;"><strong>Email:</strong></td>
-            <td style="padding: 6px 12px;">${order.customer_email}</td>
+            <td style="padding: 6px 12px;">${safe.customerEmail}</td>
           </tr>
           <tr>
             <td style="padding: 6px 12px; color: #64748b;"><strong>Phone:</strong></td>
-            <td style="padding: 6px 12px; font-weight: 700; color: #0284c7;">${order.customer_phone}</td>
+            <td style="padding: 6px 12px; font-weight: 700; color: #0284c7;">${safe.customerPhone}</td>
           </tr>
           <tr>
             <td style="padding: 6px 12px; color: #64748b;"><strong>Payment Status:</strong></td>
@@ -474,7 +514,7 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
 
         <h3 style="margin: 20px 0 8px 0; font-size: 14px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Courier Dispatch Address</h3>
         <div style="background: #f8fafc; padding: 14px; border-radius: 6px; font-size: 13px; line-height: 1.6; border: 1px solid #e2e8f0;">
-          <strong>${order.customer_name}</strong><br/>
+          <strong>${safe.customerName}</strong><br/>
           ${shipping.address || ''}${shipping.apartment ? ', ' + shipping.apartment : ''}<br/>
           ${shipping.city || ''}, ${shipping.state || 'Uttar Pradesh'} - <strong>${shipping.pinCode || ''}</strong><br/>
           <strong>Phone:</strong> ${order.customer_phone || ''}
@@ -529,7 +569,7 @@ function renderReviewRequestEmailHtml(order: any, items: any[], customReviewUrl?
             <span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
               👑 1-Week Culinary Check-In
             </span>
-            <h2 style="color: #1a2f22; margin: 12px 0 6px 0; font-size: 20px;">How did your Awadhi cooking turn out, ${order.customer_name || 'Food Lover'}?</h2>
+            <h2 style="color: #1a2f22; margin: 12px 0 6px 0; font-size: 20px;">How did your Awadhi cooking turn out, ${safe.customerName}?</h2>
             <p style="color: #64748b; font-size: 14px; margin: 0; line-height: 1.5;">
               It has been a week since your royal spice package arrived. We hope the authentic aroma of Lucknow has brought rich flavors to your home!
             </p>
@@ -557,7 +597,7 @@ function renderReviewRequestEmailHtml(order: any, items: any[], customReviewUrl?
 
           <!-- Purchased Items -->
           <h3 style="color: #1a2f22; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 10px 0; border-bottom: 2px solid #1a2f22; padding-bottom: 6px;">
-            Masalas in Your Order #${order.display_order_id}
+            Masalas in Your Order #${safe.displayOrderId}
           </h3>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
             <tbody>
@@ -620,10 +660,10 @@ function renderCustomMessageEmailHtml(order: any, customSubject: string, customM
           <!-- Order Reference Badge -->
           <div style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
             <span style="font-size: 13px; color: #64748b;">
-              Order: <strong style="color: #1a2f22; font-family: monospace;">#${order.display_order_id}</strong>
+              Order: <strong style="color: #1a2f22; font-family: monospace;">#${safe.displayOrderId}</strong>
             </span>
             <span style="font-size: 12px; color: #94a3b8;">
-              Customer: <strong>${order.customer_name || 'Valued Customer'}</strong>
+              Customer: <strong>${safe.customerName}</strong>
             </span>
           </div>
 
@@ -655,7 +695,8 @@ function renderCustomMessageEmailHtml(order: any, customSubject: string, customM
 
 // MAIN HANDLER
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+    const corsHeaders = getCorsHeaders(req);
+    if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
@@ -667,6 +708,15 @@ serve(async (req) => {
     const rawAdminEmail = Deno.env.get('ADMIN_NOTIFICATION_EMAIL') || 'admin@kabgeermasala.com';
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Verify internal service role or administrative caller credentials
+    const authResult = await verifyInternalOrAdminCaller(req, supabase);
+    if (!authResult.authorized) {
+      return new Response(
+        JSON.stringify({ error: authResult.errorMessage || 'Unauthorized' }),
+        { status: authResult.statusCode, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const body: EmailPayload = await req.json();
     const { orderId, forceResend, emailType, newStatus, awbNumber, courierName, cancellationReason, customSubject, customMessage, reviewLink } = body;
@@ -786,7 +836,8 @@ serve(async (req) => {
     // CASE C: Post-Delivery Review Request Email (emailType === 'review_request')
     // =========================================================================
     if (emailType === 'review_request') {
-      const subject = customSubject || `⭐ How did your Awadhi cooking turn out, ${order.customer_name || 'Food Lover'}?`;
+      const cleanCustomerName = escapeHtml(order.customer_name || 'Food Lover');
+      const subject = customSubject ? escapeHtml(customSubject) : `⭐ How did your Awadhi cooking turn out, ${cleanCustomerName}?`;
       const reviewHtml = renderReviewRequestEmailHtml(order, items || [], reviewLink);
 
       if (reviewHtml && !isSimulationMode) {

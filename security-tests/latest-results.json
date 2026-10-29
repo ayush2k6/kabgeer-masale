@@ -1,0 +1,190 @@
+{
+  "timestamp": "2026-10-28T19:05:07.790Z",
+  "passCount": 2,
+  "failCount": 18,
+  "notApplicableCount": 0,
+  "inconclusiveCount": 0,
+  "totalTime": 349,
+  "results": [
+    {
+      "id": 1,
+      "name": "Duplicate Order Creation & Idempotency",
+      "category": "A: Concurrency & Race Conditions",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Endpoint failed to process requests",
+      "elapsedMs": 127
+    },
+    {
+      "id": 2,
+      "name": "Concurrent Inventory Checkout",
+      "category": "A: Concurrency & Race Conditions",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 6
+    },
+    {
+      "id": 3,
+      "name": "Coupon Exhaustion Race",
+      "category": "A: Concurrency & Race Conditions",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 5
+    },
+    {
+      "id": 4,
+      "name": "Duplicate Payment Processing",
+      "category": "A: Concurrency & Race Conditions",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 12
+    },
+    {
+      "id": 5,
+      "name": "Client-Side Price Tampering",
+      "category": "B: Authentication & Security",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 10
+    },
+    {
+      "id": 6,
+      "name": "Database Access Control & RLS",
+      "category": "B: Authentication & Security",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 8
+    },
+    {
+      "id": 7,
+      "name": "Payment Signature Forgery",
+      "category": "B: Authentication & Security",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 10
+    },
+    {
+      "id": 8,
+      "name": "Webhook Forgery & Replay",
+      "category": "B: Authentication & Security",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 6
+    },
+    {
+      "id": 9,
+      "name": "Unauthorized Admin Operations",
+      "category": "B: Authentication & Security",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 4
+    },
+    {
+      "id": 10,
+      "name": "Type Confusion & Numeric Edge Cases",
+      "category": "C: Input Validation & Resilience",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 10
+    },
+    {
+      "id": 11,
+      "name": "Oversized Request & Resource Limits",
+      "category": "C: Input Validation & Resilience",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 9
+    },
+    {
+      "id": 12,
+      "name": "External Service Failure Isolation",
+      "category": "C: Input Validation & Resilience",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 7
+    },
+    {
+      "id": 13,
+      "name": "Broken Object-Level Authorization (IDOR)",
+      "category": "D: Adversarial Tests",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 9
+    },
+    {
+      "id": 14,
+      "name": "Authentication & Session Security",
+      "category": "D: Adversarial Tests",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 4
+    },
+    {
+      "id": 15,
+      "name": "SQL Injection & Query Manipulation",
+      "category": "D: Adversarial Tests",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 7
+    },
+    {
+      "id": 16,
+      "name": "Cross-Site Scripting (XSS)",
+      "category": "D: Adversarial Tests",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 11
+    },
+    {
+      "id": 17,
+      "name": "CSRF & Cross-Origin Protection",
+      "category": "D: Adversarial Tests",
+      "status": "PASS",
+      "severity": "INFO",
+      "details": "Strict exact allowlist enforced; arbitrary vercel and attacker origins rejected; Bearer token immune to CSRF",
+      "elapsedMs": 7
+    },
+    {
+      "id": 18,
+      "name": "Rate Limiting & Abuse Resistance",
+      "category": "D: Adversarial Tests",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 5
+    },
+    {
+      "id": 19,
+      "name": "Database Transaction Integrity & State Transitions",
+      "category": "D: Adversarial Tests",
+      "status": "FAIL",
+      "severity": "HIGH",
+      "details": "Execution exception: fetch failed",
+      "elapsedMs": 9
+    },
+    {
+      "id": 20,
+      "name": "Secrets, Configuration, Dependencies & Production Safety",
+      "category": "D: Adversarial Tests",
+      "status": "PASS",
+      "severity": "INFO",
+      "details": "Zero secret leaks, .gitignore secure, bundles clean",
+      "elapsedMs": 83
+    }
+  ]
+}

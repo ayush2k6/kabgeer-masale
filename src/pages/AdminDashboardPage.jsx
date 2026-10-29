@@ -27,7 +27,8 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  Printer
+  Printer,
+  Eye
 } from 'lucide-react';
 import logo from '../assets/logo.png';
 import PrintableThermalBill from '../components/PrintableThermalBill';
@@ -472,11 +473,15 @@ const AdminDashboardPage = () => {
   };
 
   const getStatusClass = (status) => {
-    const s = String(status || '').toLowerCase();
-    if (s.includes('paid') || s.includes('delivered') || s.includes('confirmed')) return 'status-paid';
-    if (s.includes('shipped') || s.includes('processing')) return 'status-shipped';
-    if (s.includes('pending')) return 'status-pending';
-    if (s.includes('failed') || s.includes('cancelled')) return 'status-failed';
+    const s = String(status || '').toLowerCase().trim();
+    if (s === 'paid') return 'status-paid';
+    if (s === 'delivered') return 'status-delivered';
+    if (s === 'confirmed') return 'status-confirmed';
+    if (s === 'processing') return 'status-processing';
+    if (s === 'shipped') return 'status-shipped';
+    if (s === 'pending' || s === 'unpaid') return 'status-pending';
+    if (s === 'cancelled') return 'status-cancelled';
+    if (s === 'failed' || s === 'refunded') return 'status-failed';
     return 'status-shipped';
   };
 
@@ -487,22 +492,34 @@ const AdminDashboardPage = () => {
       <header className="admin-navbar">
         <div className="admin-nav-container">
           <div className="admin-brand-left">
-            <img src={logo} alt="Kabgeer Masale" className="admin-brand-logo" />
-            <span className="admin-portal-badge">Admin Portal</span>
+            <Link to="/admin" className="admin-brand-link">
+              <img src={logo} alt="Kabgeer Masale" className="admin-brand-logo" />
+            </Link>
+            <div className="admin-brand-suite-tag">
+              <span className="brand-suite-badge">OPERATIONS</span>
+              <span className="brand-suite-sub">Order Management</span>
+            </div>
           </div>
 
           <div className="admin-nav-right">
-            <div className="admin-user-tag">
-              <User size={14} />
-              <span>Admin: <strong>{user?.email || 'Admin'}</strong></span>
+            <div className="admin-user-profile-badge">
+              <div className="admin-avatar-circle">
+                {(user?.email || 'A').charAt(0).toUpperCase()}
+              </div>
+              <div className="admin-user-info-text">
+                <span className="admin-user-role">Administrator</span>
+                <span className="admin-user-email">{user?.email || 'Admin'}</span>
+              </div>
             </div>
 
             <Link to="/" className="btn-nav-store" target="_blank" rel="noopener noreferrer">
-              <ExternalLink size={14} /> View Store
+              <ExternalLink size={13} />
+              <span>View Store</span>
             </Link>
 
-            <button type="button" onClick={logout} className="btn-admin-logout" title="Sign Out">
-              <LogOut size={14} /> Logout
+            <button type="button" onClick={logout} className="btn-nav-logout" title="Sign out of portal">
+              <LogOut size={13} />
+              <span>Logout</span>
             </button>
           </div>
         </div>
@@ -511,12 +528,15 @@ const AdminDashboardPage = () => {
       {/* 2. Main Container */}
       <main className="admin-main-container">
         
-        {/* Title and Refresh Row */}
+        {/* 2. Page Title Row */}
         <div className="admin-page-title-row">
-          <div>
-            <h1>Orders Management</h1>
-            <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '0.25rem 0 0 0' }}>
-              Manage customer orders, inspect line items, and track fulfillment status in real-time.
+          <div className="admin-title-content">
+            <div className="admin-title-badge-flex">
+              <h1>Orders Management</h1>
+              <span className="admin-orders-count-pill">{metrics.totalOrders} Orders</span>
+            </div>
+            <p className="admin-page-subtitle">
+              Manage spice orders, monitor fulfillment pipelines, and dispatch thermal shipping parcels.
             </p>
           </div>
 
@@ -525,82 +545,101 @@ const AdminDashboardPage = () => {
             className="admin-refresh-btn" 
             onClick={fetchAllOrders}
             disabled={loading}
+            title="Refresh latest customer orders"
           >
             <RotateCw size={14} className={loading ? 'animate-spin' : ''} />
-            {loading ? 'Refreshing...' : 'Refresh Orders'}
+            <span>{loading ? 'Refreshing...' : 'Refresh Orders'}</span>
           </button>
         </div>
 
-        {/* 3. Interactive KPI Metrics Overview Cards */}
-        <section className="kpi-metrics-grid" aria-label="Dashboard Overview KPIs">
+        {/* 3. Executive KPI Metric Cards */}
+        <section className="executive-kpi-grid" aria-label="Executive Metrics">
           <div 
-            className={`kpi-card ${statusFilter === 'ALL' && paymentFilter === 'ALL' ? 'kpi-card-active' : ''}`}
+            className={`exec-kpi-card ${statusFilter === 'ALL' && paymentFilter === 'ALL' ? 'exec-kpi-active' : ''}`}
             onClick={() => handleKpiClick('all')}
-            title="Click to view all orders"
           >
-            <div className="kpi-icon-wrapper kpi-icon-blue">
-              <Package size={22} />
+            <div className="exec-kpi-header">
+              <div className="exec-kpi-icon-box icon-emerald">
+                <Package size={18} />
+              </div>
+              <span className="exec-kpi-label">Total Orders</span>
+              {statusFilter === 'ALL' && paymentFilter === 'ALL' && (
+                <span className="exec-active-indicator">Active</span>
+              )}
             </div>
-            <div className="kpi-data-col">
-              <span className="kpi-label">Total Orders</span>
-              <span className="kpi-value">{metrics.totalOrders}</span>
-              <span className="kpi-hint">All customer orders</span>
+            <div className="exec-kpi-value">{metrics.totalOrders}</div>
+            <div className="exec-kpi-footer">
+              <span className="exec-kpi-context">All registered & guest orders</span>
             </div>
           </div>
 
           <div 
-            className={`kpi-card ${statusFilter === 'Pending' ? 'kpi-card-active' : ''}`}
+            className={`exec-kpi-card ${statusFilter === 'Pending' ? 'exec-kpi-active' : ''}`}
             onClick={() => handleKpiClick('pending')}
-            title="Click to filter Pending orders"
           >
-            <div className="kpi-icon-wrapper kpi-icon-amber">
-              <Clock size={22} />
+            <div className="exec-kpi-header">
+              <div className="exec-kpi-icon-box icon-amber">
+                <Clock size={18} />
+              </div>
+              <span className="exec-kpi-label">To Fulfill</span>
+              {statusFilter === 'Pending' && (
+                <span className="exec-active-indicator">Active</span>
+              )}
             </div>
-            <div className="kpi-data-col">
-              <span className="kpi-label">Pending / Processing</span>
-              <span className="kpi-value">{metrics.pendingOrders}</span>
-              <span className="kpi-hint">Requires packing</span>
+            <div className="exec-kpi-value">{metrics.pendingOrders}</div>
+            <div className="exec-kpi-footer">
+              <span className="exec-kpi-context">Requires packing & dispatch</span>
             </div>
           </div>
 
           <div 
-            className={`kpi-card ${paymentFilter === 'Paid' ? 'kpi-card-active' : ''}`}
+            className={`exec-kpi-card ${paymentFilter === 'Paid' ? 'exec-kpi-active' : ''}`}
             onClick={() => handleKpiClick('paid')}
-            title="Click to filter Paid orders"
           >
-            <div className="kpi-icon-wrapper kpi-icon-green">
-              <CheckCircle2 size={22} />
+            <div className="exec-kpi-header">
+              <div className="exec-kpi-icon-box icon-green">
+                <CheckCircle2 size={18} />
+              </div>
+              <span className="exec-kpi-label">Paid Orders</span>
+              {paymentFilter === 'Paid' && (
+                <span className="exec-active-indicator">Active</span>
+              )}
             </div>
-            <div className="kpi-data-col">
-              <span className="kpi-label">Paid Orders</span>
-              <span className="kpi-value">{metrics.paidOrders}</span>
-              <span className="kpi-hint">Confirmed captures</span>
+            <div className="exec-kpi-value">{metrics.paidOrders}</div>
+            <div className="exec-kpi-footer">
+              <span className="exec-kpi-context">Razorpay verified captures</span>
             </div>
           </div>
 
           <div 
-            className={`kpi-card ${statusFilter === 'Delivered' ? 'kpi-card-active' : ''}`}
+            className={`exec-kpi-card ${statusFilter === 'Delivered' ? 'exec-kpi-active' : ''}`}
             onClick={() => handleKpiClick('delivered')}
-            title="Click to filter Delivered orders"
           >
-            <div className="kpi-icon-wrapper kpi-icon-emerald">
-              <Truck size={22} />
+            <div className="exec-kpi-header">
+              <div className="exec-kpi-icon-box icon-teal">
+                <Truck size={18} />
+              </div>
+              <span className="exec-kpi-label">Delivered</span>
+              {statusFilter === 'Delivered' && (
+                <span className="exec-active-indicator">Active</span>
+              )}
             </div>
-            <div className="kpi-data-col">
-              <span className="kpi-label">Delivered Orders</span>
-              <span className="kpi-value">{metrics.deliveredOrders}</span>
-              <span className="kpi-hint">Completed delivery</span>
+            <div className="exec-kpi-value">{metrics.deliveredOrders}</div>
+            <div className="exec-kpi-footer">
+              <span className="exec-kpi-context">Parcels received by customer</span>
             </div>
           </div>
 
-          <div className="kpi-card" style={{ cursor: 'default' }}>
-            <div className="kpi-icon-wrapper kpi-icon-purple">
-              <IndianRupee size={22} />
+          <div className="exec-kpi-card exec-kpi-static">
+            <div className="exec-kpi-header">
+              <div className="exec-kpi-icon-box icon-gold">
+                <IndianRupee size={18} />
+              </div>
+              <span className="exec-kpi-label">Total Revenue</span>
             </div>
-            <div className="kpi-data-col">
-              <span className="kpi-label">Total Sales</span>
-              <span className="kpi-value">₹{metrics.totalSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
-              <span className="kpi-hint">Gross paid revenue</span>
+            <div className="exec-kpi-value">₹{metrics.totalSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="exec-kpi-footer">
+              <span className="exec-kpi-context">Gross paid revenue</span>
             </div>
           </div>
         </section>
@@ -619,60 +658,110 @@ const AdminDashboardPage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="admin-search-input"
               />
+              {searchQuery && (
+                <button 
+                  type="button" 
+                  onClick={() => setSearchQuery('')}
+                  className="admin-search-clear-btn"
+                  title="Clear search query"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
 
             <div className="admin-filters-row">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="admin-select-filter"
-                aria-label="Filter by Order Status"
-              >
-                <option value="ALL">All Order Statuses</option>
-                <option value="Pending">Pending</option>
-                <option value="Confirmed">Confirmed</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Delivered">Delivered</option>
-                <option value="Cancelled">Cancelled</option>
-              </select>
+              <div className="admin-select-wrapper">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="admin-select-filter"
+                  aria-label="Filter by Order Status"
+                >
+                  <option value="ALL">All Order Statuses</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </div>
 
-              <select
-                value={paymentFilter}
-                onChange={(e) => setPaymentFilter(e.target.value)}
-                className="admin-select-filter"
-                aria-label="Filter by Payment Status"
-              >
-                <option value="ALL">All Payments</option>
-                <option value="Paid">Paid</option>
-                <option value="Pending">Pending / Unpaid</option>
-                <option value="Failed">Failed</option>
-                <option value="Refunded">Refunded</option>
-              </select>
+              <div className="admin-select-wrapper">
+                <select
+                  value={paymentFilter}
+                  onChange={(e) => setPaymentFilter(e.target.value)}
+                  className="admin-select-filter"
+                  aria-label="Filter by Payment Status"
+                >
+                  <option value="ALL">All Payments</option>
+                  <option value="Paid">Paid</option>
+                  <option value="Pending">Pending / Unpaid</option>
+                  <option value="Failed">Failed</option>
+                  <option value="Refunded">Refunded</option>
+                </select>
+              </div>
 
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="admin-select-filter"
-                aria-label="Sort Orders"
-              >
-                <option value="newest">Sort: Newest First</option>
-                <option value="oldest">Sort: Oldest First</option>
-                <option value="highest">Sort: Highest Amount</option>
-                <option value="lowest">Sort: Lowest Amount</option>
-              </select>
+              <div className="admin-select-wrapper">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="admin-select-filter"
+                  aria-label="Sort Orders"
+                >
+                  <option value="newest">Sort: Newest First</option>
+                  <option value="oldest">Sort: Oldest First</option>
+                  <option value="highest">Sort: Highest Amount</option>
+                  <option value="lowest">Sort: Lowest Amount</option>
+                </select>
+              </div>
 
               {(searchQuery || statusFilter !== 'ALL' || paymentFilter !== 'ALL' || sortBy !== 'newest') && (
-                <button type="button" onClick={resetFilters} className="btn-reset-filters">
-                  Reset
+                <button type="button" onClick={resetFilters} className="btn-reset-filters" title="Reset all search & filter settings">
+                  <RotateCw size={12} />
+                  <span>Reset</span>
                 </button>
+              )}
+            </div>
+          </div>
+
+          {/* Active Filters Summary & Results Counter Bar */}
+          <div className="admin-filter-status-bar">
+            <div className="admin-active-chips-group">
+              <span className="admin-results-count-text">
+                Showing <strong>{processedOrders.length}</strong> of <strong>{orders.length}</strong> orders
+              </span>
+              {searchQuery && (
+                <span className="admin-filter-chip">
+                  Search: "{searchQuery}"
+                  <button type="button" onClick={() => setSearchQuery('')} title="Remove search filter"><X size={11} /></button>
+                </span>
+              )}
+              {statusFilter !== 'ALL' && (
+                <span className="admin-filter-chip">
+                  Status: {statusFilter}
+                  <button type="button" onClick={() => setStatusFilter('ALL')} title="Remove status filter"><X size={11} /></button>
+                </span>
+              )}
+              {paymentFilter !== 'ALL' && (
+                <span className="admin-filter-chip">
+                  Payment: {paymentFilter}
+                  <button type="button" onClick={() => setPaymentFilter('ALL')} title="Remove payment filter"><X size={11} /></button>
+                </span>
+              )}
+              {sortBy !== 'newest' && (
+                <span className="admin-filter-chip">
+                  Sort: {sortBy}
+                  <button type="button" onClick={() => setSortBy('newest')} title="Reset sort"><X size={11} /></button>
+                </span>
               )}
             </div>
           </div>
 
           {/* Error Banner */}
           {error && (
-            <div style={{ padding: '1.25rem', backgroundColor: '#fef2f2', color: '#b91c1c', borderBottom: '1px solid #fecdd3', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="admin-error-banner">
               <AlertCircle size={18} />
               <span>{error}</span>
             </div>
@@ -695,18 +784,18 @@ const AdminDashboardPage = () => {
               </button>
             </div>
           ) : (
-            <div className="admin-table-container">
+            <>
+              <div className="admin-table-container desktop-only-view">
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Customer</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Payment</th>
-                    <th>Order Status</th>
-                    <th>Action</th>
+                    <th style={{ width: '180px' }}>Order ID</th>
+                    <th style={{ width: '140px' }}>Placed Date</th>
+                    <th>Customer Details</th>
+                    <th style={{ width: '120px' }}>Payment</th>
+                    <th style={{ width: '130px' }}>Fulfillment</th>
+                    <th style={{ width: '110px', textAlign: 'right' }}>Total Amount</th>
+                    <th style={{ width: '160px', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -715,96 +804,110 @@ const AdminDashboardPage = () => {
                       ? new Date(order.created_at).toLocaleDateString('en-IN', {
                           month: 'short',
                           day: 'numeric',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
+                          year: 'numeric'
                         })
                       : '—';
+                    const formattedTime = order.created_at
+                      ? new Date(order.created_at).toLocaleTimeString('en-IN', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                        })
+                      : '';
 
                     const isGuest = order.customer_type === 'guest' || !order.customer_id;
+                    const customerInitial = (order.customer_name || 'C').trim().charAt(0).toUpperCase();
 
                     return (
-                      <tr key={order.id}>
+                      <tr 
+                        key={order.id} 
+                        className="admin-order-row"
+                        onClick={() => setSelectedOrder(order)}
+                      >
                         <td className="order-id-cell">
-                          #{order.display_order_id || order.id.slice(0, 8).toUpperCase()}
-                          {(order.display_order_id?.startsWith('BYB') || order.display_order_id?.includes('BYB')) && (
-                            <span style={{
-                              marginLeft: '6px',
-                              fontSize: '0.68rem',
-                              fontWeight: 700,
-                              backgroundColor: '#fef3c7',
-                              color: '#92400e',
-                              border: '1px solid #fde68a',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              letterSpacing: '0.5px'
-                            }}>
-                              BYB
-                            </span>
-                          )}
+                          <div className="order-id-container">
+                            <span className="order-id-code">#{order.display_order_id || order.id.slice(0, 8).toUpperCase()}</span>
+                            {(order.display_order_id?.startsWith('BYB') || order.display_order_id?.includes('BYB')) && (
+                              <span className="badge-byb">BYB</span>
+                            )}
+                            <button
+                              type="button"
+                              className="btn-table-copy"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCopy(order.display_order_id || order.id, order.id);
+                              }}
+                              title="Copy Order ID"
+                            >
+                              {copiedKey === order.id ? <Check size={11} color="#16a34a" /> : <Copy size={11} />}
+                            </button>
+                          </div>
                         </td>
-                        <td style={{ color: '#64748b', fontSize: '0.82rem' }}>
-                          {formattedDate}
+                        <td className="order-date-cell">
+                          <span className="order-date-primary">{formattedDate}</span>
+                          <span className="order-time-sub">{formattedTime}</span>
                         </td>
                         <td>
                           <div className="order-customer-meta">
-                            <span className="customer-name">{order.customer_name || 'Customer'}</span>
-                            <span className="customer-subtext">{order.customer_email}</span>
+                            <div className="customer-avatar-circle">
+                              {customerInitial}
+                            </div>
+                            <div className="customer-text-col">
+                              <div className="customer-name-row">
+                                <span className="customer-name">{order.customer_name || 'Customer'}</span>
+                                <span className={`badge-type-inline ${isGuest ? 'badge-guest' : 'badge-reg'}`}>
+                                  {isGuest ? 'Guest' : 'Member'}
+                                </span>
+                              </div>
+                              <span className="customer-subtext">{order.customer_phone || order.customer_email || '—'}</span>
+                            </div>
                           </div>
                         </td>
                         <td>
-                          <span className={`badge-customer-type ${isGuest ? 'badge-guest' : 'badge-registered'}`}>
-                            {isGuest ? 'Guest' : 'Registered'}
-                          </span>
-                        </td>
-                        <td style={{ fontWeight: 700, color: '#0f172a' }}>
-                          ₹{(Number(order.total_amount) || 0).toFixed(2)}
-                        </td>
-                        <td>
-                          <span className={`status-pill ${getStatusClass(order.payment_status)}`}>
-                            {order.payment_status || 'Pending'}
+                          <span className={`status-pill status-pill-with-dot ${getStatusClass(order.payment_status)}`}>
+                            <span className="status-dot"></span>
+                            <span>{order.payment_status || 'Pending'}</span>
                           </span>
                         </td>
                         <td>
-                          <span className={`status-pill ${getStatusClass(order.order_status)}`}>
-                            {order.order_status || 'Pending'}
+                          <span className={`status-pill status-pill-with-dot ${getStatusClass(order.order_status)}`}>
+                            <span className="status-dot"></span>
+                            <span>{order.order_status || 'Pending'}</span>
                           </span>
                         </td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <td className="order-amount-cell" style={{ textAlign: 'right' }}>
+                          ₹{(Number(order.total_amount) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <div className="order-actions-flex" onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
-                              className="btn-view-order"
+                              className="btn-action-view"
                               onClick={() => setSelectedOrder(order)}
+                              title="View full order details"
                             >
-                              View Details
+                              <Eye size={12} />
+                              <span>View</span>
                             </button>
                             <button
                               type="button"
-                              className="btn-action-print"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPrintingOrder(order);
-                              }}
+                              className="btn-action-label"
+                              onClick={() => setPrintingOrder(order)}
                               title="Print 4x6 Thermal Delivery Label or A4 Tax Invoice"
                             >
-                              <Printer size={13} />
-                              <span>Bill / Label</span>
+                              <Printer size={12} />
+                              <span>Label</span>
                             </button>
                             {order.order_status === 'Delivered' && (
                               <button
                                 type="button"
-                                className={`chip-status-btn chip-review-btn ${order.review_email_sent_at ? 'sent' : ''}`}
-                                style={{ padding: '0.28rem 0.55rem', fontSize: '0.72rem', borderRadius: '5px' }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleSendReviewEmail(order);
-                                }}
+                                className={`btn-action-review ${order.review_email_sent_at ? 'sent' : ''}`}
+                                onClick={() => handleSendReviewEmail(order)}
                                 disabled={sendingReviewEmail}
-                                title={order.review_email_sent_at ? `Review email sent on ${new Date(order.review_email_sent_at).toLocaleDateString('en-IN')}` : 'Send Google Review Email to Customer'}
+                                title={order.review_email_sent_at ? `Review email sent on ${new Date(order.review_email_sent_at).toLocaleDateString('en-IN')}` : 'Send Google Review Email'}
                               >
-                                <Star size={11} color="#ca8a04" fill={order.review_email_sent_at ? '#16a34a' : '#ca8a04'} />
-                                {order.review_email_sent_at ? 'Sent ✓' : 'Ask Review'}
+                                <Star size={11} fill={order.review_email_sent_at ? '#16a34a' : 'none'} />
+                                <span>{order.review_email_sent_at ? 'Sent' : 'Review'}</span>
                               </button>
                             )}
                           </div>
@@ -815,6 +918,129 @@ const AdminDashboardPage = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile Order Cards View (Optimized for Small Screens) */}
+            <div className="admin-mobile-cards-container mobile-only-view">
+              {processedOrders.map(order => {
+                const formattedDate = order.created_at
+                  ? new Date(order.created_at).toLocaleDateString('en-IN', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })
+                  : '—';
+                const formattedTime = order.created_at
+                  ? new Date(order.created_at).toLocaleTimeString('en-IN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                    })
+                  : '';
+
+                const isGuest = order.customer_type === 'guest' || !order.customer_id;
+                const customerInitial = (order.customer_name || 'C').trim().charAt(0).toUpperCase();
+
+                return (
+                  <div
+                    key={order.id}
+                    className="admin-order-mobile-card"
+                    onClick={() => setSelectedOrder(order)}
+                  >
+                    {/* Top Row: Order ID + Status */}
+                    <div className="mobile-card-top-row">
+                      <div className="mobile-card-id-group">
+                        <span className="order-id-code">#{order.display_order_id || order.id.slice(0, 8).toUpperCase()}</span>
+                        {(order.display_order_id?.startsWith('BYB') || order.display_order_id?.includes('BYB')) && (
+                          <span className="badge-byb">BYB</span>
+                        )}
+                        <button
+                          type="button"
+                          className="btn-table-copy"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCopy(order.display_order_id || order.id, order.id);
+                          }}
+                          title="Copy Order ID"
+                        >
+                          {copiedKey === order.id ? <Check size={11} color="#16a34a" /> : <Copy size={11} />}
+                        </button>
+                      </div>
+                      <span className={`status-pill status-pill-with-dot ${getStatusClass(order.order_status)}`}>
+                        <span className="status-dot"></span>
+                        <span>{order.order_status || 'Pending'}</span>
+                      </span>
+                    </div>
+
+                    {/* Middle Row: Customer Info + Price */}
+                    <div className="mobile-card-middle-row">
+                      <div className="customer-avatar-row">
+                        <div className="customer-avatar-circle">
+                          {customerInitial}
+                        </div>
+                        <div className="customer-text-col">
+                          <span className="customer-name">{order.customer_name || 'Customer'}</span>
+                          <span className="customer-subtext">{order.customer_phone || order.customer_email || '—'}</span>
+                        </div>
+                      </div>
+                      <div className="mobile-card-amount-col">
+                        <span className="mobile-card-amount">
+                          ₹{(Number(order.total_amount) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                        <span className={`status-pill status-pill-compact ${getStatusClass(order.payment_status)}`}>
+                          <span className="status-dot"></span>
+                          <span>{order.payment_status || 'Pending'}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Meta Row: Date & Customer Type */}
+                    <div className="mobile-card-meta-row">
+                      <span className="mobile-card-date">
+                        {formattedDate} • {formattedTime}
+                      </span>
+                      <span className={`badge-customer-type ${isGuest ? 'badge-guest' : 'badge-registered'}`}>
+                        {isGuest ? 'Guest' : 'Registered'}
+                      </span>
+                    </div>
+
+                    {/* Footer Row: Action Buttons */}
+                    <div className="mobile-card-footer-actions" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        className="btn-mobile-action"
+                        onClick={() => setSelectedOrder(order)}
+                        title="View order details"
+                      >
+                        <Eye size={13} />
+                        <span>View</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-mobile-action"
+                        onClick={() => setPrintingOrder(order)}
+                        title="Print Thermal Shipping Label"
+                      >
+                        <Printer size={13} />
+                        <span>Label</span>
+                      </button>
+                      {order.order_status === 'Delivered' && (
+                        <button
+                          type="button"
+                          className={`btn-mobile-action ${order.review_email_sent_at ? 'sent' : ''}`}
+                          onClick={() => handleSendReviewEmail(order)}
+                          disabled={sendingReviewEmail}
+                          title={order.review_email_sent_at ? 'Review email sent' : 'Send Review Email'}
+                        >
+                          <Star size={12} fill={order.review_email_sent_at ? '#16a34a' : 'none'} />
+                          <span>{order.review_email_sent_at ? 'Sent' : 'Review'}</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            </>
           )}
         </section>
       </main>
@@ -826,7 +1052,7 @@ const AdminDashboardPage = () => {
             
             {/* Drawer Header */}
             <div className="admin-drawer-header">
-              <div>
+              <div className="drawer-header-left">
                 <h3>
                   Order #{selectedOrder.display_order_id || selectedOrder.id}
                   {(selectedOrder.display_order_id?.startsWith('BYB') || selectedOrder.display_order_id?.includes('BYB')) && (
@@ -855,11 +1081,11 @@ const AdminDashboardPage = () => {
                     {copiedKey === 'orderId' ? 'Copied' : 'Copy'}
                   </button>
                 </h3>
-                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                <span className="drawer-header-date">
                   Placed on {new Date(selectedOrder.created_at).toLocaleString('en-IN')}
                 </span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className="drawer-header-actions">
                 <button
                   type="button"
                   className="btn-drawer-print-bill"

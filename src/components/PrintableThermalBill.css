@@ -1039,6 +1039,36 @@
 }
 
 /* ==========================================================================
+   3.5. Mobile Responsiveness for Print Preview Modal
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+  .thermal-modal-backdrop {
+    padding: 0.5rem;
+  }
+  .thermal-modal-panel {
+    height: 98vh;
+    border-radius: 8px;
+  }
+  .thermal-modal-header {
+    padding: 0.75rem 1rem;
+    gap: 0.65rem;
+  }
+  .thermal-controls-right {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .format-btn {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.74rem;
+  }
+  .thermal-preview-scrollable {
+    padding: 0.75rem 0.35rem;
+  }
+}
+
+/* ==========================================================================
    4. FULL PRINT STYLESHEET (@media print)
    Hides all website UI, prints only the active bill or thermal sticker
    ========================================================================== */

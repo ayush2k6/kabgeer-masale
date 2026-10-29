@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
-import { corsHeaders } from '../_shared/cors.ts';
+import { corsHeaders, getCorsHeaders } from '../_shared/cors.ts';
 
 interface VerifyPaymentPayload {
   orderId: string;
@@ -33,8 +33,10 @@ async function verifyHmacSha256(secret: string, text: string, signature: string)
 }
 
 serve(async (req) => {
+  const dynamicCorsHeaders = getCorsHeaders(req);
+
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response('ok', { headers: dynamicCorsHeaders });
   }
 
   try {
@@ -50,7 +52,7 @@ serve(async (req) => {
     if (!orderId || !razorpay_order_id || !razorpay_payment_id) {
       return new Response(
         JSON.stringify({ error: 'Missing required payment verification parameters.' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -68,7 +70,7 @@ serve(async (req) => {
     if (fetchErr || !dbOrder) {
       return new Response(
         JSON.stringify({ error: 'Order not found in database.', details: fetchErr?.message }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 404, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -79,9 +81,10 @@ serve(async (req) => {
           success: true,
           message: 'Order payment is already verified and marked as Paid.',
           orderId: dbOrder.id,
-          displayOrderId: dbOrder.display_order_id
+          displayOrderId: dbOrder.display_order_id,
+          alreadyProcessed: true
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -89,7 +92,23 @@ serve(async (req) => {
     if (dbOrder.razorpay_order_id && dbOrder.razorpay_order_id !== razorpay_order_id) {
       return new Response(
         JSON.stringify({ error: 'Mismatched Razorpay Order ID.' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 2.1 Duplicate Payment Processing Protection
+    // Ensure this payment ID was not already credited to another order
+    const { data: existingPayment } = await supabase
+      .from('payments')
+      .select('id, order_id')
+      .eq('razorpay_payment_id', razorpay_payment_id)
+      .maybeSingle();
+
+    if (existingPayment && existingPayment.order_id !== dbOrder.id) {
+      console.error(`SECURITY ALERT: Attempted reuse of payment ID ${razorpay_payment_id} for different order ${dbOrder.id}`);
+      return new Response(
+        JSON.stringify({ error: 'Duplicate payment processing detected. This payment ID has already been applied to another order.' }),
+        { status: 400, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -112,78 +131,75 @@ serve(async (req) => {
 
       return new Response(
         JSON.stringify({ error: 'Payment signature verification failed. Unauthorized request.' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // 4. Update Order Status to Confirmed & Paid (Atomic check payment_status == 'Pending')
-    const { error: updateErr } = await supabase
-      .from('orders')
-      .update({
-        order_status: 'Confirmed',
-        payment_status: 'Paid',
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', dbOrder.id)
-      .eq('payment_status', 'Pending');
-
-    if (updateErr) {
-      console.error('Error updating order payment status:', updateErr.message);
-      return new Response(
-        JSON.stringify({ error: 'Failed to update order status in database.', details: updateErr.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // 5. Insert Payment Audit Record into public.payments
-    await supabase.from('payments').insert({
-      order_id: dbOrder.id,
-      razorpay_payment_id: razorpay_payment_id,
-      razorpay_order_id: razorpay_order_id,
-      razorpay_signature: razorpay_signature,
-      amount: dbOrder.total_amount,
-      currency: 'INR',
-      status: 'captured',
-      raw_payload: { verified_via: 'verify-razorpay-payment', timestamp: new Date().toISOString() }
+    // 4. Atomic Payment Claim & State Transition
+    // Invokes database-enforced single-claim RPC (claim_and_process_order_payment).
+    // Fails closed if the RPC is unavailable or encounters an error — no silent weak fallback.
+    const { data: claimResult, error: rpcErr } = await supabase.rpc('claim_and_process_order_payment', {
+      p_order_id: dbOrder.id,
+      p_razorpay_payment_id: razorpay_payment_id,
+      p_razorpay_order_id: razorpay_order_id,
+      p_amount: dbOrder.total_amount,
+      p_source: 'verify-razorpay-payment'
     });
 
-    // 6. Deduct Stock Quantity from public.inventory
-    const { data: items } = await supabase
-      .from('order_items')
-      .select('product_id, quantity')
-      .eq('order_id', dbOrder.id);
-
-    if (items && items.length > 0) {
-      for (const item of items) {
-        if (!item.product_id) continue;
-        const { data: inv } = await supabase
-          .from('inventory')
-          .select('stock_quantity')
-          .eq('product_id', item.product_id)
-          .maybeSingle();
-
-        if (inv) {
-          const newQty = Math.max(0, inv.stock_quantity - item.quantity);
-          await supabase
-            .from('inventory')
-            .update({ stock_quantity: newQty, updated_at: new Date().toISOString() })
-            .eq('product_id', item.product_id);
-        }
-      }
+    if (rpcErr || !claimResult) {
+      console.error('CRITICAL: Atomic payment processing RPC claim_and_process_order_payment failed:', rpcErr?.message);
+      return new Response(
+        JSON.stringify({
+          error: 'Atomic payment processing failed. Transaction aborted to protect financial consistency.',
+          code: 'ATOMIC_TRANSACTION_FAILED',
+          details: rpcErr?.message || 'Database RPC unavailable'
+        }),
+        { status: 500, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // 7. Trigger Downstream Automations in Parallel / Background
-    // (Email dispatch via Resend, Google Sheets sync, and Trackon booking)
-    const backgroundTasks = Promise.allSettled([
+    if (!claimResult.success) {
+      return new Response(
+        JSON.stringify({
+          error: claimResult.error || 'Payment transition rejected',
+          code: claimResult.code || 'PAYMENT_REJECTED'
+        }),
+        { status: 400, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (claimResult.already_processed) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'Order payment is already verified and marked as Paid.',
+          orderId: claimResult.order_id,
+          displayOrderId: claimResult.display_order_id,
+          alreadyProcessed: true
+        }),
+        { status: 200, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const stockAllocationFailed = !claimResult.stock_allocated;
+    const failedItems = claimResult.failed_items || [];
+
+    // 5. Trigger Downstream Automations (ONLY if transition was claimed by this invocation)
+    const taskList = [
       supabase.functions.invoke('send-order-email', { body: { orderId: dbOrder.id } }),
-      supabase.functions.invoke('sync-google-sheets', { body: { orderId: dbOrder.id } }),
-      supabase.functions.invoke('create-shipment', { body: { orderId: dbOrder.id } })
-    ]);
+      supabase.functions.invoke('sync-google-sheets', { body: { orderId: dbOrder.id } })
+    ];
+
+    // Courier shipment booking is strictly bypassed if stock allocation failed
+    if (!stockAllocationFailed) {
+      taskList.push(supabase.functions.invoke('create-shipment', { body: { orderId: dbOrder.id } }));
+    }
+
+    const backgroundTasks = Promise.allSettled(taskList);
 
     if (typeof (globalThis as any).EdgeRuntime !== 'undefined' && (globalThis as any).EdgeRuntime?.waitUntil) {
       (globalThis as any).EdgeRuntime.waitUntil(backgroundTasks);
     } else {
-      // Fast fallback timeout (max 1.5s) to guarantee snappy checkout experience
       await Promise.race([
         backgroundTasks,
         new Promise((resolve) => setTimeout(resolve, 1500))
@@ -193,17 +209,21 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Payment verified, order confirmed, and all fulfillment integrations triggered successfully.',
+        stockAllocated: !stockAllocationFailed,
+        message: stockAllocationFailed
+          ? 'Payment captured successfully, but one or more items experienced inventory stockout. Order flagged for fulfillment attention.'
+          : 'Payment verified, order confirmed, and fulfillment integrations triggered successfully.',
         orderId: dbOrder.id,
-        displayOrderId: dbOrder.display_order_id
+        displayOrderId: dbOrder.display_order_id,
+        warning: stockAllocationFailed ? `Stockout on: ${failedItems.join(', ')}` : undefined
       }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (err: any) {
     console.error('Unhandled verify-razorpay-payment error:', err);
     return new Response(
       JSON.stringify({ error: 'Internal server error', details: err?.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

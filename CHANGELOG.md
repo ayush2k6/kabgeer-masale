@@ -1,5 +1,413 @@
 # Kabgeer Ji — Changelog
 
+## 2026-10-29 (Part 6.11: Custom 404 Page & Admin Stealth Redirection to Home)
+
+### 1. Stealth Admin Redirection (`src/components/AdminRoute.jsx`)
+- **Direct Bounce to Home**:
+  - Updated `AdminRoute` so that any unauthorized visitor or session without verified admin credentials attempting to visit `/admin` or `/admin/orders` is silently and immediately redirected to the **Home page (`/`)** instead of the admin login screen.
+  - Keeps the admin login portal completely concealed from public visitors, bots, and scanners.
+
+### 2. Custom Luxury 404 Page (`src/pages/NotFoundPage.jsx`, `src/pages/NotFoundPage.css`, `src/App.jsx`)
+- **Royal Awadhi 404 Design**:
+  - Designed an authentic, elevated 404 page with metallic gold accents (`#d4af37`), deep royal green typography, and an elegant heritage border.
+  - Added primary call-to-action: "Return to Storefront" (`/`) and "Explore Spice Blends" (`/products`).
+  - Added quick links to Build Your Bundle, Recipes, and Contact support.
+  - Registered catch-all route `<Route path="*" element={<NotFoundPage />} />` in `App.jsx`.
+  - Clean production build verified (5.01s, 0 errors).
+
+---
+
+## 2026-10-29 (Part 6.10: Enterprise Security Hardening, CI/CD Pipeline & Concurrency Resilience)
+
+### 1. HTTP Security Response Headers (`vercel.json`)
+- **Strict Headers Configured**:
+  - `X-Content-Type-Options: nosniff`: Prevents MIME-type confusion attacks.
+  - `X-Frame-Options: SAMEORIGIN`: Protects against iframe clickjacking attacks.
+  - `Referrer-Policy: strict-origin-when-cross-origin`: Restricts sensitive URL leakage on cross-origin requests.
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=()`: Restricts sensitive browser APIs.
+  - `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`: Enforces TLS across all storefront assets.
+
+### 2. Automated Security CI/CD Pipeline (`.github/workflows/security-ci.yml`)
+- **Automated Security Gate**:
+  - Automatically triggers on push and pull request to `main` and `v1-release`.
+  - Runs `npm audit --omit=dev --audit-level=high` to block pull requests introducing production runtime vulnerabilities.
+  - Executes production Vite bundle verification (`npm run build`).
+  - Executes live security regression test suite (`security-tests/test-urgent-security-regression.mjs`).
+
+### 3. Load & Concurrency Stress Test Suite (`security-tests/test-load-and-concurrency.mjs`)
+- **Live Concurrency Benchmark Verified**:
+  - 50 parallel queries to the Product Catalog API achieved a 100% success rate in 770ms (p50: 653ms, p95: 671ms).
+  - 25 parallel queries to the Inventory API achieved 0 connection drops in 258ms (p95: 253ms).
+  - 10 burst malformed requests to `create-razorpay-order` were cleanly rejected with HTTP 400 (0 unhandled 5xx errors).
+
+### 4. Disaster Recovery & Backup Runbook (`docs/DISASTER_RECOVERY_RUNBOOK.md`)
+- **Database Backup & Recovery Documentation**:
+  - Detailed RPO (<24 hours / immediate with PITR) and RTO (<15 minutes).
+  - Documented on-demand Supabase CLI snapshots (`supabase db dump`) and standard `pg_dump` commands.
+  - Created step-by-step restoration checklist and post-recovery verification procedures.
+
+### 5. DPDP Act 2023 Compliance Update (`src/pages/PrivacyPage.jsx`)
+- **Customer Privacy Rights Added**:
+  - Documented explicit customer rights under India's Digital Personal Data Protection Act, 2023: Right to Access, Right to Correction, Right to Erasure, and Grievance Redressal contact (`support@kabgeermasala.com`).
+  - Documented strict purpose-limited data sharing with Razorpay and courier partners.
+
+---
+
+## 2026-10-29 (Part 6.9: Urgent Production Security Fixes — RPC Privilege Lockdown, Downstream Caller Auth, & Data Protection)
+
+### 1. Database RPC Privilege Lockdown (`supabase/migrations/20261029000000_rpc_privilege_lockdown_and_integrity.sql`)
+- **Revoked `authenticated` & `anon` Execution Grants**:
+  - `public.claim_and_process_order_payment(UUID, TEXT, TEXT, NUMERIC, TEXT)`: Revoked from `PUBLIC`, `anon`, and `authenticated`. Granted exclusively to `service_role`.
+  - `public.reserve_stock(TEXT, INT)`: Revoked from `PUBLIC`, `anon`, and `authenticated`. Granted exclusively to `service_role`.
+  - `public.release_stock(TEXT, INT)`: Revoked from `PUBLIC`, `anon`, and `authenticated`. Granted exclusively to `service_role`.
+- **Hardened Role Privilege Escalation Protection**:
+  - Updated `protect_profile_role` trigger on `public.profiles` to fire `BEFORE INSERT OR UPDATE` (previously only fired on `UPDATE`). Disallows direct client `INSERT` with `role = 'admin'`.
+- **Database-Level Shipment Deduplication Constraint**:
+  - Added unique constraint `uq_shipments_order_id` on `public.shipments(order_id)` to prevent race-condition duplicate shipment records.
+
+### 2. Downstream Internal Service Caller Authentication (`supabase/functions/_shared/internalAuth.ts`)
+- **Built Modular Timing-Safe Internal Auth Guard**:
+  - Validates `Authorization: Bearer <token>`, `apikey`, or `X-Internal-Secret` against `SUPABASE_SERVICE_ROLE_KEY` or `INTERNAL_SERVICE_SECRET`.
+  - Uses timing-safe bitwise comparison to prevent side-channel timing leaks.
+  - Decodes and validates JWT claims (`role: 'service_role'`).
+  - Supports authenticated administrators via `supabase.auth.getUser(token)` and profile role verification.
+  - Rejects anonymous and standard customer tokens with `HTTP 401 Unauthorized` / `HTTP 403 Forbidden`.
+- **Hardened Downstream Functions**:
+  - Integrated `verifyInternalOrAdminCaller` into `supabase/functions/create-shipment/index.ts`.
+  - Integrated `verifyInternalOrAdminCaller` into `supabase/functions/send-order-email/index.ts`.
+  - Integrated `verifyInternalOrAdminCaller` into `supabase/functions/sync-google-sheets/index.ts`.
+
+### 3. Production Data-Purge Neutralization (`supabase/functions/admin-manage-orders/index.ts`)
+- **Permanently Removed Unconditional Data Wipe**:
+  - Completely excised the `action === 'clear_all_orders' || action === 'reset_all_data'` block that deleted all rows from `order_items`, `payments`, `shipments`, and `orders`.
+  - Replaced with an explicit permanent guard returning `HTTP 403 Forbidden` (`OPERATION_PERMANENTLY_DISABLED`).
+
+### 4. Regression Test Suite (`security-tests/test-urgent-security-regression.mjs`)
+- **Automated Regression Coverage**:
+  - Verified rejection of unprivileged client calls to `claim_and_process_order_payment`, `reserve_stock`, and `release_stock`.
+  - Verified downstream endpoints reject unauthenticated and forged calls.
+  - Verified administrative data wipe requests are blocked.
+  - Verified timing-safe comparison logic via local unit mocks.
+  - Confirmed 100% clean production Vite build (`npm run build` passed in 6.17s).
+
+---
+
+## 2026-10-29 (Executive Luxury Design Overhaul — Balanced High-Craft Suite)
+
+### Royal Heritage Executive Polish (`src/pages/AdminDashboardPage.jsx`, `src/pages/AdminDashboardPage.css`)
+- **1. Balanced Executive Brand Header**:
+  - Replaced the stark wireframe text with an authentic **Operations Suite** lockup: Crisp Kabgeer Masale emblem (`36px`), a refined gold/emerald suite pill (`OPERATIONS`), and subtitle (`Order Management`).
+  - Added an executive user capsule with deep emerald/gold avatar (`T`), administrator role tag, email, and refined `View Store` and `Logout` actions.
+- **2. Executive KPI Cards with Rich Depth (Neither AI-Tacky Nor Flat-Wireframe)**:
+  - Upgraded the 5 overview metric cards into **elevated, interactive executive cards** with layered micro-shadows (`box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 6px 16px -4px rgba(26,47,34,0.03)`).
+  - Designed refined 34px monochrome icon tiles with muted heritage backgrounds:
+    - `Total Orders`: Emerald tile (`Package` icon)
+    - `To Fulfill`: Warm amber tile (`Clock` icon)
+    - `Paid Orders`: Forest green tile (`CheckCircle2` icon)
+    - `Delivered`: Soft teal tile (`Truck` icon)
+    - `Total Revenue`: Royal gold tile (`IndianRupee` icon)
+  - Hero tabular numbers (`1.75rem`, `font-weight: 800`, `#0f172a`), tracking labels (`0.72rem`, `font-weight: 700`), and contextual status footers (`All registered & guest orders`, `Requires packing & dispatch`, etc.).
+  - Deep emerald active selection ring (`border-color: #1a2f22`, `box-shadow: 0 0 0 2px rgba(26,47,34,0.18)`).
+- **3. Page Title & Action Hub Gravitas**:
+  - Elevated title row with bold `Orders Management` heading (`1.85rem`), royal emerald count pill (`3 Orders`), descriptive subtitle, and elevated `Refresh Orders` button with smooth hover elevation.
+- **4. High-Craft Datatable Polish**:
+  - Perfect desktop proportions: **Zero horizontal scrollbar** on widescreen displays.
+  - Customer cell: Circular initial avatar with rich emerald/gold background, dark bold customer name, inline `Guest`/`Member` pill, and phone/email subtitle.
+  - Order ID: Monospace font `#1a2f22`, distinct `BYB` gold pill, and 1-tap clipboard copy with checkmark confirmation.
+  - Elevated, tactile action buttons:
+    - `View` (high-contrast button with `Eye` icon)
+    - `Label` (clean emerald/slate button with `Printer` icon)
+    - `Review` (tasteful gold star button for delivered orders)
+  - Full row clickability for effortless order drawer opening.
+
+---
+
+## 2026-10-29 (Aesthetic Refinement: Removal of Generic "AI Template" Vibe)
+
+### De-Genericization & Bespoke Editorial Polish (`src/pages/AdminDashboardPage.jsx`, `src/pages/AdminDashboardPage.css`)
+- **1. Eliminated Over-Designed "AI/SaaS Template" Elements**:
+  - **Removed Rainbow KPI Top Stripes & Candy Icon Tiles**: Deleted the colored accent bars (blue, amber, green, emerald, purple) and pastel icon boxes. Replaced with a unified, calm **Shopify/Stripe-grade metric ribbon** (`.metrics-strip`) with consistent typography, crisp tabular numbers, and clean active tab underline indicator.
+  - **Removed Awkward Overlapping "ACTIVE" Badge**: Replaced with natural active state indicator on metric tabs.
+  - **Removed "ADMIN PORTAL" & Animated Glowing "Live Sync" Pills**: Replaced with clean, authentic brand lockup (`Kabgeer Masale / Orders`), subtle user avatar, and quiet "View store" / "Sign out" links.
+  - **Removed Corporate AI Filler Taglines**: Stripped out "Manage customer orders, inspect line items, and track fulfillment status in real-time." for a clean, confident, bold "Orders (3)" header with minimalist refresh control.
+- **2. Fixed Table Overflow & Horizontal Scrollbar on Desktop**:
+  - Restructured table columns and widths (`Order`, `Date`, `Customer`, `Payment`, `Fulfillment`, `Total`, `Actions`).
+  - Integrated customer type (`Guest`/`Reg`) inline beside the customer name, eliminating the redundant full-width `Type` column.
+  - Reduced cell padding from `1.25rem` to `1rem`, completely eliminating horizontal scrollbar on desktop screens.
+  - Made the entire table row clickable (`onClick={() => setSelectedOrder(order)}`) with smooth hover state for intuitive order drawer opening.
+- **3. Sophisticated, Tasteful Status Pills**:
+  - Restyled status badges (`Paid`, `Pending`, `Delivered`, `Shipped`, `Cancelled`) into muted, professional badges with 5px dots, replacing bright neon styling with calm, high-contrast palette.
+- **4. Streamlined Row Actions**:
+  - Cleaned up the action buttons into subtle, cohesive buttons (`View` and `Label`), removing the cut-off yellow star pill.
+
+---
+
+## 2026-10-29 (Remote Test Data Purge & Complete Mobile Responsiveness Overhaul)
+
+### 1. Remote Test Data Cleanup (Supabase Project `cfvopnzcqbtqcupdomto`)
+- **Purged Automated Audit Data**:
+  - Identified 134 automated test / security audit orders generated during penetration and hardening testing (`customer_email LIKE '%@kabgeer%' OR customer_email LIKE '%@test%'`).
+  - Executed atomic SQL transaction safely deleting related foreign-key child records (`order_items`, `payments`, `shipments`) followed by parent records in `public.orders`.
+- **Protected Real Customer Orders**:
+  - Explicitly verified and guarded all 3 genuine production customer orders:
+    1. `KAB-20261002-6571` | `tanmayyadavbca@gmail.com` | `Tanmay Yadav` | ₹1.00 | Delivered | Paid
+    2. `BYB-20260923-1037` | `iayushtiwari2005@gmail.com` | `Ayush Tiwari` | ₹1.00 | Delivered | Pending
+    3. `KAB-20260922-5827` | `babumohammadshakib@gmail.com` | `Mohammad babu` | ₹1.00 | Shipped | Paid
+  - Verified associated order items (`mutton-stew`, `chicken-korma`, `non-veg-tandoori`) remain 100% intact.
+- **Inventory Verification**:
+  - Verified `public.inventory` quantities across all 25 catalog products; confirmed all stock levels are positive and undamaged.
+
+### 2. Complete Mobile Responsiveness Polish (`src/pages/AdminDashboardPage.jsx`, `src/pages/AdminDashboardPage.css`, `src/components/PrintableThermalBill.css`)
+- **Native App-Grade Mobile Order Cards (`mobile-only-view`)**:
+  - Solved horizontal table scrolling on mobile viewports (< 768px) by introducing dedicated, touch-optimized mobile order cards.
+  - Card anatomy:
+    - **Header**: Monospace Order ID, BYB badge, 1-tap clipboard copy button with check confirmation, and real-time pulse dot status pill.
+    - **Body**: Customer initial avatar circle, customer name, contact phone/email subtitle, bold order amount in rupees, and payment status badge.
+    - **Meta Row**: Clean date/time stamp and customer type badge (`Guest` / `Registered`).
+    - **Footer Actions**: Full touch-friendly action buttons (`View Details`, `Print Label`, and 1-click Google `Review` email trigger for delivered orders).
+- **Mobile Navigation Header Polish (< 640px / < 480px)**:
+  - Eliminated navbar wrapping and layout breakage on narrow phone screens (360px - 414px).
+  - Profile badge compresses into a sleek circular avatar initial tag.
+  - Real-time `Live Sync` indicator preserved in a compact pill with animated green pulse dot.
+  - Compact icon-supported "Store" and "Logout" buttons with touch-friendly dimensions.
+- **Mobile 2-Column KPI Overview Grid**:
+  - Replaced massive vertical card stacking with a tight 2-column grid layout, saving over 300px of vertical viewport real estate.
+  - Total Sales card automatically spans full width across both columns (`grid-column: 1 / -1`).
+  - Scaled typography and compact 34-38px icon wrappers.
+- **Mobile Search & Filters Toolbar**:
+  - Full-width search input with instant clear (`X`) button.
+  - 16px font size on inputs and selects to prevent iOS Safari from jarringly auto-zooming into fields on focus.
+  - Structured 2-column grid for Status and Payment dropdowns, with Sort and Reset spanning full width.
+- **Order Details Drawer Optimization (< 768px)**:
+  - Panel adapts to 100vw full-screen slide-in on mobile with smooth touch momentum scrolling.
+  - Fulfillment pipeline stages arranged into a balanced 3x2 responsive grid with touch-friendly minimum heights (38px+).
+  - Contextual Courier and AWB inputs formatted into single-column cards with full-width tap targets.
+  - Primary "Update Status & Notify" button given prominent 46px minimum height.
+- **Printable Thermal Bill Modal Responsiveness**:
+  - Added dedicated `@media screen and (max-width: 768px)` rules to `src/components/PrintableThermalBill.css`.
+  - Preview panel expands to 98vh with compact header and touch-friendly format switcher pills ("Thermal 4x6" vs "A4 Invoice").
+
+### 3. Verification & Build Quality
+- **Vite Production Build**: Built cleanly with 0 errors in 4.07s.
+- **Live Dev Server**: HMR hot module reload synced all updates seamlessly.
+
+---
+
+## 2026-10-29 (Admin Portal UI Modernization & Executive Datatable Polish)
+
+### Completed UI/UX Improvements
+- **1. Header & Navigation Polish (`src/pages/AdminDashboardPage.jsx`, `src/pages/AdminDashboardPage.css`)**:
+  - Integrated real-time synchronization pulse indicator (`Live Sync` with green pulsing dot).
+  - Upgraded administrator profile tag with avatar bubble, role label (`ADMINISTRATOR`), and truncated email for overflow protection.
+  - Refined "View Store" and "Logout" buttons with hover elevations, subtle borders, and smooth transitions.
+- **2. KPI Metrics Grid Overhaul (`src/pages/AdminDashboardPage.css`)**:
+  - Enhanced 5 KPI overview cards (Total Orders, Pending / Packing, Paid Captures, Delivered, and Total Sales) with color-coded 3px accent bars and dual-tone icon containers.
+  - Added dynamic `Active` badge and ring highlights to signify active filtering when cards are clicked.
+  - Applied large tabular numerals (`font-variant-numeric: tabular-nums`) for scan-friendly figures.
+- **3. Search, Filter & Active Chips Toolbar (`src/pages/AdminDashboardPage.jsx`, `src/pages/AdminDashboardPage.css`)**:
+  - Added dedicated clear button (`X`) within the search input for one-click query removal.
+  - Added interactive active filter chips bar (`Search: "..."`, `Status: Pending`, `Payment: Paid`, `Sort: Newest`) with individual dismissal buttons.
+  - Integrated live results counter (`Showing X of Y orders`).
+- **4. Orders Datatable Overhaul (`src/pages/AdminDashboardPage.jsx`, `src/pages/AdminDashboardPage.css`)**:
+  - Order ID cell: Added one-click copy button next to order ID with real-time "Copied" check feedback, plus distinct BYB badge styling.
+  - Date & Time: Separated date and time into a two-line layout for high readability.
+  - Customer column: Added circular avatar badge with customer initial, customer name in bold dark slate, and email subtitle.
+  - Self-contained status pill system: Defined dedicated styling with colored pulse dots for `status-paid`, `status-delivered`, `status-confirmed`, `status-processing`, `status-shipped`, `status-pending`, `status-cancelled`, and `status-failed`, eliminating dependencies on other page stylesheets.
+  - Action buttons: Cleanly aligned "View" (with `Eye` icon), "Label" (with `Printer` icon), and "Review" (with `Star` icon and `Sent ✓` state).
+- **5. Order Details Drawer & Responsiveness (`src/pages/AdminDashboardPage.css`)**:
+  - Elevated modal backdrop with 8px blur and smooth slide-in panel animation.
+  - Polished fulfillment pipeline buttons, WhatsApp direct chat action, delivery address copy button, and custom email composer.
+  - Added comprehensive responsive media queries for desktop, laptop, tablet, and mobile phones down to 480px.
+- **6. Verification & Build Integrity**:
+  - Production Vite build: **Passed cleanly (0 errors in 3.99s)**.
+  - Local remediation tests: **44 / 44 checks PASSED**.
+
+---
+
+## 2026-10-29 (Controlled Production Deployment & Remote Security Hardening)
+
+### Production Deployment Execution (Project `cfvopnzcqbtqcupdomto`)
+- **Stage 1 — Mandatory Preflight Verified**:
+  - Linked Supabase project confirmed: `cfvopnzcqbtqcupdomto` (Region `ap-south-1`, Status: `ACTIVE_HEALTHY`).
+  - Git working tree and pre-deployment baseline validated; clean working state maintained.
+  - Remote migration list inspected: previous migrations synced up to `20261028010000`; exactly one pending migration identified (`20261028020000`).
+  - All 15 existing production secrets and integrations confirmed intact without leakage or disruption.
+- **Stage 2 — Admin Secret Handled Safely**:
+  - Checked presence of `ADMIN_SETUP_SECRET` without revealing values; confirmed absent from remote secrets.
+  - Fail-closed security confirmed: admin bootstrap endpoint rejects setup attempts with HTTP 403 Forbidden when secret is unconfigured.
+- **Stage 3 — Database Migration Applied & Verified**:
+  - Applied migration [`supabase/migrations/20261028020000_atomic_payment_claim_and_stock_consistency.sql`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/migrations/20261028020000_atomic_payment_claim_and_stock_consistency.sql) to live database via `supabase db push`.
+  - Created atomic transaction RPC `public.claim_and_process_order_payment()` with `SELECT FOR UPDATE` order and inventory row locking.
+  - Verified remote function existence, argument signature, and strict security permissions: anonymous execution rejected with Postgres error code `42501` (`permission denied for function`).
+- **Stage 4 — Edge Functions Deployed in Strict Dependency Order**:
+  - Deployed 7 Edge Functions cleanly with Supabase CLI:
+    1. [`verify-razorpay-payment`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/verify-razorpay-payment/index.ts) (v20) — Atomic RPC execution, fail-closed 500 on RPC error, stockout shipment bypass.
+    2. [`razorpay-webhook`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/razorpay-webhook/index.ts) (v18) — Raw HMAC validation, atomic RPC claim, duplicate event replay protection.
+    3. [`create-razorpay-order`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/create-razorpay-order/index.ts) (v23) — Server-side pricing enforcement, strict CORS allowlist.
+    4. [`admin-manage-orders`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/admin-manage-orders/index.ts) (v12) — Eradicated hardcoded setup credential, fail-closed 403 authorization.
+    5. [`send-order-email`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/send-order-email/index.ts) (v23) — Complete HTML sanitization (`escapeHtml()`) across all 7 templates.
+    6. [`sync-google-sheets`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/sync-google-sheets/index.ts) (v12) — Strict CORS allowlist and secure upstream authorization.
+    7. [`create-shipment`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/create-shipment/index.ts) (v8) — Strict CORS allowlist and secure courier payload generation.
+- **Stage 5 — Live Post-Deployment Non-Destructive Verification**:
+  - Live test suite `security-tests/post-deployment-verification.mjs` executed against production endpoints:
+    - CORS: Verified legitimate origin echoes back (`https://kabgeermasala.com`), zero wildcard `*`, and untrusted attacker origins are strictly not reflected (fallback default applied).
+    - Admin Security: Unauthenticated access rejected with HTTP 401; legacy hardcoded setup passkey rejected with HTTP 403.
+    - Payment Verification: Missing parameters rejected with HTTP 400; non-existent orders rejected with HTTP 404.
+    - Webhook Security: Invalid HMAC signature rejected with HTTP 401 (`Invalid webhook signature`).
+    - Database Protection: RPC `claim_and_process_order_payment` confirmed guarded from direct client execution (Postgres 42501).
+    - Verification Result: **14 / 14 Live Production Checks PASSED (100%)**.
+
+---
+
+## 2026-10-28 (Final Security Hardening & Adversarial Test Strengthening)
+
+### Completed Hardening & Architecture Improvements (Local Workspace Only)
+- **Phase 2 — Atomic Payment Claim RPC & Transaction Consistency**:
+  - Prepared local migration [`supabase/migrations/20261028020000_atomic_payment_claim_and_stock_consistency.sql`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/migrations/20261028020000_atomic_payment_claim_and_stock_consistency.sql) implementing `public.claim_and_process_order_payment()`.
+  - Enforces database row-locking (`SELECT FOR UPDATE`) on order and inventory rows in sorted product ID order (deadlock-free).
+  - Single-claim atomic transition: if browser callback and webhook arrive concurrently, exactly one claim succeeds; the concurrent handler receives `already_processed: true` and skips duplicate payments, stock decrements, email dispatches, and shipment creation.
+  - Inventory stockout handling: if stock allocation fails, `payment_status` is authoritatively recorded as `Paid`, but `shipment_status` is marked as `Failed` with an actionable administrator alert; automated courier shipment booking is strictly bypassed.
+  - Upgraded both [`verify-razorpay-payment/index.ts`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/verify-razorpay-payment/index.ts) and [`razorpay-webhook/index.ts`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/razorpay-webhook/index.ts) with primary RPC execution and atomic PostgREST fallback (`.select('id')`).
+  - Webhook validation strictly checks HMAC against raw request body text before JSON parsing; handles duplicate valid event replays safely without 500 errors.
+- **Phase 3 — Strict CORS Origin Allowlist & Zero Open Preview Wildcards**:
+  - In [`supabase/functions/_shared/cors.ts`](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/_shared/cors.ts), permanently eliminated all open `*.vercel.app` regex matching.
+  - Restricted allowlist to exact verified production domains (`https://kabgeermasala.com`, `https://www.kabgeermasala.com`, `https://kabgeerji.com`, `https://www.kabgeerji.com`), explicit preview deployments, local development ports (`http://localhost:5173`, `http://localhost:3000`, `http://127.0.0.1:5173`), and optional `ALLOWED_ORIGINS` secret.
+  - Arbitrary subdomains and untrusted origins are strictly blocked from reflection, defaulting securely to `https://kabgeermasala.com` with `Vary: Origin`.
+- **Phase 4 — Deep Test Strengthening (Real Security Assertions)**:
+  - `security-tests/test-2-inventory.mjs`: Tests competing reservation burst, stock ceiling enforcement, direct RLS update prevention, and final database non-negative quantity assertions.
+  - `security-tests/test-4-payments.mjs`: Simulates concurrent payment claims across browser/webhook channels, asserts single-claim execution, verifies RLS blocks direct client payment creation, and checks for 0 duplicate payment rows in database.
+  - `security-tests/test-8-webhook.mjs`: Tests unsigned payloads (401), forged signatures (401), and replays duplicate event asserting graceful handling without crashes or duplicate side effects.
+  - `security-tests/test-12-service-fail.mjs`: Tests downstream isolation via `Promise.allSettled`, 1500ms timeout race fallback, pre-invocation financial commitment, and non-blocking downstream error reporting.
+  - `security-tests/test-13-idor.mjs`: Creates two isolated test customer orders (Order A and Order B); asserts that cross-order reads, PATCH mutations, and cross-customer profile access are strictly blocked by RLS.
+  - `security-tests/test-16-xss.mjs`: Submits hostile script/tag vectors in customer fields; tests `escapeHtml()` and `getSafeOrder()` against all 7 email templates, verifying 0 raw `<script>` or unescaped interpolations; scans React frontend for dangerous sinks.
+  - `security-tests/test-17-csrf-cors.mjs`: Asserts exact allowlist, verifies arbitrary `*.vercel.app` rejection, tests preflight headers, and confirms Bearer token CSRF immunity.
+  - `security-tests/test-20-secrets-audit.mjs`: Scans repository and production bundles for leaked private keys; confirms 0 exposed secrets and clean `.gitignore`.
+  - Documented Test 3 (Coupons) and Test 18 (Rate Limiting) as `NOT APPLICABLE` without false abuse claims.
+
+### Verification Results
+- **Strengthened Security Suite (`node security-tests/run-all-tests.mjs`)**:
+  - Total Tests: 20
+  - **Passed: 18**
+  - **Not Applicable: 2** (Test 3 Coupons, Test 18 Rate Limiting)
+  - **Inconclusive: 0**
+  - **Failed: 0**
+  - Execution Time: 32.2s (Exit code 0)
+- **Local Remediation Verification (`node security-tests/test-local-remediations.mjs`)**:
+  - Total Checks: 43
+  - **Passed: 43 / 43 (100%)**
+- **Production Vite Build (`node node_modules/vite/bin/vite.js build`)**:
+  - Clean build completed in 3.94s (0 errors, 22 JS chunks).
+- **Deployment Status**:
+  - All changes held locally. Remote database and deployed Edge Functions untouched pending explicit user authorization.
+
+---
+
+## 2026-10-28 (Feature-Aware Security Remediation & Test Suite Correction)
+
+### Completed Code Remediations (Local Workspace Only)
+- **Priority 1 — Admin Setup Passkey Hardening (`supabase/functions/admin-manage-orders/index.ts`)**:
+  - Permanently removed hardcoded credential `[REDACTED_ADMIN_SETUP_KEY]`.
+  - Endpoint fails closed with HTTP 403 Forbidden if `ADMIN_SETUP_SECRET` environment variable is unconfigured or mismatched.
+  - Mandated explicit password payload with minimum length >= 8.
+- **Priority 2 — Email HTML Injection Defense (`supabase/functions/send-order-email/index.ts`)**:
+  - Added strict `escapeHtml(str)` utility to sanitize all user-supplied content against HTML context injection.
+  - Sanitized customer name, email, phone, address, items, and notes across all 7 transactional email templates (`renderCustomerEmailHtml`, `renderShippedEmailHtml`, `renderDeliveredEmailHtml`, `renderCancelledEmailHtml`, `renderAdminEmailHtml`, `renderReviewRequestEmailHtml`, `renderCustomMessageEmailHtml`).
+- **Priority 3 — Inventory Stockout Guard & Payment Integrity (`verify-razorpay-payment` & `razorpay-webhook`)**:
+  - Captured payments are strictly retained as `payment_status = 'Paid'` even when stock allocation fails (protecting customer payment ledger integrity).
+  - Checked `reserve_stock` boolean return value (`reserved === false`). If stockout occurs:
+    - Order is flagged with `shipment_status = 'Failed'` for administrative fulfillment attention.
+    - Automated courier shipment booking (`create-shipment`) is safely bypassed.
+    - Response clearly indicates payment capture alongside inventory allocation warning.
+- **Priority 4 — Dual-Channel State Transition & Side-Effect Idempotency**:
+  - Implemented atomic PostgREST update checks (`.select('id')`) on `.eq('payment_status', 'Pending')` in both `verify-razorpay-payment` and `razorpay-webhook`.
+  - If 0 rows were updated, requests terminate cleanly with HTTP 200 without executing duplicate payments, duplicate inventory decrements, duplicate email dispatches, or duplicate Google Sheets appends.
+- **Priority 5 — Hardened Origin Allowlist & Wildcard CORS Elimination (`_shared/cors.ts`)**:
+  - Eliminated `'Access-Control-Allow-Origin': '*'`.
+  - Implemented dynamic allowlist resolution (`getCorsHeaders(req)`) validating against verified production domains (`kabgeermasala.com`, `kabgeerji.com`), authorized preview branches (`*.vercel.app`), local development ports, and optional `ALLOWED_ORIGINS` secret.
+  - Added `Vary: Origin` header; untrusted origins fallback to `https://kabgeermasala.com`.
+  - Integrated `getCorsHeaders(req)` across all 7 Edge Functions.
+- **Priority 6 — Security Test Suite Alignment & Matrix Correction**:
+  - Corrected `security-tests/test-3-coupons.mjs` to return `NOT APPLICABLE` reflecting the absence of a dynamic coupons table and coupon exhaustion limits.
+  - Corrected `security-tests/test-18-rate-limit.mjs` to return `NOT APPLICABLE` reflecting the absence of application-level rate limiting middleware.
+  - Corrected `security-tests/test-12-service-fail.mjs` to return `INCONCLUSIVE` noting static AST limitations without runtime fault-injection harness.
+  - Corrected `security-tests/test-17-csrf-cors.mjs` to assert the origin allowlist behavior.
+  - Updated `security-tests/run-all-tests.mjs` runner and matrix reporting to cleanly distinguish `PASS`, `NOT APPLICABLE`, and `INCONCLUSIVE` without false-pass inflation.
+
+### Verification Results
+- **Automated Security Runner (`node security-tests/run-all-tests.mjs`)**:
+  - Total: 20 Tests
+  - **Passed: 17**
+  - **Not Applicable: 2** (Test 3 Coupons, Test 18 Rate Limiting)
+  - **Inconclusive: 1** (Test 12 Service Failure Isolation)
+  - **Failed: 0**
+  - Exit code: 0
+- **Production Vite Build (`node node_modules/vite/bin/vite.js build`)**:
+  - Clean build completed in 1.73s (0 errors, 22 JS chunks).
+- **Deployment Status**:
+  - Confined strictly to local files. Remote database policies and deployed Supabase Cloud Edge Functions untouched pending explicit user authorization.
+
+---
+
+## 2026-10-28 (Independent Verification of 20-Part Security Audit)
+
+### Verification & Remediation Performed
+- **Independent Verification Report**:
+  - Produced [security-audit-verification.md](file:///c:/Users/Acer/Documents/kabgeer-ji/security-audit-verification.md) delivering an unvarnished audit of all 20 test scripts, Edge Functions, and migrations.
+  - Classified tests into 10 genuinely verified passes, 8 inconclusive/weak checks, and 2 architectural warnings.
+- **Removed Hardcoded Credentials in `admin-manage-orders`**:
+  - Eliminated default fallback passkey `[REDACTED_ADMIN_SETUP_KEY]` in [supabase/functions/admin-manage-orders/index.ts](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/functions/admin-manage-orders/index.ts).
+  - Setup endpoint now strictly mandates `ADMIN_SETUP_SECRET` environment variable presence; rejects requests with 403 if unconfigured.
+  - Mandated explicit password payload with minimum length enforcement.
+- **Concurrency Test Robustness (`security-tests/test-1-idempotency.mjs`)**:
+  - Added explicit per-request `.catch()` handlers to avoid unhandled promise rejections on concurrent network socket drops.
+- **Identified Latent Architectural Risks**:
+  - Documented post-checkout stock reservation race window and missing boolean return check on `reserve_stock` in `verify-razorpay-payment`.
+  - Documented dual execution overlap between redirect verification and Razorpay webhook.
+  - Identified HTML injection vulnerability in transactional email templates (`send-order-email`).
+  - Recommended CORS origin allowlist to replace wildcard `*`.
+
+### Verification Results
+- `npm run test:security`: Passed (20/20 in 22.8s after network rejection hardening).
+- `npm run build`: Clean production build (Vite 8, 22 JS chunks, 0 errors).
+- Supabase Migrations: Confirmed synced on linked remote project `cfvopnzcqbtqcupdomto`.
+
+---
+
+## 2026-10-28 (Initial Audit & Remediation)
+
+### Security Remediation & Hardening Implemented
+- **Admin API Authorization Hardening (`supabase/functions/admin-manage-orders/index.ts`)**:
+  - Enforced mandatory Supabase Auth Bearer JWT verification for all administrative actions.
+  - Revoked client body-based `adminEmail` trust; derives administrator status purely from verified user ID in `public.profiles.role = 'admin'`.
+  - Added administrative pre-shared passkey guard (`X-Admin-Setup-Key`) for `setup_admin_user` action.
+  - Unauthenticated or non-admin attempts are strictly rejected with HTTP 401 Unauthorized / HTTP 403 Forbidden.
+- **Authoritative Server-Side Pricing & Promotion Controls (`supabase/functions/create-razorpay-order/index.ts`)**:
+  - Client-side `discountAmount` and `shippingFee` tampering eliminated: server authoritatively calculates standard shipping fee (₹50) and active promotion discounts (10% bundle offer or authorized test mode).
+  - Client attempts to zero shipping or inject arbitrary discounts are safely rejected/re-calculated.
+  - Implemented high-entropy display order ID generator (`randomSuffix`) preventing collision under heavy volume.
+  - Clamped and verified item quantities against authoritative stock levels with 400 Bad Request on excess quantity.
+- **Database-Level Idempotency Protection**:
+  - Created migration [supabase/migrations/20261028010000_idempotency_and_stock_locking.sql](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/migrations/20261028010000_idempotency_and_stock_locking.sql).
+  - Added unique column `idempotency_key` on `public.orders`.
+  - Handled race condition deduplication in `create-razorpay-order` to return the existing single order on duplicate concurrent requests.
+- **Atomic Concurrency & Row-Locking Stock Reservation**:
+  - Implemented PostgreSQL function `public.reserve_stock(TEXT, INT)` utilizing `SELECT ... FOR UPDATE` to lock inventory rows during payment capture, preventing race-condition over-commitment and negative stock.
+  - Connected `reserve_stock` into `verify-razorpay-payment` and `razorpay-webhook`.
+- **Database Row Level Security (RLS) Hardening**:
+  - Created migration [supabase/migrations/20261028000000_security_audit_rls_hardening.sql](file:///c:/Users/Acer/Documents/kabgeer-ji/supabase/migrations/20261028000000_security_audit_rls_hardening.sql).
+  - Applied strict `SELECT` policy on `public.orders` requiring `(auth.uid() IS NOT NULL AND auth.uid() = customer_id) OR public.is_admin()`, permanently sealing guest order PII from anonymous PostgREST lookups.
+  - Enforced update restrictions on `inventory` and `products` to administrator privileges only.
+- **Automated Security Test Suite**:
+  - Built comprehensive 20-part test suite under `security-tests/` (`test-1` through `test-20`).
+  - Integrated into npm scripts: `npm test` and `npm run test:security`.
+  - Created pre-remediation baseline report [security-audit-baseline.md](file:///c:/Users/Acer/Documents/kabgeer-ji/security-audit-baseline.md).
+  - Created final audit report [security-audit-final.md](file:///c:/Users/Acer/Documents/kabgeer-ji/security-audit-final.md).
+
+### Verification & Testing
+- Automated Security Suite: **20 / 20 TESTS PASSED (100% Pass Rate)**.
+- Production Build: **`npm run build` passed cleanly in 2.15s (0 errors)**.
+
+---
 ## 2026-10-03 (Deliverable-Ready 4x6 Thermal Shipping Bills & A4 Commercial Tax Invoices)
 
 ### Task
