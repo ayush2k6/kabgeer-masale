@@ -1122,6 +1122,12 @@ const AdminDashboardPage = () => {
               <div className="drawer-header-left">
                 <h3>
                   Order #{selectedOrder.display_order_id || selectedOrder.id}
+                  {getOrderCoupon(selectedOrder) && (
+                    <span className="order-coupon-pill" style={{ marginLeft: '8px', verticalAlign: 'middle' }} title="Applied Coupon">
+                      <Tag size={11} />
+                      <span>{getOrderCoupon(selectedOrder)}</span>
+                    </span>
+                  )}
                   {(selectedOrder.display_order_id?.startsWith('BYB') || selectedOrder.display_order_id?.includes('BYB')) && (
                     <span style={{
                       marginLeft: '8px',
@@ -1683,23 +1689,47 @@ const AdminDashboardPage = () => {
                 <div className="drawer-section-title">
                   <CreditCard size={14} style={{ display: 'inline', marginRight: '4px' }} /> Payment & Financial Breakdown
                 </div>
+
+                {/* Prominent Coupon / Promotion Banner */}
+                {getOrderCoupon(selectedOrder) ? (
+                  <div className="drawer-coupon-callout-card">
+                    <div className="coupon-callout-header">
+                      <div className="coupon-pill-large">
+                        <Tag size={13} />
+                        <span>COUPON: {getOrderCoupon(selectedOrder)}</span>
+                      </div>
+                      <span className="coupon-applied-status">✓ Discount Applied</span>
+                    </div>
+                    <div className="coupon-callout-desc">
+                      Customer applied promo code <code>{getOrderCoupon(selectedOrder)}</code> and saved <strong>₹{Number(selectedOrder.discount).toFixed(2)}</strong>.
+                    </div>
+                  </div>
+                ) : Number(selectedOrder.discount) > 0 ? (
+                  <div className="drawer-coupon-callout-card bundle-promo">
+                    <div className="coupon-callout-header">
+                      <div className="coupon-pill-large bundle">
+                        <Sparkles size={13} />
+                        <span>BUNDLE SPECIAL OFFER</span>
+                      </div>
+                      <span className="coupon-applied-status">✓ Deal Applied</span>
+                    </div>
+                    <div className="coupon-callout-desc">
+                      Customer saved <strong>₹{Number(selectedOrder.discount).toFixed(2)}</strong> with 10% Bundle Discount + 2 Free Mini Boxes.
+                    </div>
+                  </div>
+                ) : null}
                 
                 <div className="drawer-summary-totals">
                   <div className="summary-flex-row">
                     <span>Subtotal</span>
                     <span>₹{(Number(selectedOrder.subtotal) || 0).toFixed(2)}</span>
                   </div>
-                  {getOrderCoupon(selectedOrder) && (
-                    <div className="summary-flex-row" style={{ color: '#047857', fontWeight: 600 }}>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                        <Tag size={13} /> Coupon Code
-                      </span>
-                      <span className="drawer-coupon-badge">{getOrderCoupon(selectedOrder)}</span>
-                    </div>
-                  )}
                   {Number(selectedOrder.discount) > 0 && (
-                    <div className="summary-flex-row" style={{ color: '#16a34a' }}>
-                      <span>Discount {getOrderCoupon(selectedOrder) ? `(${getOrderCoupon(selectedOrder)})` : '(Bundle 10% Off)'}</span>
+                    <div className="summary-flex-row" style={{ color: '#047857', fontWeight: 600 }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        {getOrderCoupon(selectedOrder) ? <Tag size={12} /> : <Sparkles size={12} />}
+                        Discount {getOrderCoupon(selectedOrder) ? `(${getOrderCoupon(selectedOrder)})` : '(Bundle 10% Off)'}
+                      </span>
                       <span>-₹{Number(selectedOrder.discount).toFixed(2)}</span>
                     </div>
                   )}
@@ -1711,18 +1741,51 @@ const AdminDashboardPage = () => {
                   )}
                   <div className="summary-flex-row">
                     <span>Shipping Fee</span>
-                    <span>{Number(selectedOrder.shipping_fee) === 0 ? 'FREE' : `+₹${Number(selectedOrder.shipping_fee).toFixed(2)}`}</span>
+                    <span style={{ color: Number(selectedOrder.shipping_fee) === 0 ? '#047857' : 'inherit', fontWeight: 600 }}>
+                      {Number(selectedOrder.shipping_fee) === 0 ? 'FREE DELIVERY' : `+₹${Number(selectedOrder.shipping_fee).toFixed(2)}`}
+                    </span>
                   </div>
                   <div className="summary-flex-row summary-final-total">
-                    <span>Total Amount</span>
+                    <span>Total Amount Paid</span>
                     <span>₹{(Number(selectedOrder.total_amount) || 0).toFixed(2)}</span>
                   </div>
                 </div>
 
-                <div style={{ marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px dashed #e2e8f0', fontSize: '0.82rem', color: '#64748b' }}>
-                  <div>Payment Status: <strong>{selectedOrder.payment_status}</strong></div>
+                {/* Structured Financial & Payment Details */}
+                <div className="drawer-payment-metadata-box">
+                  <div className="payment-meta-row">
+                    <span className="payment-meta-label">Payment Mode</span>
+                    <span className="payment-mode-pill">
+                      {selectedOrder.razorpay_order_id ? '⚡ Razorpay Online (Prepaid)' : '💵 Cash on Delivery (COD)'}
+                    </span>
+                  </div>
+                  <div className="payment-meta-row">
+                    <span className="payment-meta-label">Payment Status</span>
+                    <span className={`status-pill status-pill-compact ${getStatusClass(selectedOrder.payment_status)}`}>
+                      <span className="status-dot"></span>
+                      <span>{selectedOrder.payment_status || 'Pending'}</span>
+                    </span>
+                  </div>
                   {selectedOrder.razorpay_order_id && (
-                    <div style={{ marginTop: '0.2rem' }}>Razorpay Order ID: <code>{selectedOrder.razorpay_order_id}</code></div>
+                    <div className="payment-meta-row">
+                      <span className="payment-meta-label">Razorpay Order ID</span>
+                      <div className="payment-meta-copyable">
+                        <code>{selectedOrder.razorpay_order_id}</code>
+                        <button
+                          type="button"
+                          className="btn-copy-mini"
+                          onClick={() => handleCopy(selectedOrder.razorpay_order_id, 'rzpOrderId')}
+                          title="Copy Razorpay Order ID"
+                        >
+                          {copiedKey === 'rzpOrderId' ? <Check size={11} color="#16a34a" /> : <Copy size={11} />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {Number(selectedOrder.discount) > 0 && (
+                    <div className="savings-highlight-banner">
+                      🎉 Customer saved a total of <strong>₹{Number(selectedOrder.discount).toFixed(2)}</strong> on this order!
+                    </div>
                   )}
                 </div>
               </div>

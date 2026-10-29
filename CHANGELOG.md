@@ -8,8 +8,11 @@
 - **Edge Function Support (`supabase/functions/create-razorpay-order/index.ts`)**:
   - Saved applied coupon code directly into `orders.coupon_code` and address metadata upon order creation.
 - **Admin Dashboard UI (`src/pages/AdminDashboardPage.jsx`, `src/pages/AdminDashboardPage.css`)**:
-  - Datatable (Desktop & Mobile): Displays emerald coupon badge (`🏷️ {COUPON}`) in the Order ID column for any order where a coupon was used.
-  - Order Details Drawer: Displays clear "Coupon Code" row with coupon badge in the Financial Breakdown section.
+  - **Datatable (Desktop & Mobile)**: Displays emerald coupon badge (`🏷️ {COUPON}`) in the Order ID column for any order where a coupon was used.
+  - **Drawer Header Tag**: Displays coupon pill (`🏷️ {COUPON}`) next to the Order Number in the drawer title.
+  - **Prominent Coupon Callout Card**: Dedicated callout card (`.drawer-coupon-callout-card`) in the drawer displaying `COUPON: {CODE}`, green verified badge `✓ Discount Applied`, and descriptive text `Customer applied promo code {CODE} and saved ₹{AMOUNT}.`
+  - **Bundle Deal Fallback**: If discount exists without a coupon code, displays amber callout card for `BUNDLE SPECIAL OFFER (10% OFF + 2 Free Mini Boxes)`.
+  - **Structured Payment & Financial Details**: Subtotal, Coupon/Bundle Discount row in emerald green with icon, Tax, Free Delivery highlight, Total Amount Paid, Payment Mode pill (`⚡ Razorpay Online (Prepaid)` / `💵 Cash on Delivery`), Payment Status pill, Razorpay Order ID with copy button, and customer savings celebration banner.
 
 ### 2. Admin Single Order Deletion (`supabase/functions/admin-manage-orders/index.ts`, `src/pages/AdminDashboardPage.jsx`)
 - **Secure Deletion Endpoint**:

@@ -1945,3 +1945,142 @@
   border-color: #f87171 !important;
   color: #b91c1c !important;
 }
+
+/* Prominent Coupon / Promo Callout Card in Drawer */
+.drawer-coupon-callout-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #a7f3d0;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.drawer-coupon-callout-card.bundle-promo {
+  background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+  border-color: #fde68a;
+}
+
+.coupon-callout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.coupon-pill-large {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #047857;
+  color: #ffffff;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.coupon-pill-large.bundle {
+  background-color: #b45309;
+}
+
+.coupon-applied-status {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.coupon-callout-desc {
+  font-size: 0.82rem;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.coupon-callout-desc code {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 700;
+  color: #047857;
+}
+
+/* Structured Financial & Payment Details Box */
+.drawer-payment-metadata-box {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.payment-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.payment-meta-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.payment-mode-pill {
+  font-size: 0.78rem;
+  font-weight: 600;
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.payment-meta-copyable {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.payment-meta-copyable code {
+  font-size: 0.78rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #1e293b;
+}
+
+.btn-copy-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+
+.btn-copy-mini:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.savings-highlight-banner {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  margin-top: 0.25rem;
+  text-align: center;
+}

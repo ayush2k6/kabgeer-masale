@@ -50,8 +50,8 @@ Current Branch: v1-release / main (Deployed on Vercel)
 
 ## 2. Current Active Part
 
-* **Part Number**: Part 6.11
-* **Part Name**: Custom Luxury 404 Page & Admin Stealth Redirection to Home
+* **Part Number**: Part 6.12
+* **Part Name**: Coupon Code Tracking, Admin Order Details Upgrade & Order Deletion
 * **Current Status**: ✅ 100% COMPLETE & VERIFIED
 * **Completed Components**:
   - `src/components/AdminRoute.jsx`: Stealth redirect to Home (`/`) for any unauthorized visitor attempting to access `/admin`.
