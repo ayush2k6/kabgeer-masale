@@ -28,7 +28,9 @@ import {
   ChevronDown,
   ChevronUp,
   Printer,
-  Eye
+  Eye,
+  Trash2,
+  Tag
 } from 'lucide-react';
 import logo from '../assets/logo.png';
 import PrintableThermalBill from '../components/PrintableThermalBill';
@@ -74,6 +76,46 @@ const AdminDashboardPage = () => {
   const [copiedKey, setCopiedKey] = useState(null);
   const [actionSuccessKey, setActionSuccessKey] = useState(null);
   const [printingOrder, setPrintingOrder] = useState(null);
+  const [isDeletingOrder, setIsDeletingOrder] = useState(false);
+
+  // Helper to retrieve coupon code from order columns or address metadata
+  const getOrderCoupon = (order) => {
+    if (!order) return null;
+    return order.coupon_code || order.billing_address?.coupon_code || order.shipping_address?.coupon_code || null;
+  };
+
+  // Permanently delete single order by ID
+  const handleDeleteOrder = async (orderToDelete) => {
+    if (!orderToDelete) return;
+    const confirmDelete = window.confirm(
+      `Permanently delete Order #${orderToDelete.display_order_id}?\n\nCustomer: ${orderToDelete.customer_name || 'Customer'}\nAmount: ₹${Number(orderToDelete.total_amount).toFixed(2)}\n\nThis will remove the order and all related items from the database.`
+    );
+    if (!confirmDelete) return;
+
+    setIsDeletingOrder(true);
+    try {
+      const { data, error: delErr } = await supabase.functions.invoke('admin-manage-orders', {
+        body: {
+          action: 'delete_order',
+          orderId: orderToDelete.id
+        }
+      });
+
+      if (delErr || !data?.success) {
+        throw new Error(delErr?.message || data?.error || 'Failed to delete order.');
+      }
+
+      setOrders(prev => prev.filter(o => o.id !== orderToDelete.id));
+      if (selectedOrder?.id === orderToDelete.id) {
+        setSelectedOrder(null);
+      }
+    } catch (err) {
+      console.error('Delete order error:', err);
+      alert(`Could not delete order: ${err.message}`);
+    } finally {
+      setIsDeletingOrder(false);
+    }
+  };
 
   // Fetch all orders from Supabase (with direct RLS, Edge function & RPC fallback)
   const fetchAllOrders = useCallback(async () => {
@@ -827,6 +869,12 @@ const AdminDashboardPage = () => {
                         <td className="order-id-cell">
                           <div className="order-id-container">
                             <span className="order-id-code">#{order.display_order_id || order.id.slice(0, 8).toUpperCase()}</span>
+                        {getOrderCoupon(order) && (
+                          <span className="order-coupon-pill" title={`Coupon: ${getOrderCoupon(order)}`}>
+                            <Tag size={10} />
+                            <span>{getOrderCoupon(order)}</span>
+                          </span>
+                        )}
                             {(order.display_order_id?.startsWith('BYB') || order.display_order_id?.includes('BYB')) && (
                               <span className="badge-byb">BYB</span>
                             )}
@@ -897,6 +945,15 @@ const AdminDashboardPage = () => {
                             >
                               <Printer size={12} />
                               <span>Label</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-action-delete"
+                              onClick={() => handleDeleteOrder(order)}
+                              title="Permanently delete this order"
+                              disabled={isDeletingOrder}
+                            >
+                              <Trash2 size={12} />
                             </button>
                             {order.order_status === 'Delivered' && (
                               <button
@@ -1023,6 +1080,16 @@ const AdminDashboardPage = () => {
                         <Printer size={13} />
                         <span>Label</span>
                       </button>
+                      <button
+                        type="button"
+                        className="btn-mobile-action btn-mobile-delete"
+                        onClick={() => handleDeleteOrder(order)}
+                        title="Delete order"
+                        disabled={isDeletingOrder}
+                      >
+                        <Trash2 size={13} />
+                        <span>Delete</span>
+                      </button>
                       {order.order_status === 'Delivered' && (
                         <button
                           type="button"
@@ -1094,6 +1161,16 @@ const AdminDashboardPage = () => {
                 >
                   <Printer size={14} />
                   <span>Print Bill / Label</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-drawer-delete"
+                  onClick={() => handleDeleteOrder(selectedOrder)}
+                  disabled={isDeletingOrder}
+                  title="Permanently delete this order"
+                >
+                  <Trash2 size={13} />
+                  <span>{isDeletingOrder ? 'Deleting...' : 'Delete'}</span>
                 </button>
                 <button
                   type="button"
@@ -1612,9 +1689,17 @@ const AdminDashboardPage = () => {
                     <span>Subtotal</span>
                     <span>₹{(Number(selectedOrder.subtotal) || 0).toFixed(2)}</span>
                   </div>
+                  {getOrderCoupon(selectedOrder) && (
+                    <div className="summary-flex-row" style={{ color: '#047857', fontWeight: 600 }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        <Tag size={13} /> Coupon Code
+                      </span>
+                      <span className="drawer-coupon-badge">{getOrderCoupon(selectedOrder)}</span>
+                    </div>
+                  )}
                   {Number(selectedOrder.discount) > 0 && (
                     <div className="summary-flex-row" style={{ color: '#16a34a' }}>
-                      <span>Discount</span>
+                      <span>Discount {getOrderCoupon(selectedOrder) ? `(${getOrderCoupon(selectedOrder)})` : '(Bundle 10% Off)'}</span>
                       <span>-₹{Number(selectedOrder.discount).toFixed(2)}</span>
                     </div>
                   )}

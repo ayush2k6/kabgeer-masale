@@ -322,7 +322,8 @@ serve(async (req) => {
       state: shipping.state || 'Uttar Pradesh',
       pinCode: sanitizedPinCode,
       country: shipping.country || 'India',
-      idempotency_key: idempotencyKey || null
+      idempotency_key: idempotencyKey || null,
+      coupon_code: couponCode || null
     };
 
     // 9. Insert Record into public.orders
@@ -341,6 +342,7 @@ serve(async (req) => {
         payment_status: 'Pending',
         subtotal: subtotal,
         discount: discountAmount,
+        coupon_code: couponCode || null,
         tax: taxAmount,
         shipping_fee: shippingFee,
         total_amount: finalTotal,
@@ -368,6 +370,7 @@ serve(async (req) => {
           payment_status: 'Pending',
           subtotal: subtotal,
           discount: discountAmount,
+          coupon_code: couponCode || null,
           tax: taxAmount,
           shipping_fee: shippingFee,
           total_amount: finalTotal,

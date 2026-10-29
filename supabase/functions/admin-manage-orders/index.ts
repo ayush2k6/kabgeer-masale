@@ -235,7 +235,54 @@ serve(async (req) => {
       );
     }
 
-    // 4. Action: Guard against legacy destructive purge requests
+    // 4. Action: Delete single order by ID
+    if (action === 'delete_order') {
+      const { orderId } = body;
+      if (!orderId) {
+        return new Response(
+          JSON.stringify({ error: 'Missing required orderId.' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId);
+      let query = supabase.from('orders').select('id, display_order_id');
+      const { data: targetOrder, error: findErr } = isUuid 
+        ? await query.eq('id', orderId).maybeSingle()
+        : await query.eq('display_order_id', orderId).maybeSingle();
+
+      if (findErr || !targetOrder) {
+        return new Response(
+          JSON.stringify({ error: 'Order not found for deletion.' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Delete child rows first (order_items, payments, shipments) to satisfy constraints
+      await supabase.from('order_items').delete().eq('order_id', targetOrder.id);
+      await supabase.from('payments').delete().eq('order_id', targetOrder.id);
+      await supabase.from('shipments').delete().eq('order_id', targetOrder.id);
+
+      const { error: deleteErr } = await supabase.from('orders').delete().eq('id', targetOrder.id);
+      if (deleteErr) {
+        console.error('Error deleting order:', deleteErr);
+        return new Response(
+          JSON.stringify({ error: deleteErr.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: `Order #${targetOrder.display_order_id} deleted successfully.`,
+          deletedId: targetOrder.id 
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 5. Action: Guard against legacy destructive purge requests
     if (action === 'clear_all_orders' || action === 'reset_all_data') {
       return new Response(
         JSON.stringify({

@@ -1,5 +1,27 @@
 # Kabgeer Ji — Changelog
 
+## 2026-10-29 (Part 6.12: Coupon Code Visibility & Admin Single Order Deletion)
+
+### 1. Coupon Code Tracking & Visibility
+- **Database Migration (`supabase/migrations/20261029010000_add_coupon_code_column.sql`)**:
+  - Added `coupon_code TEXT` column and index to `public.orders` table on Supabase production (`cfvopnzcqbtqcupdomto`).
+- **Edge Function Support (`supabase/functions/create-razorpay-order/index.ts`)**:
+  - Saved applied coupon code directly into `orders.coupon_code` and address metadata upon order creation.
+- **Admin Dashboard UI (`src/pages/AdminDashboardPage.jsx`, `src/pages/AdminDashboardPage.css`)**:
+  - Datatable (Desktop & Mobile): Displays emerald coupon badge (`🏷️ {COUPON}`) in the Order ID column for any order where a coupon was used.
+  - Order Details Drawer: Displays clear "Coupon Code" row with coupon badge in the Financial Breakdown section.
+
+### 2. Admin Single Order Deletion (`supabase/functions/admin-manage-orders/index.ts`, `src/pages/AdminDashboardPage.jsx`)
+- **Secure Deletion Endpoint**:
+  - Added authenticated `delete_order` action to `admin-manage-orders` Edge Function with admin JWT verification.
+  - Safely deletes child records in `order_items`, `payments`, and `shipments` before removing the order to prevent foreign key errors.
+- **Admin UI Buttons**:
+  - Added delete order icon button (`Trash2`) in Datatable action row and mobile card footer.
+  - Added prominent "Delete" button in the Order Details Drawer header.
+  - Features confirmation prompt (`window.confirm`) to prevent accidental deletion.
+
+---
+
 ## 2026-10-29 (Part 6.11: Custom 404 Page & Admin Stealth Redirection to Home)
 
 ### 1. Stealth Admin Redirection (`src/components/AdminRoute.jsx`)
