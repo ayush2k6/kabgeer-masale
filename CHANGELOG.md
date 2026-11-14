@@ -1,5 +1,20 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.23: Streamlined Clean Mobile Checkout & Distraction-Free Flow)
+
+### 1. Eliminated Distracting Overlays on Checkout (`src/components/Header.jsx`)
+- **Resolved Pay Button Collision & Floating Overlays**:
+  - Automatically suppressed the fixed bottom discovery navigation bar (`Home, Products, Bundle, Recipes, Bulk Enquiry`) specifically on the `/checkout` route so it no longer obstructs the Pay button or policy links.
+  - Suppressed the floating circular green scroll-to-top button on `/checkout` so it no longer hovers directly over the payment options card.
+
+### 2. Streamlined Payment & Shipping Cards (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Eliminated Awkward Multi-Line Word Wrapping**:
+  - Removed bulky icon boxes and nested multi-column constraints that forced "Razorpay Secure Online Checkout" to break into 4 awkward vertical lines on mobile.
+  - Payment card now renders a clean radio selector, spacious title, horizontally aligned trust chips (`UPI`, `Cards`, `NetBanking`), and a single, clear subtitle: `Instant UPI (Google Pay, PhonePe, Paytm), Debit/Credit Cards & NetBanking`.
+  - Removed repetitive security slogans from the payment card, leaving the checkout clean, minimal, and effortless for customers.
+  - Refined the shipping card with a balanced, single-line title and clear delivery timeframe.
+
+
 ## 2026-11-15 (Part 6.22: Enterprise Mobile Checkout Optimization — Shopify Plus Standard)
 
 ### 1. Interactive Mobile Summary Drawer (`src/pages/CheckoutPage.jsx`)

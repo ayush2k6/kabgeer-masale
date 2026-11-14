@@ -991,12 +991,9 @@ const CheckoutPage = () => {
                   <div className="custom-radio checked">
                     <span className="radio-inner-dot"></span>
                   </div>
-                  <div className="option-icon-box">
-                    <Truck size={18} className="option-icon text-emerald" />
-                  </div>
                   <div className="option-text-group">
-                    <span className="option-primary-title">Standard Express Courier (3–5 Business Days)</span>
-                    <span className="option-subtitle">Direct insured dispatch via Shiprocket / Trackon Express</span>
+                    <span className="option-primary-title">Standard Express Courier</span>
+                    <span className="option-subtitle">3–5 Business Days • Pan-India Tracked Dispatch</span>
                   </div>
                 </div>
                 <span className="option-price-tag">
@@ -1011,7 +1008,6 @@ const CheckoutPage = () => {
                 <span className="section-step-badge">04</span>
                 <h2 className="section-title">Payment Options</h2>
               </div>
-              <p className="payment-helper-text">All transactions are end-to-end encrypted & secured by RBI-authorized payment infrastructure.</p>
               
               <div className="payment-option-card selected">
                 <div className="payment-card-main">
@@ -1019,26 +1015,18 @@ const CheckoutPage = () => {
                     <div className="custom-radio checked">
                       <span className="radio-inner-dot"></span>
                     </div>
-                    <div className="option-icon-box">
-                      <ShieldCheck size={18} className="option-icon text-emerald" />
-                    </div>
                     <div className="option-text-group">
-                      <span className="option-primary-title">Razorpay Secure Online Checkout</span>
-                      <span className="option-subtitle">Instant UPI (GPay, PhonePe, Paytm), Cards & NetBanking</span>
+                      <div className="payment-title-row">
+                        <span className="option-primary-title">Razorpay Secure Online Checkout</span>
+                        <div className="payment-trust-chips">
+                          <span className="pay-chip">UPI</span>
+                          <span className="pay-chip">Cards</span>
+                          <span className="pay-chip">NetBanking</span>
+                        </div>
+                      </div>
+                      <span className="option-subtitle">Instant UPI (Google Pay, PhonePe, Paytm), Debit/Credit Cards & NetBanking</span>
                     </div>
                   </div>
-                  <div className="payment-trust-chips">
-                    <span className="pay-chip">UPI</span>
-                    <span className="pay-chip">Cards</span>
-                    <span className="pay-chip">NetBanking</span>
-                  </div>
-                </div>
-                <div className="payment-card-sub">
-                  <span>⚡ Instant Order Confirmation</span>
-                  <span className="sub-dot">•</span>
-                  <span>🔒 256-Bit SSL Encryption</span>
-                  <span className="sub-dot">•</span>
-                  <span>🛡️ 100% Refund Protection</span>
                 </div>
               </div>
             </div>

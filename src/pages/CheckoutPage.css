@@ -515,8 +515,10 @@
 
 .option-card-left {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
+  flex: 1;
+  min-width: 0;
 }
 
 .custom-radio {
@@ -528,6 +530,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .custom-radio.checked {
@@ -541,81 +544,64 @@
   background-color: var(--color-primary, #1a2f22);
 }
 
-.option-icon-box {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background-color: #f0fdf4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
 .option-text-group {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
 .option-primary-title {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: #111827;
+  line-height: 1.35;
 }
 
 .option-subtitle {
   font-size: 0.76rem;
   color: #64748b;
-  margin-top: 2px;
+  line-height: 1.4;
 }
 
 .option-price-tag {
   font-size: 0.92rem;
   font-weight: 700;
   color: #111827;
+  white-space: nowrap;
+  margin-left: 12px;
 }
 
 /* Payment Option Card Specifics */
-.payment-helper-text {
-  font-size: 0.82rem;
-  color: #64748b;
-  margin-bottom: 0.85rem;
+.payment-card-main {
+  width: 100%;
 }
 
-.payment-card-main {
+.payment-title-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
 }
 
 .payment-trust-chips {
   display: flex;
-  gap: 6px;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
 .pay-chip {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 2px 7px;
+  padding: 1px 6px;
   border-radius: 4px;
   background-color: #f1f5f9;
   border: 1px solid #e2e8f0;
   color: #334155;
-}
-
-.payment-card-sub {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed #e2e8f0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.74rem;
-  color: #64748b;
-}
-
-.sub-dot {
-  color: #cbd5e1;
+  white-space: nowrap;
 }
 
 /* -------------------------------------------------------------------------
@@ -1606,7 +1592,16 @@
   }
   .shipping-option-card,
   .payment-option-card {
-    padding: 1rem;
+    padding: 0.95rem 1rem;
+    border-radius: 10px;
+  }
+  .payment-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .payment-trust-chips {
+    margin-top: 2px;
   }
   .btn-pay-now {
     height: 52px;

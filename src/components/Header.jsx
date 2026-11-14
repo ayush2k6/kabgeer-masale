@@ -16,6 +16,7 @@ const Header = () => {
   const searchRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const isCheckout = location.pathname === '/checkout';
 
   useEffect(() => {
     const handleScroll = () => setShowTopBtn(window.scrollY > 400);
@@ -243,38 +244,42 @@ const Header = () => {
 
       <CartDrawer />
 
-      {/* Mobile Bottom Nav — Pure Discovery */}
-      <nav className="mobile-bottom-nav">
-        <NavLink to="/" end className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <Home size={20} />
-          <span>Home</span>
-        </NavLink>
-        <NavLink to="/products" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <Package size={20} />
-          <span>Products</span>
-        </NavLink>
-        <NavLink to="/bundle" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <Sparkles size={20} />
-          <span>Bundle</span>
-        </NavLink>
-        <NavLink to="/recipes" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <ChefHat size={20} />
-          <span>Recipes</span>
-        </NavLink>
-        <NavLink to="/contact" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
-          <Mail size={20} />
-          <span>Bulk Enquiry</span>
-        </NavLink>
-      </nav>
+      {/* Mobile Bottom Nav — Pure Discovery (Hidden on Checkout to prevent collision) */}
+      {!isCheckout && (
+        <nav className="mobile-bottom-nav">
+          <NavLink to="/" end className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+            <Home size={20} />
+            <span>Home</span>
+          </NavLink>
+          <NavLink to="/products" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+            <Package size={20} />
+            <span>Products</span>
+          </NavLink>
+          <NavLink to="/bundle" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+            <Sparkles size={20} />
+            <span>Bundle</span>
+          </NavLink>
+          <NavLink to="/recipes" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+            <ChefHat size={20} />
+            <span>Recipes</span>
+          </NavLink>
+          <NavLink to="/contact" className={({ isActive }) => isActive ? "mobile-nav-item active" : "mobile-nav-item"}>
+            <Mail size={20} />
+            <span>Bulk Enquiry</span>
+          </NavLink>
+        </nav>
+      )}
 
-      {/* Scroll to Top */}
-      <button
-        className={`scroll-top-btn ${showTopBtn ? 'show' : ''}`}
-        onClick={scrollToTop}
-        aria-label="Scroll to top"
-      >
-        <ArrowUp size={22} />
-      </button>
+      {/* Scroll to Top (Hidden on Checkout to prevent card overlay) */}
+      {!isCheckout && (
+        <button
+          className={`scroll-top-btn ${showTopBtn ? 'show' : ''}`}
+          onClick={scrollToTop}
+          aria-label="Scroll to top"
+        >
+          <ArrowUp size={22} />
+        </button>
+      )}
     </>
   );
 };
