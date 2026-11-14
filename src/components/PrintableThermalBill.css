@@ -103,6 +103,33 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* File Hint Pill in Modal Header */
+.thermal-file-hint-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: #475569;
+  max-width: 380px;
+}
+
+.file-hint-icon {
+  font-size: 0.9rem;
+}
+
+.file-hint-name {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .btn-print-action {
   display: inline-flex;
   align-items: center;
@@ -1051,6 +1078,165 @@
 }
 
 /* ==========================================================================
+   3.2. ADAPTIVE DENSITY MODES FOR ORDERS WITH 12-25+ MASALAS
+   Automatically adjusts padding and font size so large orders (25 items)
+   fit cleanly without blowing up the A4 printable area.
+   ========================================================================== */
+
+/* Mode: Dense (12 - 21 items) */
+.invoice-a4-card.is-dense-order .a4-header-row {
+  padding: 6px 12px;
+}
+.invoice-a4-card.is-dense-order .a4-brand-logo-img {
+  height: 44px;
+}
+.invoice-a4-card.is-dense-order .a4-statutory-strip {
+  padding: 3px 8px;
+  font-size: 6.8pt;
+}
+.invoice-a4-card.is-dense-order .a4-parties-grid {
+  padding: 6px 12px;
+  gap: 8px;
+}
+.invoice-a4-card.is-dense-order .a4-card-body {
+  padding: 4px 8px;
+  font-size: 7.2pt;
+}
+.invoice-a4-card.is-dense-order .a4-table-wrapper {
+  padding: 4px 10px;
+}
+.invoice-a4-card.is-dense-order .a4-invoice-table th {
+  padding: 3.5px 5px;
+  font-size: 7pt;
+}
+.invoice-a4-card.is-dense-order .a4-invoice-table td {
+  padding: 2.8px 5px;
+  font-size: 7.2pt;
+}
+.invoice-a4-card.is-dense-order .a4-bottom-wrapper {
+  padding: 4px 12px 6px 12px;
+  gap: 10px;
+}
+.invoice-a4-card.is-dense-order .a4-words-panel {
+  padding: 3px 6px;
+  font-size: 6.8pt;
+  margin-bottom: 3px;
+}
+.invoice-a4-card.is-dense-order .a4-bank-details-card,
+.invoice-a4-card.is-dense-order .a4-terms-card {
+  padding: 3px 6px;
+  font-size: 6.8pt;
+}
+.invoice-a4-card.is-dense-order .a4-financial-summary-card {
+  padding: 4px 8px;
+  font-size: 7.2pt;
+}
+.invoice-a4-card.is-dense-order .a4-signatory-box {
+  padding: 4px 8px;
+}
+.invoice-a4-card.is-dense-order .a4-seal-badge {
+  padding: 2px 6px;
+}
+
+/* Mode: Ultra-Dense (22 - 35+ items, e.g. Full 25 Masala Catalogue) */
+.invoice-a4-card.is-ultra-dense .a4-header-row {
+  padding: 5px 10px;
+}
+.invoice-a4-card.is-ultra-dense .a4-brand-logo-img {
+  height: 38px;
+}
+.invoice-a4-card.is-ultra-dense .a4-brand-text-col .a4-entity-name {
+  font-size: 10.5pt;
+}
+.invoice-a4-card.is-ultra-dense .a4-brand-subheading,
+.invoice-a4-card.is-ultra-dense .a4-address-text,
+.invoice-a4-card.is-ultra-dense .a4-contact-text {
+  font-size: 6.5pt;
+  margin-top: 0;
+}
+.invoice-a4-card.is-ultra-dense .a4-statutory-strip {
+  padding: 2.5px 6px;
+  font-size: 6.5pt;
+}
+.invoice-a4-card.is-ultra-dense .a4-parties-grid {
+  padding: 4px 10px;
+  gap: 6px;
+}
+.invoice-a4-card.is-ultra-dense .a4-card-header {
+  padding: 2.5px 5px;
+  font-size: 6.6pt;
+}
+.invoice-a4-card.is-ultra-dense .a4-card-body {
+  padding: 3px 6px;
+  font-size: 6.8pt;
+  line-height: 1.25;
+}
+.invoice-a4-card.is-ultra-dense .a4-customer-name-heading {
+  font-size: 8.5pt;
+  margin-bottom: 1px;
+}
+.invoice-a4-card.is-ultra-dense .a4-table-wrapper {
+  padding: 3px 8px;
+}
+.invoice-a4-card.is-ultra-dense .a4-invoice-table th {
+  padding: 2.5px 4px;
+  font-size: 6.8pt;
+}
+.invoice-a4-card.is-ultra-dense .a4-invoice-table td {
+  padding: 1.8px 4px;
+  font-size: 6.9pt;
+  line-height: 1.15;
+}
+.invoice-a4-card.is-ultra-dense .a4-item-title {
+  font-size: 7.2pt;
+  font-weight: 600;
+}
+.invoice-a4-card.is-ultra-dense .a4-bottom-wrapper {
+  padding: 3px 10px 4px 10px;
+  gap: 8px;
+}
+.invoice-a4-card.is-ultra-dense .a4-words-panel {
+  padding: 2.5px 5px;
+  font-size: 6.5pt;
+  margin-bottom: 2px;
+}
+.invoice-a4-card.is-ultra-dense .a4-bank-header,
+.invoice-a4-card.is-ultra-dense .a4-terms-header {
+  font-size: 6.5pt;
+}
+.invoice-a4-card.is-ultra-dense .a4-bank-grid {
+  font-size: 6.3pt;
+  gap: 1px;
+}
+.invoice-a4-card.is-ultra-dense .a4-terms-list {
+  font-size: 6pt;
+  padding-left: 12px;
+  margin-top: 1px;
+}
+.invoice-a4-card.is-ultra-dense .a4-financial-summary-card {
+  padding: 3px 6px;
+  font-size: 6.8pt;
+}
+.invoice-a4-card.is-ultra-dense .a4-fin-row {
+  margin-bottom: 1px;
+}
+.invoice-a4-card.is-ultra-dense .a4-grand-total-row {
+  font-size: 8.5pt;
+  padding-top: 2px;
+}
+.invoice-a4-card.is-ultra-dense .a4-sign-stamp-area {
+  min-height: 26px;
+}
+.invoice-a4-card.is-ultra-dense .a4-seal-badge {
+  padding: 1.5px 5px;
+  font-size: 6pt;
+}
+.invoice-a4-card.is-ultra-dense .a4-footer-banner {
+  padding: 3px 10px;
+  font-size: 6.2pt;
+}
+
+/* ==========================================================================
    3.5. Mobile Responsiveness for Print Preview Modal
    ========================================================================== */
 @media screen and (max-width: 768px) {
@@ -1082,20 +1268,22 @@
 
 /* ==========================================================================
    4. FULL PRINT STYLESHEET (@media print)
-   Hides all website UI, prints only the active bill or thermal sticker
+   Multi-page resilient, repeated thead table headers, no clipped overflow
    ========================================================================== */
 @media print {
   @page {
-    margin: 0;
-    size: auto;
+    size: A4 portrait;
+    margin: 6mm 6mm 8mm 6mm;
   }
 
-  body {
+  html, body {
     background: #ffffff !important;
     color: #000000 !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -1117,15 +1305,15 @@
   }
 
   .thermal-modal-backdrop {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+    position: static !important;
+    display: block !important;
     width: 100% !important;
     height: auto !important;
     background: transparent !important;
     padding: 0 !important;
     margin: 0 !important;
-    z-index: 9999999 !important;
+    overflow: visible !important;
+    z-index: auto !important;
   }
 
   .thermal-modal-panel {
@@ -1138,6 +1326,7 @@
     border-radius: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
+    overflow: visible !important;
   }
 
   .thermal-preview-scrollable {
@@ -1146,12 +1335,15 @@
     margin: 0 !important;
     display: block !important;
     overflow: visible !important;
+    height: auto !important;
   }
 
   #printable-thermal-bill {
     box-shadow: none !important;
     margin: 0 auto !important;
-    position: relative !important;
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
   }
 
   #printable-thermal-bill.mode-thermal-4x6 {
@@ -1159,12 +1351,79 @@
     min-height: 150mm !important;
     padding: 2mm !important;
     page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   #printable-thermal-bill.mode-invoice-a4 {
     width: 100% !important;
     max-width: 210mm !important;
-    padding: 4mm 6mm !important;
-    page-break-after: avoid !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  .invoice-a4-card {
+    border: 1.5px solid #1a2f22 !important;
+    border-radius: 4px !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    box-decoration-break: clone !important;
+    -webkit-box-decoration-break: clone !important;
+  }
+
+  .a4-header-row,
+  .a4-statutory-strip,
+  .a4-parties-grid,
+  .a4-party-card {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .a4-table-wrapper {
+    overflow: visible !important;
+    padding: 4px 8px !important;
+  }
+
+  .a4-invoice-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .a4-invoice-table thead {
+    display: table-header-group !important;
+  }
+
+  .a4-invoice-table tfoot {
+    display: table-footer-group !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .a4-invoice-table tbody tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .a4-bottom-wrapper,
+  .a4-words-panel,
+  .a4-bank-details-card,
+  .a4-terms-card,
+  .a4-financial-summary-card,
+  .a4-signatory-box {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .a4-bottom-wrapper {
+    margin-top: 4px !important;
+  }
+
+  .a4-footer-banner {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }

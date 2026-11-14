@@ -12,6 +12,7 @@ Current Branch: v1-release (Local commits, NO PUSH per instructions)
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.26 | A4 Tax Invoice Compact Redesign, Order ID Filename & 25-Masala Print Resilience | ✅ COMPLETE & VERIFIED |
 | Part 6.25 | Two-Step Minimal Mobile Checkout Architecture (Recap Card & Step Navigation) | ✅ COMPLETE & VERIFIED |
 | Part 6.24 | Professional Mobile Checkout Redesign (Negative Spacing & De-cluttering) | ✅ COMPLETE & LOCALLY COMMITTED |
 | Part 6.23 | Streamlined Clean Mobile Checkout & Distraction-Free Flow | ✅ COMPLETE & LOCALLY COMMITTED |

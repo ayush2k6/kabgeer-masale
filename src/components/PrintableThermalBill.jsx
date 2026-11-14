@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Printer, X, FileText, Tag, Check, Truck, ShieldCheck, MapPin, Phone, Mail, Globe, Package, Building2, CreditCard } from 'lucide-react';
 import logo from '../assets/logo.png';
 import './PrintableThermalBill.css';
@@ -167,12 +167,46 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
   const sgstAmount = isIntraState ? (totalGst / 2) : 0;
   const igstAmount = !isIntraState ? totalGst : 0;
 
+  const cleanOrderId = String(displayOrderId).replace(/[^a-zA-Z0-9_-]/g, '');
+  const cleanCustomer = customerName ? customerName.replace(/[^a-zA-Z0-9]/g, '_').replace(/__+/g, '_') : 'Customer';
+  const cleanDate = formattedDate ? formattedDate.replace(/[\/\.]/g, '-') : 'Date';
+
+  const defaultFileName = printFormat === 'thermal'
+    ? `Kabgeer-Shipping-Label_${cleanOrderId}_${cleanCustomer}_${cleanDate}`
+    : `Kabgeer-Tax-Invoice_${cleanOrderId}_${cleanCustomer}_${cleanDate}`;
+
+  // Automatically synchronize browser document title so "Save as PDF" uses this filename
+  useEffect(() => {
+    const previousTitle = document.title;
+    document.title = defaultFileName;
+
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [defaultFileName]);
+
   const handleTriggerPrint = () => {
+    document.title = defaultFileName;
     window.print();
   };
 
+  // Adaptive density: automatically compress layout when order contains many items (e.g. 25 masalas)
+  const isDenseTable = items.length >= 12 && items.length < 22;
+  const isUltraDenseTable = items.length >= 22;
+  const densityClass = isUltraDenseTable ? 'is-ultra-dense' : (isDenseTable ? 'is-dense-order' : '');
+
   return (
     <div className="thermal-modal-backdrop" onClick={onClose}>
+      {/* Dynamic @page media rules for exact A4 vs Thermal 4x6 print rendering */}
+      <style>{`
+        @media print {
+          @page {
+            size: ${printFormat === 'thermal' ? '100mm 150mm' : 'A4 portrait'};
+            margin: ${printFormat === 'thermal' ? '2mm' : '6mm 6mm 8mm 6mm'};
+          }
+        }
+      `}</style>
+
       <div className="thermal-modal-panel" onClick={(e) => e.stopPropagation()}>
         
         {/* Header Controls (Screen Only) */}
@@ -186,6 +220,12 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
           </div>
 
           <div className="thermal-controls-right">
+            {/* Suggested File Name Hint */}
+            <div className="thermal-file-hint-pill no-print" title="Auto-assigned filename when saving as PDF">
+              <span className="file-hint-icon">📁</span>
+              <span className="file-hint-name">{defaultFileName}.pdf</span>
+            </div>
+
             {/* Format Toggle Buttons */}
             <div className="format-toggle-group">
               <button
@@ -210,8 +250,9 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
               type="button"
               className="btn-print-action"
               onClick={handleTriggerPrint}
+              title="Open browser print preview (Print or Save as PDF)"
             >
-              <Printer size={16} /> Print Document
+              <Printer size={16} /> Print / Save as PDF
             </button>
 
             <button
@@ -358,7 +399,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                     <span>AMOUNT</span>
                   </div>
                   <div className="t-items-list">
-                    {items.map((it, idx) => (
+                    {(items.length > 8 ? items.slice(0, 7) : items).map((it, idx) => (
                       <div key={it.id || idx} className="t-item-line">
                         <span className="t-item-name">
                           {idx + 1}. {it.product_name}
@@ -367,6 +408,15 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                         <span className="t-item-price">₹{(Number(it.total_price) || (Number(it.unit_price) * it.quantity) || 0).toFixed(0)}</span>
                       </div>
                     ))}
+                    {items.length > 8 && (
+                      <div className="t-item-line t-more-items" style={{ fontWeight: 700, color: '#1a2f22', fontSize: '6.5pt', fontStyle: 'italic', padding: '1px 0' }}>
+                        <span className="t-item-name">
+                          + {items.length - 7} more items ({totalQty} total units • Full manifest on A4 invoice)
+                        </span>
+                        <span className="t-item-qty">—</span>
+                        <span className="t-item-price">—</span>
+                      </div>
+                    )}
                     {isBybOrder && (
                       <div className="t-item-line" style={{ color: '#047857', fontWeight: 'bold', fontSize: '7.5pt' }}>
                         <span className="t-item-name">
@@ -415,7 +465,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
               /* =========================================================
                  2. PREMIUM EXECUTIVE A4 COMMERCIAL TAX INVOICE
                  ========================================================= */
-              <div className="invoice-a4-card">
+              <div className={`invoice-a4-card ${densityClass}`}>
                 
                 {/* 1. Header Section with Brand Logo, Entity & Invoice Number */}
                 <div className="a4-header-row">
@@ -552,7 +602,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                     <thead>
                       <tr>
                         <th style={{ width: '38px', textAlign: 'center' }}>#</th>
-                        <th>Item Description & Spice Formulation</th>
+                        <th>Item Description</th>
                         <th style={{ width: '85px', textAlign: 'center' }}>HSN Code</th>
                         <th style={{ width: '70px', textAlign: 'center' }}>MRP (₹)</th>
                         <th style={{ width: '48px', textAlign: 'center' }}>Qty</th>
@@ -574,7 +624,6 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                             <td style={{ textAlign: 'center' }} className="a4-cell-idx">{index + 1}</td>
                             <td>
                               <div className="a4-item-title">{item.product_name}</div>
-                              <div className="a4-item-subtitle">Authentic Royal Lucknowi Spice Formulation • 100% Pure</div>
                             </td>
                             <td style={{ textAlign: 'center' }} className="monospace a4-hsn-cell">09109990</td>
                             <td style={{ textAlign: 'center' }}>₹{unitRate.toFixed(0)}</td>

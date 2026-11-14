@@ -1,5 +1,37 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.26: A4 Tax Invoice Compact Redesign, Order ID Filename & 25-Masala Print Resilience)
+
+### 1. Eliminated Repetitive Descriptions Under Every Masala (`src/components/PrintableThermalBill.jsx`)
+- **Resolved Table Bloat for A4 Printing**:
+  - Removed `<div className="a4-item-subtitle">Authentic Royal Lucknowi Spice Formulation • 100% Pure</div>` from each product row in the A4 invoice table.
+  - Changed column header from `Item Description & Spice Formulation` to `Item Description`.
+  - Cut row height by over 50% (from ~42px down to ~18px–22px), converting table rows into clean, single-line entries.
+
+### 2. Auto-Formatted Filename with Order ID & Details (`src/components/PrintableThermalBill.jsx`, `src/components/PrintableThermalBill.css`)
+- **Seamless "Save as PDF" Default Filename**:
+  - Automatically synchronizes `document.title` on modal mount and format toggle:
+    * **A4 Invoice**: `Kabgeer-Tax-Invoice_[OrderID]_[CustomerName]_[Date]` (e.g. `Kabgeer-Tax-Invoice_KBG-202611-0025_Tanmay_Yadav_15-11-2026.pdf`).
+    * **Thermal 4x6**: `Kabgeer-Shipping-Label_[OrderID]_[CustomerName]_[Date]`.
+  - Restores previous `document.title` upon modal unmount or print completion.
+  - Added an interactive file hint pill in the toolbar (`📁 [Filename].pdf`) and updated the print button to `🖨️ Print / Save as PDF`.
+
+### 3. Adaptive Density & Full Multi-Page Print Resilience for 25 Masalas (`src/components/PrintableThermalBill.jsx`, `src/components/PrintableThermalBill.css`)
+- **25-Masala Full Catalogue Optimization**:
+  - Added automatic density modes:
+    * `is-dense-order` for 12–21 items (condenses header and table padding).
+    * `is-ultra-dense` for 22–35+ items (compact 1.8px cell padding, 7pt typography, condensed bottom cards).
+  - Allows all 25 masalas in the Kabgeer catalogue to fit comfortably on **1 single A4 page** with complete HSN codes, tax breakdown, bank details, terms, and authorized signatory stamp.
+- **Multi-Page Table Pagination Rules (`@media print`)**:
+  - Configured `@page { size: A4 portrait; margin: 6mm 6mm 8mm 6mm; }`.
+  - Set `thead { display: table-header-group !important; }` so column headers automatically re-print at the top of Page 2 if an order paginates across multiple pages.
+  - Added `tr { break-inside: avoid; page-break-inside: avoid; }` to prevent horizontal row slicing across page margins.
+  - Added `break-inside: avoid;` to `.a4-bottom-wrapper` (bank details, financial summary, and signature stamp) so they remain unified as a solid block.
+  - Removed `overflow: hidden;` from `.invoice-a4-card` in print mode to prevent truncation.
+- **Thermal 4"x6" Rollup Safeguard**:
+  - For orders with > 8 items on thermal labels, rolls up excess items into `+ N more items (Total units • Full manifest on A4 invoice)` so the label never exceeds physical 4"x6" sticker boundaries.
+
+
 ## 2026-11-15 (Part 6.25: Two-Step Minimal Mobile Checkout Architecture)
 
 ### 1. Two-Step Guided Checkout Flow (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
