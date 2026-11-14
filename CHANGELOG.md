@@ -1,5 +1,38 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-14 (Part 6.14: Professional UI/UX Refinement — De-cluttering & Text Polish)
+
+### 1. Checkout Page Professional UI/UX De-cluttering (`src/pages/CheckoutPage.jsx`)
+- **Input Placeholder & Label Optimization**:
+  - Removed noisy double asterisks and repetitive placeholder examples (e.g. `(e.g. rahul@example.com) *`, `(e.g. Rahul) *`, `(e.g. Sharma) *`, `*` in placeholder).
+  - Standardized clean, professional placeholders: `Email address`, `First name`, `Last name`, `Street address, house / flat number, area`, `Apartment, suite, landmark (optional)`, `City / Town`, `6-digit PIN code`, and `10-digit mobile number`.
+  - Cleaned section headers to `Contact Information` and `Shipping Address`.
+- **Eliminated Unused / Cluttering Form Fields**:
+  - Removed unused `Company or Business name (optional)` input which was taking up space and was never persisted or required for B2C royal culinary spices.
+  - Removed static unclickable `Info` icon from the phone number input that caused visual obstruction.
+- **Conversion-Focused Order Summary Header**:
+  - Removed the dangerous and destructive red `Clear Cart` button from the Checkout sidebar header to prevent accidental customer cart abandonment.
+  - Retained clean and centered header `Order Summary ({totalUnits})` with the `[👑 BYB Order]` badge.
+- **Mobile Accordion Dropdown Parity**:
+  - Synchronized mobile collapsible order summary with desktop sidebar:
+    * Displays complimentary `2x Mini Masala Boxes (Assorted Pack) — FREE (Included)` gift item.
+    * Displays exact discount breakdown: `Special Discount (Build Your Bundle 10% OFF)` or `Special Discount (BYB • {COUPON})`.
+- **Microcopy Polish**:
+  - Replaced developer-jargon footer text (`"Inclusive of all taxes. Verified securely by server during checkout."`) with customer-reassuring copy: `"All taxes inclusive • 100% Encrypted & Secure Checkout"`.
+  - Streamlined trust badges under Pay button to avoid duplicating top SSL banner: `Bank-Grade Security`, `FSSAI Certified Quality`, and `100% Authentic Awadhi Blends`.
+  - Refined BYB perk card to concise, premium copy: *"Royal Awadhi Bundle Applied — 10% FLAT OFF + 2 FREE GIFTS — 10% flat savings and 2 complimentary chef's mini masala boxes have been applied to your parcel."*
+
+### 2. Cart Drawer Microcopy Polish (`src/components/CartDrawer.jsx`)
+- **Refined Bundle Messaging**:
+  - Streamlined bundle progress notification to elegant, professional copy: *"Add {n} more masala to unlock 10% OFF + 2 Free Mini Boxes"*.
+  - When unlocked: *"10% Flat Savings applied • 2 Free Mini Boxes included"*.
+
+### 3. Admin Dashboard Robustness (`src/pages/AdminDashboardPage.jsx`)
+- **Universal BYB Order Detection**:
+  - Added centralized `checkIsBybOrder` helper checking order ID prefix, `is_bundle` database flag, or 4+ masala units.
+  - Ensures BYB badge and special discount labeling appear consistently across table rows, mobile cards, and drawer modals.
+
+
 ## 2026-11-14 (Part 6.13: Automatic Build Your Bundle (BYB) Upgrade on 4+ Masalas & Tax Invoice Special Discount Tagging)
 
 ### 1. Automatic BYB Upgrade on Any 4 Masalas (`src/context/CartContext.jsx`)
