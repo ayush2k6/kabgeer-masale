@@ -12,6 +12,7 @@ Current Branch: v1-release / main (Deployed on Vercel)
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.15 | Complete Checkout Page Redesign (PIN Code First & Auto-Location) | ✅ COMPLETE & VERIFIED |
 | Part 6.14 | Professional UI/UX Refinement — Checkout De-cluttering & Text Polish | ✅ COMPLETE & VERIFIED |
 | Part 6.13 | Automatic BYB Upgrade on 4+ Masalas & Tax Invoice Special Discount Tagging | ✅ COMPLETE & VERIFIED |
 | Part 6.12 | Custom 404 Page & Admin Redirect Logic | ✅ COMPLETE & VERIFIED |

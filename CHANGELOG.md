@@ -1,5 +1,32 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-14 (Part 6.15: Complete Checkout Page Redesign with PIN Code First & Auto-Location)
+
+### 1. PIN Code First Flow with Instant City/State Auto-Detection (`src/pages/CheckoutPage.jsx`)
+- **PIN Code First Architecture**:
+  - Re-ordered address fields so that customers enter their **6-digit PIN code FIRST** before City and State.
+  - Features real-time postal API lookup (`https://api.postalpincode.in/pincode/`):
+    * Instant animated loading state while verifying PIN.
+    * Automatically extracts District / City and State, matching against `INDIAN_STATES` for seamless selection.
+    * Instantly clears validation errors on City and State upon successful detection.
+    * Displays high-trust delivery chip: `✓ Delivery Location: [City], [State]`.
+  - Placed City / District and State dropdown directly beneath the PIN code, fully editable if manual adjustment is needed.
+
+### 2. World-Class Luxury Checkout Redesign (`src/pages/CheckoutPage.css`, `src/pages/CheckoutPage.jsx`)
+- **Visual Design & Card Layout**:
+  - Replaced outdated beige background inputs with crisp white surfaces, clean 1.5px borders (`#d1d5db`), and deep emerald focus rings (`#1a2f22`).
+  - Added structured step circles (`1`, `2`, `3`, `4`) with clear card titles and descriptive subheadings.
+  - Added dedicated uppercase bold labels above each input, eliminating reliance on raw placeholders.
+  - Upgraded Mobile Number input with attached `🇮🇳 +91` country flag badge.
+  - Redesigned Shipping Method card with selected check state, delivery truck icon, and clear express timeframe (`3–5 Working Days`).
+  - Redesigned Payment Method card with Razorpay integration and instant payment chips (`GPay`, `PhonePe`, `Paytm`, `UPI`, `Cards`, `NetBanking`).
+  - Redesigned Pay button as high-contrast emerald royal action with lock icon and clear price.
+- **Order Summary Sidebar**:
+  - Upgraded to modern sticky sidebar with crisp product thumbnails, quantity stepper pills, trash button, and mint gift card.
+  - Integrated inline coupon code form with tag icon and apply button.
+  - Refined typography and price breakdown hierarchy.
+
+
 ## 2026-11-14 (Part 6.14: Professional UI/UX Refinement — De-cluttering & Text Polish)
 
 ### 1. Checkout Page Professional UI/UX De-cluttering (`src/pages/CheckoutPage.jsx`)

@@ -6,13 +6,17 @@ import {
   X, 
   ShoppingBag, 
   AlertCircle, 
-  Info, 
   CreditCard, 
   Check, 
-  Sparkles,
-  Lock,
-  Crown,
-  Gift
+  Lock, 
+  Crown, 
+  Gift,
+  MapPin,
+  CheckCircle2,
+  Truck,
+  Tag,
+  RotateCw,
+  ArrowRight
 } from 'lucide-react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
@@ -103,11 +107,11 @@ const CheckoutPage = () => {
     firstName: '',
     lastName: '',
     company: '',
-    address: '',
-    apartment: '',
+    pinCode: '',
     city: '',
     state: 'Uttar Pradesh',
-    pinCode: '',
+    address: '',
+    apartment: '',
     phone: '',
     saveInfo: false
   });
@@ -129,6 +133,7 @@ const CheckoutPage = () => {
     }
   };
 
+  // PIN Code First: Auto-lookup City and State
   const handlePinCodeChange = async (e) => {
     const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 6);
     setFormData(prev => ({ ...prev, pinCode: digitsOnly }));
@@ -142,22 +147,30 @@ const CheckoutPage = () => {
         return;
       }
       setIsLookingUpPincode(true);
-      setPincodeStatusMessage('Looking up PIN code...');
+      setPincodeStatusMessage('Looking up City & State from postal registry...');
       try {
         const res = await fetch(`https://api.postalpincode.in/pincode/${digitsOnly}`);
         const data = await res.json();
         if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice?.length > 0) {
           const postOffice = data[0].PostOffice[0];
           const detectedCity = postOffice.District || postOffice.Block || postOffice.Name;
-          const detectedState = postOffice.State;
+          const rawState = postOffice.State || '';
+          
+          // Match state name exactly with INDIAN_STATES list
+          const matchedState = INDIAN_STATES.find(
+            s => s.toLowerCase() === rawState.toLowerCase()
+          ) || rawState || formData.state;
+
           setFormData(prev => ({
             ...prev,
             city: detectedCity || prev.city,
-            state: detectedState || prev.state
+            state: matchedState
           }));
-          setPincodeStatusMessage(`✓ Location: ${detectedCity}, ${detectedState}`);
+          if (formErrors.city) setFormErrors(prev => ({ ...prev, city: '' }));
+          if (formErrors.state) setFormErrors(prev => ({ ...prev, state: '' }));
+          setPincodeStatusMessage(`✓ Delivery Location: ${detectedCity}, ${matchedState}`);
         } else {
-          setPincodeStatusMessage('');
+          setPincodeStatusMessage('⚠️ Location not found automatically. Please enter City & State below.');
         }
       } catch {
         setPincodeStatusMessage('');
@@ -200,20 +213,20 @@ const CheckoutPage = () => {
       errors.email = 'Please enter a valid email address.';
     }
 
-    if (!formData.phone.trim()) {
-      errors.phone = '10-digit mobile number is required.';
-    } else if (!/^[6-9]\d{9}$/.test(formData.phone.trim())) {
-      errors.phone = 'Please enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, 9).';
-    }
-
-    if (!formData.address.trim()) errors.address = 'Street / delivery address is required.';
-    if (!formData.city.trim()) errors.city = 'City / Town is required.';
-    if (!formData.state.trim()) errors.state = 'State is required.';
-
     if (!formData.pinCode.trim()) {
       errors.pinCode = '6-digit PIN code is required.';
     } else if (!/^[1-9]\d{5}$/.test(formData.pinCode.trim())) {
       errors.pinCode = 'Please enter a valid 6-digit Indian PIN code (cannot start with 0).';
+    }
+
+    if (!formData.city.trim()) errors.city = 'City / Town is required.';
+    if (!formData.state.trim()) errors.state = 'State is required.';
+    if (!formData.address.trim()) errors.address = 'Street / delivery address is required.';
+
+    if (!formData.phone.trim()) {
+      errors.phone = '10-digit mobile number is required.';
+    } else if (!/^[6-9]\d{9}$/.test(formData.phone.trim())) {
+      errors.phone = 'Please enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, 9).';
     }
 
     setFormErrors(errors);
@@ -419,14 +432,18 @@ const CheckoutPage = () => {
   return (
     <div className="checkout-page">
       <div className="checkout-container">
+        
+        {/* Main Form Area */}
         <div className="checkout-main">
-          {/* Brand Header Banner */}
-          <div className="checkout-brand-header">
-            <Link to="/" className="brand-logo-link">
+          
+          {/* Top Brand Navigation Header */}
+          <div className="checkout-top-nav">
+            <Link to="/" className="brand-logo-link" title="Return to Kabgeer Masale">
               <img src={logo} alt="Kabgeer Masale" className="checkout-brand-logo" />
             </Link>
-            <div className="checkout-steps-badge">
-              <ShieldCheck size={16} color="#16a34a" /> 256-Bit SSL Encrypted Checkout
+            <div className="checkout-security-pill">
+              <ShieldCheck size={16} color="#16a34a" />
+              <span>100% Encrypted Checkout</span>
             </div>
           </div>
 
@@ -510,419 +527,501 @@ const CheckoutPage = () => {
           </div>
 
           {errorMessage && (
-            <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid #fca5a5', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="checkout-error-banner">
               <AlertCircle size={18} />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          {/* Compact, Luxury BYB Perk Card */}
+          {/* Luxury Royal BYB Perk Notification */}
           {isBundle && (
-            <div className="checkout-byb-perk-card">
-              <div className="byb-perk-left">
-                <div className="byb-perk-icon-wrap">
-                  <Crown size={16} color="#047857" />
+            <div className="byb-royal-card">
+              <div className="byb-royal-inner">
+                <div className="byb-crown-box">
+                  <Crown size={20} color="#b45309" />
                 </div>
-                <div className="byb-perk-text">
-                  <div className="byb-perk-title">
-                    <span>Royal Awadhi Bundle Applied</span>
-                    <span className="byb-perk-pill">10% OFF + 2 FREE GIFTS</span>
+                <div className="byb-royal-content">
+                  <div className="byb-royal-header">
+                    <h4>Royal Awadhi Bundle Applied</h4>
+                    <span className="byb-tag-gold">10% FLAT SAVINGS + 2 FREE GIFTS</span>
                   </div>
-                  <div className="byb-perk-desc">
-                    10% flat savings and 2 complimentary chef's mini masala boxes have been applied to your parcel.
-                  </div>
+                  <p className="byb-royal-desc">
+                    Your order qualifies for our signature Awadhi Bundle! <strong>10% instant savings</strong> and <strong>2 complimentary mini masala boxes</strong> are included with your parcel.
+                  </p>
                 </div>
               </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            {/* Contact Section */}
-            <div className="checkout-section">
-              <div className="section-header">
-                <h3>Contact Information</h3>
+          <form onSubmit={handleSubmit} noValidate>
+            
+            {/* Step 1: Contact Information */}
+            <div className="checkout-card">
+              <div className="card-header">
+                <div className="step-circle">1</div>
+                <div>
+                  <h3 className="card-title">Contact Information</h3>
+                  <p className="card-subtitle">Order receipt & dispatch updates will be sent here</p>
+                </div>
               </div>
-              <input 
-                type="email" 
-                name="email" 
-                className={`form-input ${formErrors.email ? 'input-error' : ''}`} 
-                placeholder="Email address" 
-                autoComplete="email"
-                value={formData.email} 
-                onChange={handleChange} 
-                required 
-              />
-              {formErrors.email && (
-                <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.email}</span>
-              )}
-              <label className="checkbox-label mt-1">
+              <div className="form-group">
+                <label className="field-label">Email Address <span className="req-star">*</span></label>
                 <input 
-                  type="checkbox" 
-                  name="newsAndOffers"
-                  checked={formData.newsAndOffers}
-                  onChange={handleChange}
+                  type="email" 
+                  name="email" 
+                  className={`form-control ${formErrors.email ? 'is-invalid' : ''}`} 
+                  placeholder="name@example.com" 
+                  autoComplete="email"
+                  value={formData.email} 
+                  onChange={handleChange} 
+                  required 
                 />
-                <span>Email me with exclusive recipe tips and special offers</span>
-              </label>
+                {formErrors.email && <span className="field-error-text">{formErrors.email}</span>}
+                <label className="custom-checkbox mt-2">
+                  <input 
+                    type="checkbox" 
+                    name="newsAndOffers"
+                    checked={formData.newsAndOffers}
+                    onChange={handleChange}
+                  />
+                  <span>Email me with royal recipes, culinary tips, and exclusive offers</span>
+                </label>
+              </div>
             </div>
 
-            {/* Delivery Section */}
-            <div className="checkout-section">
-              <h3>Shipping Address</h3>
-              <select name="country" className="form-input" value={formData.country} onChange={handleChange}>
-                <option value="India">India</option>
-              </select>
-
-              <div className="form-row">
+            {/* Step 2: Shipping Address (PIN CODE FIRST!) */}
+            <div className="checkout-card">
+              <div className="card-header">
+                <div className="step-circle">2</div>
                 <div>
+                  <h3 className="card-title">Shipping & Delivery Address</h3>
+                  <p className="card-subtitle">Where should we deliver your authentic royal spices?</p>
+                </div>
+              </div>
+
+              {/* Recipient Full Name */}
+              <div className="form-row two-cols">
+                <div className="form-group">
+                  <label className="field-label">First Name <span className="req-star">*</span></label>
                   <input 
                     type="text" 
                     name="firstName" 
-                    className={`form-input ${formErrors.firstName ? 'input-error' : ''}`} 
+                    className={`form-control ${formErrors.firstName ? 'is-invalid' : ''}`} 
                     placeholder="First name" 
                     autoComplete="given-name"
                     value={formData.firstName} 
                     onChange={handleNameChange} 
                     required 
                   />
-                  {formErrors.firstName && (
-                    <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.firstName}</span>
-                  )}
+                  {formErrors.firstName && <span className="field-error-text">{formErrors.firstName}</span>}
                 </div>
-                <div>
+                <div className="form-group">
+                  <label className="field-label">Last Name <span className="req-star">*</span></label>
                   <input 
                     type="text" 
                     name="lastName" 
-                    className={`form-input ${formErrors.lastName ? 'input-error' : ''}`} 
+                    className={`form-control ${formErrors.lastName ? 'is-invalid' : ''}`} 
                     placeholder="Last name" 
                     autoComplete="family-name"
                     value={formData.lastName} 
                     onChange={handleNameChange} 
                     required 
                   />
-                  {formErrors.lastName && (
-                    <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.lastName}</span>
-                  )}
+                  {formErrors.lastName && <span className="field-error-text">{formErrors.lastName}</span>}
                 </div>
               </div>
 
-              <div style={{ marginTop: '0.75rem' }}>
-                <input 
-                  type="text" 
-                  name="address" 
-                  className={`form-input ${formErrors.address ? 'input-error' : ''}`} 
-                  placeholder="Street address, house / flat number, area" 
-                  autoComplete="address-line1"
-                  value={formData.address} 
-                  onChange={handleChange} 
-                  required 
-                />
-                {formErrors.address && (
-                  <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.address}</span>
-                )}
-              </div>
-
-              <input 
-                type="text" 
-                name="apartment" 
-                className="form-input" 
-                placeholder="Apartment, suite, landmark (optional)" 
-                autoComplete="address-line2"
-                value={formData.apartment} 
-                onChange={handleChange} 
-                style={{ marginTop: '0.75rem' }}
-              />
-
-              <div className="form-row three-cols" style={{ marginTop: '0.75rem' }}>
-                <div>
-                  <input 
-                    type="text" 
-                    name="city" 
-                    className={`form-input ${formErrors.city ? 'input-error' : ''}`} 
-                    placeholder="City / Town" 
-                    autoComplete="address-level2"
-                    value={formData.city} 
-                    onChange={handleChange} 
-                    required 
-                  />
-                  {formErrors.city && (
-                    <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.city}</span>
-                  )}
+              {/* >>> PIN CODE FIRST AS REQUESTED <<< */}
+              <div className="form-group pincode-first-group">
+                <div className="field-label-split">
+                  <label className="field-label">PIN Code <span className="req-star">*</span></label>
+                  <span className="field-hint-badge">Auto-detects City & State</span>
                 </div>
-                <div>
-                  <select name="state" className="form-input" value={formData.state} onChange={handleChange}>
-                    {INDIAN_STATES.map(st => (
-                      <option key={st} value={st}>{st}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
+                <div className="input-with-affix">
+                  <MapPin size={18} className="affix-icon" />
                   <input 
                     type="text" 
                     name="pinCode" 
-                    className={`form-input ${formErrors.pinCode ? 'input-error' : ''}`} 
-                    placeholder="6-digit PIN code" 
+                    className={`form-control affix-field ${formErrors.pinCode ? 'is-invalid' : ''}`} 
+                    placeholder="Enter 6-digit PIN code (e.g. 208010 or 226001)" 
                     autoComplete="postal-code"
                     maxLength={6}
                     value={formData.pinCode} 
                     onChange={handlePinCodeChange} 
                     required 
                   />
-                  {formErrors.pinCode && (
-                    <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.pinCode}</span>
+                  {isLookingUpPincode && (
+                    <div className="affix-loader">
+                      <RotateCw size={16} className="animate-spin text-emerald" />
+                    </div>
                   )}
+                </div>
+                {pincodeStatusMessage && (
+                  <div className={`pincode-status-chip ${pincodeStatusMessage.startsWith('✓') ? 'chip-success' : 'chip-warning'}`}>
+                    {pincodeStatusMessage.startsWith('✓') ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
+                    <span>{pincodeStatusMessage}</span>
+                  </div>
+                )}
+                {formErrors.pinCode && <span className="field-error-text">{formErrors.pinCode}</span>}
+              </div>
+
+              {/* City & State (Auto-populated from PIN code) */}
+              <div className="form-row two-cols">
+                <div className="form-group">
+                  <label className="field-label">City / Town <span className="req-star">*</span></label>
+                  <input 
+                    type="text" 
+                    name="city" 
+                    className={`form-control ${formErrors.city ? 'is-invalid' : ''}`} 
+                    placeholder="City / Town" 
+                    autoComplete="address-level2"
+                    value={formData.city} 
+                    onChange={handleChange} 
+                    required 
+                  />
+                  {formErrors.city && <span className="field-error-text">{formErrors.city}</span>}
+                </div>
+                <div className="form-group">
+                  <label className="field-label">State <span className="req-star">*</span></label>
+                  <select name="state" className="form-control form-select" value={formData.state} onChange={handleChange}>
+                    {INDIAN_STATES.map(st => (
+                      <option key={st} value={st}>{st}</option>
+                    ))}
+                  </select>
+                  {formErrors.state && <span className="field-error-text">{formErrors.state}</span>}
                 </div>
               </div>
 
-              {pincodeStatusMessage && (
-                <p style={{ fontSize: '0.8rem', color: isLookingUpPincode ? '#d4af37' : '#16a34a', marginTop: '0.35rem', fontWeight: 600 }}>
-                  {pincodeStatusMessage}
-                </p>
-              )}
-
-              <div className="mt-2">
+              {/* Street Address */}
+              <div className="form-group">
+                <label className="field-label">Flat / House No., Road, Locality <span className="req-star">*</span></label>
                 <input 
-                  type="tel" 
-                  name="phone" 
-                  className={`form-input ${formErrors.phone ? 'input-error' : ''}`} 
-                  placeholder="10-digit mobile number" 
-                  autoComplete="tel"
-                  maxLength={10}
-                  value={formData.phone} 
-                  onChange={handlePhoneChange} 
+                  type="text" 
+                  name="address" 
+                  className={`form-control ${formErrors.address ? 'is-invalid' : ''}`} 
+                  placeholder="e.g. House #24, Near Hazratganj Metro Gate 1, Civil Lines" 
+                  autoComplete="address-line1"
+                  value={formData.address} 
+                  onChange={handleChange} 
                   required 
                 />
+                {formErrors.address && <span className="field-error-text">{formErrors.address}</span>}
               </div>
-              {formErrors.phone && (
-                <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.phone}</span>
-              )}
 
-              <label className="checkbox-label mt-1">
+              {/* Apartment / Landmark */}
+              <div className="form-group">
+                <label className="field-label">Apartment, Suite, Landmark <span className="optional-text">(Optional)</span></label>
+                <input 
+                  type="text" 
+                  name="apartment" 
+                  className="form-control" 
+                  placeholder="e.g. 2nd Floor, Opposite Clock Tower" 
+                  autoComplete="address-line2"
+                  value={formData.apartment} 
+                  onChange={handleChange} 
+                />
+              </div>
+
+              {/* Mobile Phone with +91 Country Badge */}
+              <div className="form-group">
+                <label className="field-label">Mobile Number <span className="req-star">*</span></label>
+                <div className="phone-prefix-wrap">
+                  <span className="phone-flag-pill">🇮🇳 +91</span>
+                  <input 
+                    type="tel" 
+                    name="phone" 
+                    className={`form-control phone-input ${formErrors.phone ? 'is-invalid' : ''}`} 
+                    placeholder="10-digit mobile number" 
+                    autoComplete="tel"
+                    maxLength={10}
+                    value={formData.phone} 
+                    onChange={handlePhoneChange} 
+                    required 
+                  />
+                </div>
+                <span className="field-help-subtext">Used for Trackon parcel tracking and courier delivery updates.</span>
+                {formErrors.phone && <span className="field-error-text">{formErrors.phone}</span>}
+              </div>
+
+              <label className="custom-checkbox mt-1">
                 <input type="checkbox" name="saveInfo" checked={formData.saveInfo} onChange={handleChange} />
-                <span>Save address details for future orders</span>
+                <span>Save this address securely for future orders</span>
               </label>
             </div>
 
-            {/* Shipping Method */}
-            <div className="checkout-section">
-              <h3>Shipping Method</h3>
-              <div className="radio-group" style={{ marginTop: '0.75rem' }}>
-                <label className="radio-label active" style={{ justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <input type="radio" name="shippingMethod" checked readOnly />
-                    <span>Standard Express Shipping (5–7 Working Days)</span>
-                  </div>
-                  <strong style={{ color: 'var(--color-primary)', fontSize: '0.9rem' }}>₹{shippingFee.toFixed(2)}</strong>
-                </label>
+            {/* Step 3: Shipping Method */}
+            <div className="checkout-card">
+              <div className="card-header">
+                <div className="step-circle">3</div>
+                <div>
+                  <h3 className="card-title">Shipping Method</h3>
+                  <p className="card-subtitle">Fast, tracked delivery across India</p>
+                </div>
               </div>
-            </div>
-
-            {/* Payment Method Section - Online Only */}
-            <div className="checkout-section">
-              <h3>Payment Method</h3>
-              <div className="radio-group" style={{ marginTop: '0.75rem' }}>
-                <div className="radio-label active" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <CreditCard size={22} color="var(--color-primary)" />
-                    <div>
-                      <strong style={{ color: 'var(--color-primary)', fontSize: '0.95rem' }}>⚡ Razorpay Secure Checkout</strong>
-                      <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '2px' }}>UPI (GPay, PhonePe, Paytm), Credit/Debit Cards, NetBanking</div>
-                    </div>
+              <div className="shipping-select-card selected">
+                <div className="shipping-card-left">
+                  <input type="radio" name="shippingMethod" checked readOnly />
+                  <div className="shipping-icon-circle">
+                    <Truck size={18} color="var(--color-primary)" />
                   </div>
-                  <span style={{ fontSize: '0.75rem', backgroundColor: '#dcfce7', color: '#16a34a', padding: '3px 10px', borderRadius: '12px', fontWeight: 700 }}>
-                    100% Secure
-                  </span>
+                  <div className="shipping-card-meta">
+                    <strong>Standard Express Courier (3–5 Working Days)</strong>
+                    <span>Safe doorstep delivery with automated SMS tracking</span>
+                  </div>
+                </div>
+                <div className="shipping-card-price">
+                  {shippingFee === 0 ? <span className="free-tag">FREE</span> : <strong>₹{shippingFee.toFixed(2)}</strong>}
                 </div>
               </div>
             </div>
 
+            {/* Step 4: Payment Method */}
+            <div className="checkout-card">
+              <div className="card-header">
+                <div className="step-circle">4</div>
+                <div>
+                  <h3 className="card-title">Payment Method</h3>
+                  <p className="card-subtitle">All transactions are encrypted and processed securely by Razorpay</p>
+                </div>
+              </div>
+              <div className="payment-select-card selected">
+                <div className="payment-card-top">
+                  <div className="payment-card-title-group">
+                    <CreditCard size={22} color="var(--color-primary)" />
+                    <div>
+                      <strong className="payment-main-title">⚡ Razorpay Secure Checkout</strong>
+                      <span className="payment-sub-title">UPI (Google Pay, PhonePe, Paytm), Cards & NetBanking</span>
+                    </div>
+                  </div>
+                  <span className="payment-secure-badge">
+                    <ShieldCheck size={13} /> 100% Secure
+                  </span>
+                </div>
+                <div className="payment-chips-strip">
+                  <span className="p-chip">GPay</span>
+                  <span className="p-chip">PhonePe</span>
+                  <span className="p-chip">Paytm</span>
+                  <span className="p-chip">UPI</span>
+                  <span className="p-chip">Debit / Credit Card</span>
+                  <span className="p-chip">NetBanking</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Pay Now Button */}
             <button 
               type="submit" 
               disabled={isSubmitting || cartItems.length === 0} 
-              className="btn btn-primary btn-large w-100 mt-2" 
-              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+              className="btn-pay-securely"
             >
-              <Lock size={18} /> {isSubmitting ? 'Initializing Payment...' : `Pay ₹${finalTotal.toFixed(2)}`}
+              <Lock size={18} />
+              <span>{isSubmitting ? 'Securing Transaction...' : `Pay ₹${finalTotal.toFixed(2)} Securely`}</span>
+              <ArrowRight size={18} />
             </button>
 
-            <div className="trust-badge-container">
-              <div className="trust-badge"><ShieldCheck size={16} color="#16a34a" /> Bank-Grade Security</div>
-              <div className="trust-badge"><Lock size={16} color="#16a34a" /> FSSAI Certified Quality</div>
-              <div className="trust-badge"><Check size={16} color="#16a34a" /> 100% Authentic Awadhi Blends</div>
+            {/* Bottom Trust Strip */}
+            <div className="checkout-trust-row">
+              <div className="trust-pill"><ShieldCheck size={16} color="#16a34a" /> Bank-Grade 256-Bit SSL</div>
+              <div className="trust-pill"><Check size={16} color="#16a34a" /> FSSAI Certified Heritage Quality</div>
+              <div className="trust-pill"><Truck size={16} color="#16a34a" /> Doorstep Tracked Delivery</div>
             </div>
 
-            <div className="checkout-footer-links mt-4 text-sm text-accent">
+            {/* Footer Policy Links */}
+            <div className="checkout-legal-links">
               <Link to="/returns">Returns policy</Link>
-              <Link to="/shipping">Shipping</Link>
+              <span className="link-divider">•</span>
+              <Link to="/shipping">Shipping policy</Link>
+              <span className="link-divider">•</span>
               <Link to="/privacy">Privacy policy</Link>
+              <span className="link-divider">•</span>
               <Link to="/terms">Terms of service</Link>
             </div>
           </form>
         </div>
 
-        {/* Sidebar Order Summary */}
+        {/* Right Sticky Sidebar (Order Summary) */}
         <div className="checkout-sidebar">
-          <div className="order-summary">
-            <div className="summary-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e0e0e0' }}>
-              <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--color-primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span>Order Summary ({totalMasalaUnits})</span>
-                {isBundle && (
-                  <span className="byb-summary-pill"><Crown size={11} /> BYB Order</span>
-                )}
+          <div className="order-summary-box">
+            
+            <div className="summary-title-row">
+              <h3 className="summary-main-heading">
+                <span>Order Summary</span>
+                <span className="summary-count-badge">({totalMasalaUnits})</span>
               </h3>
+              {isBundle && (
+                <span className="summary-byb-pill"><Crown size={12} /> BYB Order</span>
+              )}
             </div>
 
-            <div className="summary-items">
+            {/* Items List */}
+            <div className="summary-items-list">
               {cartItems.map((item) => {
                 const itemId = item.cartItemId || `${item.id}__${item.weight || '50g'}`;
                 return (
-                  <div key={itemId} className="summary-item">
-                    <div className="summary-item-img placeholder-img" style={{ position: 'relative' }}>
-                      <span className="item-badge">{item.quantity}</span>
+                  <div key={itemId} className="summary-product-row">
+                    <div className="product-thumb-box">
+                      <span className="product-qty-tag">{item.quantity}</span>
                       <img 
                         src={item.image || item.images?.[0]} 
                         alt={item.name} 
-                        style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px', borderRadius: '8px', backgroundColor: '#fff' }} 
+                        className="product-thumb-img" 
                       />
                     </div>
-                    <div className="summary-item-details" style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, paddingRight: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <span className="item-name">{item.name} ({item.weight || '50g'})</span>
-                        {isBundle && (
-                          <span className="byb-item-pill" style={{ fontSize: '0.62rem' }}>BYB</span>
-                        )}
+                    <div className="product-details-col">
+                      <div className="product-name-row">
+                        <span className="product-name">{item.name}</span>
+                        {isBundle && <span className="product-byb-tag">BYB</span>}
                       </div>
-                      <div className="quantity-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="product-weight-pack">• {item.weight || '50g'}</span>
+                      <div className="product-stepper">
                         <button 
                           type="button"
                           onClick={() => updateQuantity(itemId, item.quantity - 1)}
                           aria-label="Decrease quantity"
-                          style={{ width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem' }}
+                          className="stepper-btn"
                         >
                           -
                         </button>
-                        <span style={{ fontSize: '0.9rem', minWidth: '16px', textAlign: 'center', fontWeight: 600 }}>{item.quantity}</span>
+                        <span className="stepper-count">{item.quantity}</span>
                         <button 
                           type="button"
                           onClick={() => updateQuantity(itemId, item.quantity + 1)}
                           aria-label="Increase quantity"
-                          style={{ width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc', borderRadius: '4px', background: '#fff', cursor: 'pointer', fontSize: '1rem' }}
+                          className="stepper-btn"
                         >
                           +
                         </button>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
-                      <span className="summary-item-price" style={{ fontWeight: 700 }}>
+                    <div className="product-price-col">
+                      <span className="product-line-price">
                         ₹{(item.price * item.quantity).toFixed(2)}
                       </span>
                       <button
                         type="button"
                         onClick={() => removeFromCart(itemId)}
                         title="Remove item"
-                        style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', padding: '2px' }}
-                        onMouseOver={(e) => e.target.style.color = '#cc0c39'}
-                        onMouseOut={(e) => e.target.style.color = '#999'}
+                        className="btn-trash-item"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </div>
                 );
               })}
 
+              {/* Complimentary BYB Gift Box Row */}
               {isBundle && (
-                <div className="summary-item summary-gift-row">
-                  <div className="summary-item-img placeholder-img gift-icon-container">
-                    <span className="item-badge gift-badge-qty">2</span>
-                    <Gift size={20} color="#047857" />
+                <div className="summary-gift-card">
+                  <div className="gift-card-icon-box">
+                    <span className="gift-qty-badge">2</span>
+                    <Gift size={18} color="#047857" />
                   </div>
-                  <div className="summary-item-details" style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, paddingLeft: '8px' }}>
-                    <span className="item-name" style={{ color: '#047857', fontWeight: 600 }}>2x Mini Masala Boxes (Assorted Pack)</span>
-                    <span style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 500 }}>Complimentary BYB Gift</span>
+                  <div className="gift-card-meta">
+                    <span className="gift-card-title">2x Mini Masala Boxes (Assorted Pack)</span>
+                    <span className="gift-card-subtitle">Complimentary Royal Chef Curation</span>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <span className="summary-item-price" style={{ fontWeight: 700, color: '#047857', fontSize: '0.85rem' }}>
-                      FREE
-                    </span>
-                  </div>
+                  <span className="gift-free-badge">FREE</span>
                 </div>
               )}
 
               {cartItems.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#666' }}>
-                  <ShoppingBag size={36} style={{ margin: '0 auto 0.5rem auto', color: '#ccc', display: 'block' }} />
-                  <p className="text-sm text-text-light text-center">Your cart is currently empty.</p>
-                  <Link to="/products" className="btn-primary" style={{ display: 'inline-block', marginTop: '1rem', padding: '0.5rem 1.25rem', fontSize: '0.9rem' }}>
+                <div className="summary-empty-state">
+                  <ShoppingBag size={36} className="empty-bag-icon" />
+                  <p>Your cart is currently empty.</p>
+                  <Link to="/products" className="btn-browse-spices">
                     Browse Spices
                   </Link>
                 </div>
               )}
             </div>
 
+            {/* Totals & Coupon Section */}
             {cartItems.length > 0 && (
-              <div className="summary-totals mt-3">
-                {/* Coupon Code Row */}
-                <form onSubmit={handleCouponSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-                  <input
-                    type="text"
-                    placeholder="Coupon code"
-                    value={couponInput}
-                    onChange={(e) => setCouponInput(e.target.value)}
-                    style={{ flex: 1, padding: '8px 12px', border: '1px solid #ccc', borderRadius: '6px', fontSize: '0.85rem' }}
-                  />
-                  <button type="submit" style={{ backgroundColor: 'var(--color-primary)', color: '#fff', border: 'none', padding: '8px 14px', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
-                    Apply
-                  </button>
+              <div className="summary-totals-wrapper">
+                
+                {/* Coupon Form */}
+                <form onSubmit={handleCouponSubmit} className="coupon-submit-form">
+                  <div className="coupon-input-wrap">
+                    <Tag size={15} className="coupon-tag-icon" />
+                    <input
+                      type="text"
+                      placeholder="Coupon or promo code"
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value)}
+                      className="coupon-field"
+                    />
+                    <button type="submit" className="btn-apply-coupon">
+                      Apply
+                    </button>
+                  </div>
                 </form>
 
                 {appliedCoupon && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', color: '#16a34a', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', marginBottom: '1rem' }}>
-                    <span>Coupon: <strong>{appliedCoupon.code}</strong></span>
-                    <button onClick={removeCoupon} style={{ background: 'none', border: 'none', color: '#16a34a', cursor: 'pointer' }}><X size={14} /></button>
+                  <div className="active-coupon-chip">
+                    <div className="coupon-chip-left">
+                      <CheckCircle2 size={14} />
+                      <span>Coupon applied: <strong>{appliedCoupon.code}</strong></span>
+                    </div>
+                    <button type="button" onClick={removeCoupon} className="btn-remove-coupon">
+                      <X size={14} />
+                    </button>
                   </div>
                 )}
 
-                {couponError && <p style={{ fontSize: '0.78rem', color: '#cc0c39', marginTop: '-0.5rem', marginBottom: '0.75rem' }}>{couponError}</p>}
+                {couponError && <p className="coupon-err-text">{couponError}</p>}
 
-                <div className="summary-row">
-                  <span>Subtotal</span>
-                  <span>₹{subtotal.toFixed(2)}</span>
-                </div>
-                {discount > 0 && (
-                  <div className="summary-row" style={{ color: '#16a34a', fontWeight: 600 }}>
-                    <span>
-                      {isBundle
-                        ? (appliedCoupon ? `Special Discount (BYB Order • ${appliedCoupon.code})` : 'Special Discount (Build Your Bundle 10% OFF)')
-                        : (appliedCoupon ? `Discount (${appliedCoupon.code})` : 'Discount')
-                      }
+                {/* Subtotal, Discount, Shipping, Total */}
+                <div className="totals-table">
+                  <div className="total-line">
+                    <span className="line-label">Subtotal</span>
+                    <span className="line-val">₹{subtotal.toFixed(2)}</span>
+                  </div>
+
+                  {discount > 0 && (
+                    <div className="total-line discount-line">
+                      <span className="line-label">
+                        {isBundle
+                          ? (appliedCoupon ? `Special Discount (BYB Order • ${appliedCoupon.code})` : 'Special Discount (Build Your Bundle 10% OFF)')
+                          : (appliedCoupon ? `Discount (${appliedCoupon.code})` : 'Discount')
+                        }
+                      </span>
+                      <span className="line-val">-₹{discount.toFixed(2)}</span>
+                    </div>
+                  )}
+
+                  {isBundle && (
+                    <div className="total-line gift-line">
+                      <span className="line-label">
+                        <Gift size={13} style={{ marginRight: '5px', verticalAlign: 'middle' }} />
+                        2 Mini Masala Boxes
+                      </span>
+                      <span className="line-val gift-val">FREE (Included)</span>
+                    </div>
+                  )}
+
+                  <div className="total-line">
+                    <span className="line-label">Standard Shipping</span>
+                    <span className="line-val">{shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}</span>
+                  </div>
+
+                  <div className="total-line grand-total-line">
+                    <span className="grand-label">Total Amount</span>
+                    <span className="grand-val">
+                      <span className="currency-tag">INR</span> ₹{finalTotal.toFixed(2)}
                     </span>
-                    <span>-₹{discount.toFixed(2)}</span>
                   </div>
-                )}
-                {isBundle && (
-                  <div className="summary-row" style={{ color: '#047857', fontWeight: 600 }}>
-                    <span><Gift size={13} style={{marginRight: '5px', verticalAlign: 'middle'}}/> 2 Mini Masala Boxes</span>
-                    <span style={{ color: '#047857', fontWeight: 700 }}>FREE (Included)</span>
-                  </div>
-                )}
-                <div className="summary-row">
-                  <span>Standard Shipping</span>
-                  <span style={{ fontWeight: 600 }}>₹{shippingFee.toFixed(2)}</span>
                 </div>
-                <div className="summary-row total-row mt-2" style={{ borderTop: '1px solid #e0e0e0', paddingTop: '1rem' }}>
-                  <span>Total Amount</span>
-                  <span className="total-price" style={{ fontWeight: 700, color: 'var(--color-primary)' }}>
-                    <span className="currency-code">INR</span> ₹{finalTotal.toFixed(2)}
-                  </span>
-                </div>
-                <p className="tax-info text-sm text-text-light mt-1">All taxes inclusive • 100% Encrypted & Secure Checkout</p>
+
+                <p className="summary-taxes-note">All taxes inclusive • 100% Encrypted & Secure Checkout</p>
               </div>
             )}
           </div>
         </div>
+
       </div>
 
+      {/* Simulated/Mock Payment Modal if credentials not configured */}
       {showPaymentModal && pendingServerOrder && (
         <MockPaymentModal 
           amount={pendingServerOrder.totalAmount} 
