@@ -11,7 +11,9 @@ import {
   Gift,
   Truck,
   Tag,
-  ChevronRight
+  ChevronRight,
+  CheckCircle2,
+  Sparkles
 } from 'lucide-react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
@@ -494,14 +496,20 @@ const CheckoutPage = () => {
         {/* Main Column (Only this side scrolls on desktop) */}
         <main className="checkout-main">
           <div className="checkout-main-content">
-            {/* Header with Brand Logo & 256-Bit SSL Encrypted Badge */}
+            {/* Header with Step Progress & 256-Bit SSL Encrypted Badge */}
             <header className="checkout-header">
-              <Link to="/" className="brand-logo-link" title="Return to home">
-                <img src={logo} alt="Kabgeer Masale" className="brand-logo-img" />
-              </Link>
+              <div className="checkout-step-nav">
+                <span className="step-tag-pill active">
+                  <span className="step-num">1</span> Information & Delivery
+                </span>
+                <ChevronRight size={13} className="step-nav-chevron" />
+                <span className="step-tag-pill">
+                  <span className="step-num">2</span> Payment
+                </span>
+              </div>
               <div className="checkout-secure-badge">
-                <ShieldCheck size={15} color="#15803d" />
-                <span>256-Bit SSL Encrypted Checkout</span>
+                <ShieldCheck size={14} color="#15803d" />
+                <span>256-Bit SSL Encrypted</span>
               </div>
             </header>
 
@@ -593,9 +601,14 @@ const CheckoutPage = () => {
             
             {/* 1. Contact Section */}
             <div className="form-section">
-              <h2 className="section-title">Contact</h2>
+              <div className="section-title-wrap">
+                <span className="section-step-badge">01</span>
+                <h2 className="section-title">Contact Information</h2>
+              </div>
               <div className="form-field">
-                <label className="field-label" htmlFor="email">Email</label>
+                <label className="field-label" htmlFor="email">
+                  Email Address <span className="required-star">*</span>
+                </label>
                 <input 
                   id="email"
                   type="email" 
@@ -616,18 +629,23 @@ const CheckoutPage = () => {
                   checked={formData.newsAndOffers}
                   onChange={handleChange}
                 />
-                <span>Email me with news and offers</span>
+                <span>Email me with exclusive recipe tips and order updates</span>
               </label>
             </div>
 
             {/* 2. Delivery Section (PIN CODE FIRST!) */}
             <div className="form-section">
-              <h2 className="section-title">Delivery</h2>
+              <div className="section-title-wrap">
+                <span className="section-step-badge">02</span>
+                <h2 className="section-title">Delivery Address</h2>
+              </div>
 
               {/* Name Row */}
               <div className="grid-2-cols">
                 <div className="form-field">
-                  <label className="field-label" htmlFor="firstName">First name</label>
+                  <label className="field-label" htmlFor="firstName">
+                    First Name <span className="required-star">*</span>
+                  </label>
                   <input 
                     id="firstName"
                     type="text" 
@@ -642,7 +660,9 @@ const CheckoutPage = () => {
                   {formErrors.firstName && <span className="field-err">{formErrors.firstName}</span>}
                 </div>
                 <div className="form-field">
-                  <label className="field-label" htmlFor="lastName">Last name</label>
+                  <label className="field-label" htmlFor="lastName">
+                    Last Name <span className="required-star">*</span>
+                  </label>
                   <input 
                     id="lastName"
                     type="text" 
@@ -661,8 +681,10 @@ const CheckoutPage = () => {
               {/* PIN Code FIRST */}
               <div className="form-field">
                 <div className="field-label-row">
-                  <label className="field-label" htmlFor="pinCode">PIN code</label>
-                  {isLookingUpPincode && <span className="pincode-status">Locating...</span>}
+                  <label className="field-label" htmlFor="pinCode">
+                    PIN Code <span className="required-star">*</span>
+                  </label>
+                  {isLookingUpPincode && <span className="pincode-status locating">Locating delivery hub...</span>}
                   {pincodeStatusMessage && !isLookingUpPincode && (
                     <span className={`pincode-status ${pincodeStatusMessage.startsWith('✓') ? 'pincode-ok' : ''}`}>
                       {pincodeStatusMessage}
@@ -687,7 +709,9 @@ const CheckoutPage = () => {
               {/* City & State (Auto-filled from PIN) */}
               <div className="grid-2-cols">
                 <div className="form-field">
-                  <label className="field-label" htmlFor="city">City</label>
+                  <label className="field-label" htmlFor="city">
+                    City / Town <span className="required-star">*</span>
+                  </label>
                   <input 
                     id="city"
                     type="text" 
@@ -702,7 +726,9 @@ const CheckoutPage = () => {
                   {formErrors.city && <span className="field-err">{formErrors.city}</span>}
                 </div>
                 <div className="form-field">
-                  <label className="field-label" htmlFor="state">State</label>
+                  <label className="field-label" htmlFor="state">
+                    State <span className="required-star">*</span>
+                  </label>
                   <select 
                     id="state"
                     name="state" 
@@ -719,7 +745,9 @@ const CheckoutPage = () => {
 
               {/* Street Address */}
               <div className="form-field">
-                <label className="field-label" htmlFor="address">Address</label>
+                <label className="field-label" htmlFor="address">
+                  Flat, House No., Building, Street <span className="required-star">*</span>
+                </label>
                 <input 
                   id="address"
                   type="text" 
@@ -736,7 +764,9 @@ const CheckoutPage = () => {
 
               {/* Apartment / Landmark */}
               <div className="form-field">
-                <label className="field-label" htmlFor="apartment">Apartment, suite, landmark <span className="optional-tag">(optional)</span></label>
+                <label className="field-label" htmlFor="apartment">
+                  Apartment, Suite, Landmark <span className="optional-tag">(optional)</span>
+                </label>
                 <input 
                   id="apartment"
                   type="text" 
@@ -749,39 +779,58 @@ const CheckoutPage = () => {
                 />
               </div>
 
-              {/* Phone */}
+              {/* Phone with +91 Country Tag */}
               <div className="form-field">
-                <label className="field-label" htmlFor="phone">Phone</label>
-                <input 
-                  id="phone"
-                  type="tel" 
-                  name="phone" 
-                  className={`field-input ${formErrors.phone ? 'input-err' : ''}`} 
-                  placeholder="10-digit mobile number" 
-                  autoComplete="tel"
-                  maxLength={10}
-                  value={formData.phone} 
-                  onChange={handlePhoneChange} 
-                  required 
-                />
+                <label className="field-label" htmlFor="phone">
+                  Phone Number <span className="required-star">*</span>
+                </label>
+                <div className="phone-input-group">
+                  <span className="phone-prefix-tag">
+                    <span className="flag-icon">🇮🇳</span>
+                    <span className="prefix-num">+91</span>
+                  </span>
+                  <input 
+                    id="phone"
+                    type="tel" 
+                    name="phone" 
+                    className={`field-input phone-input ${formErrors.phone ? 'input-err' : ''}`} 
+                    placeholder="10-digit mobile number" 
+                    autoComplete="tel"
+                    maxLength={10}
+                    value={formData.phone} 
+                    onChange={handlePhoneChange} 
+                    required 
+                  />
+                </div>
                 {formErrors.phone && <span className="field-err">{formErrors.phone}</span>}
               </div>
 
               <label className="checkbox-row mt-2">
                 <input type="checkbox" name="saveInfo" checked={formData.saveInfo} onChange={handleChange} />
-                <span>Save this information for next time</span>
+                <span>Save this delivery information for next time</span>
               </label>
             </div>
 
             {/* 3. Shipping Method Section */}
             <div className="form-section">
-              <h2 className="section-title">Shipping method</h2>
-              <div className="shipping-radio-row">
-                <div className="shipping-info-left">
-                  <input type="radio" checked readOnly />
-                  <span>Standard Express Shipping (3–5 Business Days)</span>
+              <div className="section-title-wrap">
+                <span className="section-step-badge">03</span>
+                <h2 className="section-title">Shipping Method</h2>
+              </div>
+              <div className="shipping-option-card selected">
+                <div className="option-card-left">
+                  <div className="custom-radio checked">
+                    <span className="radio-inner-dot"></span>
+                  </div>
+                  <div className="option-icon-box">
+                    <Truck size={18} className="option-icon text-emerald" />
+                  </div>
+                  <div className="option-text-group">
+                    <span className="option-primary-title">Standard Express Courier (3–5 Business Days)</span>
+                    <span className="option-subtitle">Direct insured dispatch via Shiprocket / Trackon Express</span>
+                  </div>
                 </div>
-                <span className="shipping-price-tag">
+                <span className="option-price-tag">
                   {shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}
                 </span>
               </div>
@@ -789,18 +838,38 @@ const CheckoutPage = () => {
 
             {/* 4. Payment Section */}
             <div className="form-section">
-              <h2 className="section-title">Payment</h2>
-              <p className="payment-helper-text">All transactions are secure and encrypted.</p>
-              <div className="payment-radio-box">
-                <div className="payment-box-header">
-                  <div className="payment-header-left">
-                    <input type="radio" checked readOnly />
-                    <span className="payment-name">Razorpay Secure (UPI, Cards, NetBanking)</span>
+              <div className="section-title-wrap">
+                <span className="section-step-badge">04</span>
+                <h2 className="section-title">Payment Options</h2>
+              </div>
+              <p className="payment-helper-text">All transactions are end-to-end encrypted & secured by RBI-authorized payment infrastructure.</p>
+              
+              <div className="payment-option-card selected">
+                <div className="payment-card-main">
+                  <div className="option-card-left">
+                    <div className="custom-radio checked">
+                      <span className="radio-inner-dot"></span>
+                    </div>
+                    <div className="option-icon-box">
+                      <ShieldCheck size={18} className="option-icon text-emerald" />
+                    </div>
+                    <div className="option-text-group">
+                      <span className="option-primary-title">Razorpay Secure Online Checkout</span>
+                      <span className="option-subtitle">Instant UPI (GPay, PhonePe, Paytm), Cards & NetBanking</span>
+                    </div>
                   </div>
-                  <div className="payment-tags-wrap">
-                    <span className="pay-mini-badge">UPI</span>
-                    <span className="pay-mini-badge">Cards</span>
+                  <div className="payment-trust-chips">
+                    <span className="pay-chip">UPI</span>
+                    <span className="pay-chip">Cards</span>
+                    <span className="pay-chip">NetBanking</span>
                   </div>
+                </div>
+                <div className="payment-card-sub">
+                  <span>⚡ Instant Order Confirmation</span>
+                  <span className="sub-dot">•</span>
+                  <span>🔒 256-Bit SSL Encryption</span>
+                  <span className="sub-dot">•</span>
+                  <span>🛡️ 100% Refund Protection</span>
                 </div>
               </div>
             </div>
@@ -811,16 +880,35 @@ const CheckoutPage = () => {
               disabled={isSubmitting || cartItems.length === 0} 
               className="btn-pay-now"
             >
-              <Lock size={16} />
-              <span>{isSubmitting ? 'Processing...' : `Pay ₹${finalTotal.toFixed(2)}`}</span>
+              <Lock size={17} />
+              <span>{isSubmitting ? 'Securing Order...' : `Pay Securely • ₹${finalTotal.toFixed(2)}`}</span>
             </button>
+
+            {/* High-Trust Guarantee Row */}
+            <div className="checkout-trust-row">
+              <div className="trust-item">
+                <ShieldCheck size={14} className="trust-icon" />
+                <span>100% Authentic Awadhi Spices</span>
+              </div>
+              <div className="trust-item">
+                <Lock size={14} className="trust-icon" />
+                <span>Zero Storage of Card Data</span>
+              </div>
+              <div className="trust-item">
+                <Truck size={14} className="trust-icon" />
+                <span>Express Pan-India Delivery</span>
+              </div>
+            </div>
 
             {/* Clean Footer Policy Links */}
             <div className="checkout-footer-links">
-              <Link to="/returns">Refund policy</Link>
-              <Link to="/shipping">Shipping policy</Link>
-              <Link to="/privacy">Privacy policy</Link>
-              <Link to="/terms">Terms of service</Link>
+              <Link to="/returns">Refund Policy</Link>
+              <span className="policy-dot">•</span>
+              <Link to="/shipping">Shipping Policy</Link>
+              <span className="policy-dot">•</span>
+              <Link to="/privacy">Privacy Policy</Link>
+              <span className="policy-dot">•</span>
+              <Link to="/terms">Terms of Service</Link>
             </div>
           </form>
           </div>
@@ -832,7 +920,8 @@ const CheckoutPage = () => {
             
             <div className="sidebar-header">
               <div className="sidebar-title-group">
-                <h2 className="sidebar-title">Order summary ({totalMasalaUnits})</h2>
+                <h2 className="sidebar-title">Order Summary</h2>
+                <span className="sidebar-count-chip">{totalMasalaUnits} items</span>
                 {isBundle && <span className="byb-tag">👑 BYB ORDER</span>}
               </div>
               {cartItems.length > 0 && (
@@ -855,49 +944,51 @@ const CheckoutPage = () => {
                 return (
                   <div key={itemId} className="item-row">
                     <div className="item-thumb-box">
-                      <span className="item-qty-badge">{item.quantity}</span>
                       <img 
                         src={item.image || item.images?.[0]} 
                         alt={item.name} 
                         className="item-thumb-img" 
                       />
+                      <span className="item-qty-badge">{item.quantity}</span>
                     </div>
                     <div className="item-meta">
                       <div className="item-title-row">
                         <span className="item-title">{item.name}</span>
+                        <span className="item-price">
+                          ₹{(item.price * item.quantity).toFixed(2)}
+                        </span>
                       </div>
-                      <span className="item-weight">• {item.weight || '50g'}</span>
-                      <div className="item-controls">
-                        <button 
-                          type="button"
-                          onClick={() => updateQuantity(itemId, item.quantity - 1)}
-                          aria-label="Decrease quantity"
-                          className="item-qty-btn"
-                        >
-                          -
-                        </button>
-                        <span className="item-qty-num">{item.quantity}</span>
-                        <button 
-                          type="button"
-                          onClick={() => updateQuantity(itemId, item.quantity + 1)}
-                          aria-label="Increase quantity"
-                          className="item-qty-btn"
-                        >
-                          +
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeFromCart(itemId)}
-                          title="Remove item"
-                          className="item-remove-btn"
-                        >
-                          <Trash2 size={12} />
-                        </button>
+                      <div className="item-sub-row">
+                        <span className="item-weight">{item.weight || '50g'}</span>
+                        <div className="item-controls">
+                          <button 
+                            type="button"
+                            onClick={() => updateQuantity(itemId, item.quantity - 1)}
+                            aria-label="Decrease quantity"
+                            className="item-qty-btn"
+                          >
+                            -
+                          </button>
+                          <span className="item-qty-num">{item.quantity}</span>
+                          <button 
+                            type="button"
+                            onClick={() => updateQuantity(itemId, item.quantity + 1)}
+                            aria-label="Increase quantity"
+                            className="item-qty-btn"
+                          >
+                            +
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeFromCart(itemId)}
+                            title="Remove item"
+                            className="item-remove-btn"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    <span className="item-price">
-                      ₹{(item.price * item.quantity).toFixed(2)}
-                    </span>
                   </div>
                 );
               })}
@@ -906,14 +997,16 @@ const CheckoutPage = () => {
               {isBundle && (
                 <div className="gift-row">
                   <div className="gift-thumb-box">
-                    <span className="item-qty-badge">2</span>
                     <Gift size={16} color="#047857" />
+                    <span className="item-qty-badge">2</span>
                   </div>
                   <div className="item-meta">
-                    <span className="item-title text-emerald">2x Mini Masala Boxes (Sample Pack)</span>
+                    <div className="item-title-row">
+                      <span className="item-title text-emerald">2x Mini Masala Boxes (Sample Pack)</span>
+                      <span className="item-price text-emerald font-bold">FREE</span>
+                    </div>
                     <span className="item-weight text-emerald">Complimentary Royal Chef Curation</span>
                   </div>
-                  <span className="item-price text-emerald">FREE</span>
                 </div>
               )}
 
@@ -933,14 +1026,17 @@ const CheckoutPage = () => {
                 
                 {/* Coupon input */}
                 <form onSubmit={handleCouponSubmit} className="coupon-form-row">
-                  <input
-                    type="text"
-                    placeholder="Discount code"
-                    value={couponInput}
-                    onChange={(e) => setCouponInput(e.target.value)}
-                    className="coupon-field"
-                  />
-                  <button type="submit" className="coupon-apply-btn">
+                  <div className="coupon-input-wrap">
+                    <Tag size={15} className="coupon-tag-icon" />
+                    <input
+                      type="text"
+                      placeholder="Discount or coupon code"
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value)}
+                      className="coupon-field"
+                    />
+                  </div>
+                  <button type="submit" className="coupon-apply-btn" disabled={!couponInput.trim()}>
                     Apply
                   </button>
                 </form>
@@ -959,45 +1055,47 @@ const CheckoutPage = () => {
                 {/* Totals table */}
                 <div className="totals-table">
                   <div className="totals-row">
-                    <span>Subtotal</span>
-                    <span>₹{subtotal.toFixed(2)}</span>
+                    <span className="totals-label">Items Subtotal</span>
+                    <span className="totals-val">₹{subtotal.toFixed(2)}</span>
                   </div>
 
                   {discount > 0 && (
                     <div className="totals-row text-emerald font-semibold">
-                      <span>Discount ({appliedCoupon?.code || '10% Bundle'})</span>
-                      <span>-₹{discount.toFixed(2)}</span>
+                      <span className="totals-label">Special Discount ({appliedCoupon?.code || 'Build Your Bundle 10% OFF'})</span>
+                      <span className="totals-val discount-val">-₹{discount.toFixed(2)}</span>
                     </div>
                   )}
 
                   {isBundle && (
                     <div className="totals-row text-emerald">
-                      <span>2 Mini Masala Boxes</span>
-                      <span>FREE (Included)</span>
+                      <span className="totals-label">2 Mini Masala Boxes</span>
+                      <span className="totals-val gift-val">FREE (Included)</span>
                     </div>
                   )}
 
                   {isBundle && (
                     <div className="totals-row byb-classification-row">
-                      <span>Order Classification</span>
+                      <span className="totals-label">Order Classification</span>
                       <span className="byb-class-badge">👑 BYB ORDER</span>
                     </div>
                   )}
 
                   <div className="totals-row">
-                    <span>Shipping</span>
-                    <span>{shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}</span>
+                    <span className="totals-label">Standard Shipping</span>
+                    <span className="totals-val">{shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}</span>
                   </div>
 
                   <div className="totals-row total-grand-row">
-                    <span className="grand-title">Total</span>
-                    <span className="grand-amount">
-                      <span className="currency-unit">INR</span> ₹{finalTotal.toFixed(2)}
-                    </span>
+                    <div className="grand-label-col">
+                      <span className="grand-title">Total Amount</span>
+                      <span className="taxes-note">Inclusive of ₹{(subtotal * 0.05 / 1.05).toFixed(2)} GST</span>
+                    </div>
+                    <div className="grand-val-col">
+                      <span className="currency-unit">INR</span>
+                      <span className="grand-amount">₹{finalTotal.toFixed(2)}</span>
+                    </div>
                   </div>
                 </div>
-
-                <p className="taxes-note">Including ₹{(subtotal * 0.05 / 1.05).toFixed(2)} in taxes</p>
               </div>
             )}
           </div>
