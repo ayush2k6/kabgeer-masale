@@ -1,5 +1,27 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.22: Enterprise Mobile Checkout Optimization — Shopify Plus Standard)
+
+### 1. Interactive Mobile Summary Drawer (`src/pages/CheckoutPage.jsx`)
+- **Resolved Mobile Functional Gaps**:
+  - Previously, mobile shoppers could only see static titles without the ability to manage item quantities or apply discount codes without scrolling past the payment button.
+  - Upgraded `.checkout-mobile-summary` into a fully interactive mobile order summary:
+    * **Quantity Steppers & Deletion**: Added compact touch-friendly steppers (`[-] [qty] [+]`) and delete trash buttons directly inside each item line.
+    * **Unit Price Transparency**: Added unit price hints (`• ₹79.00 each`) beside pack weights.
+    * **Mobile Coupon Code Input**: Added dedicated coupon code input with `Tag` icon, automatic uppercase formatting, and instant `Apply` / `Remove` controls.
+    * **Complimentary BYB Gift Card**: Styled emerald/gold sample pack line with `FREE` tag.
+    * **Clear Cart Action**: Added quick clear-cart confirmation trigger in drawer header.
+
+### 2. Mobile Layout & UX Polish (`src/pages/CheckoutPage.css`)
+- **Eliminated Duplicate Bottom Sidebar**:
+  - On screens `< 992px`, hidden the redundant desktop sidebar (`.checkout-sidebar { display: none !important; }`), cutting unnecessary mobile scroll height in half.
+- **iOS Safari Auto-Zoom Prevention**:
+  - Enforced `font-size: 16px !important` on all mobile input fields and selects to prevent iOS Safari from auto-zooming and displacing the viewport on tap.
+- **Touch-Optimized Spacing**:
+  - Refined container padding (`padding: 1rem 0.75rem 3.5rem`), 48px touch inputs, and 52px commanding `Pay Securely` CTA button.
+  - Clean vertical stacking for the Step Breadcrumb header and high-trust guarantee badges.
+
+
 ## 2026-11-15 (Part 6.21: Luxury Centered Empty Checkout State)
 
 ### 1. Replaced Broken Empty Split-View with Luxury Centered View (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
