@@ -88,24 +88,16 @@ const CartDrawer = () => {
         </div>
 
         <div className="cart-drawer-body">
-          {/* Bundle Offer State: Progress or Celebratory Showcase */}
+          {/* Bundle Offer State: Progress or Sleek Notification */}
           {cartItems.length > 0 && (
             bundleOfferActive ? (
-              <div className="byb-active-showcase-card">
-                <div className="byb-showcase-badge-row">
-                  <span className="byb-crown-pill">
-                    <Crown size={12} /> ROYAL BYB ORDER ACTIVATED
-                  </span>
-                  <span className="byb-unlocked-pill">
-                    <Check size={11} /> 10% OFF + 2 FREE BOXES
+              <div className="cart-byb-banner">
+                <div className="cart-byb-banner-left">
+                  <span className="byb-pill-gold"><Crown size={12} /> BYB UNLOCKED</span>
+                  <span className="cart-byb-banner-text">
+                    <strong>10% OFF</strong> applied • <strong>2 Free Mini Boxes</strong> added!
                   </span>
                 </div>
-                <div className="byb-showcase-title">
-                  ✨ Wah! Order Upgraded to <em>Build Your Bundle (BYB)</em>
-                </div>
-                <p className="byb-showcase-desc">
-                  Aapke box me <strong>{totalItems} royal masalas</strong> add ho chuke hain! This order has been automatically upgraded to a <strong>Build Your Bundle (BYB)</strong> order — enjoying <strong>10% instant savings</strong> and <strong>2 complimentary Mini Masala Boxes</strong>!
-                </p>
               </div>
             ) : (
               <div className="free-shipping-bar-container" style={{ background: 'rgba(212, 175, 55, 0.05)' }}>
@@ -187,15 +179,15 @@ const CartDrawer = () => {
 
               {/* Complimentary Free Gift Box Card when BYB is Active */}
               {bundleOfferActive && (
-                <div className="drawer-byb-free-gift-box">
-                  <div className="drawer-byb-gift-icon-wrap">
-                    <Gift size={20} color="#b45309" />
+                <div className="drawer-gift-row">
+                  <div className="drawer-gift-icon">
+                    <Gift size={16} color="#047857" />
                   </div>
-                  <div className="drawer-byb-gift-info">
-                    <div className="drawer-byb-gift-title">2x Mini Masala Boxes (Assorted Sample Pack)</div>
-                    <div className="drawer-byb-gift-subtitle">Complimentary royal chef curation • Packed free with this BYB order</div>
+                  <div className="drawer-gift-info">
+                    <span className="drawer-gift-title">2x Mini Masala Boxes (Assorted Pack)</span>
+                    <span className="drawer-gift-sub">Complimentary BYB Gift • Automatically Packed</span>
                   </div>
-                  <span className="drawer-byb-gift-badge">FREE</span>
+                  <span className="drawer-gift-badge">FREE</span>
                 </div>
               )}
 
@@ -278,14 +270,6 @@ const CartDrawer = () => {
                 <div className="summary-row" style={{ color: '#047857', fontWeight: '600' }}>
                   <span><Gift size={13} style={{marginRight: '5px', verticalAlign: 'middle'}}/> 2 Mini Masala Boxes</span>
                   <span className="summary-val" style={{ color: '#047857', fontWeight: 700 }}>FREE (Included)</span>
-                </div>
-              )}
-              {bundleOfferActive && (
-                <div className="summary-row byb-summary-status-row">
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#b45309', fontWeight: 600 }}>
-                    <Crown size={13} /> Order Classification
-                  </span>
-                  <span className="byb-type-badge">👑 BYB ORDER</span>
                 </div>
               )}
               <div className="summary-row">

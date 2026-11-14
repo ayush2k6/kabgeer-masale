@@ -54,6 +54,18 @@
 - **Storefront Route (`src/App.jsx`)**:
   - Added `/cart` route redirecting directly to `/checkout` with full cart context.
 
+### 6. Design Polish & Checkout Page Sans-Serif Typography Enforcement (`src/pages/CheckoutPage.css`, `src/pages/CheckoutPage.jsx`, `src/components/CartDrawer.css`, `src/components/CartDrawer.jsx`)
+- **Strict Sans-Serif Enforcement on Checkout Page**:
+  - Enforced `font-family: var(--font-sans), 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;` across all checkout page elements (headings, contact/shipping forms, inputs, placeholders, labels, order summary, line items, and buttons).
+- **Cart Drawer Design De-cluttering**:
+  - Replaced oversized, clunky showcase card with a compact, luxury banner (`.cart-byb-banner`): `👑 BYB UNLOCKED • 10% OFF applied + 2 Free Mini Boxes added!` (no scrolling cutoff).
+  - Streamlined complimentary gift card into a neat item row (`.drawer-gift-row`).
+  - Removed redundant "Order Classification" row from financial breakdown for a clean, direct layout.
+  - Refined header BYB pill with translucent dark background and metallic gold border.
+- **Checkout Page Perk Card Refinement**:
+  - Replaced heavy yellow billboard with an executive, high-trust perk card (`.checkout-byb-perk-card`): soft emerald tint, clean crown icon, and crisp sans-serif text.
+  - Streamlined sidebar free gift item (`.summary-gift-row`) and replaced heavy black badge with an elegant gold badge (`.byb-summary-pill`).
+
 ---
 
 ## 2026-10-29 (Part 6.12: Coupon Code Visibility & Admin Single Order Deletion)

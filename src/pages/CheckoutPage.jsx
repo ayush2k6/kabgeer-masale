@@ -491,23 +491,23 @@ const CheckoutPage = () => {
             </div>
           )}
 
-          {/* Creative BYB Order Activation Banner */}
+          {/* Compact, Luxury BYB Perk Card */}
           {isBundle && (
-            <div className="checkout-byb-banner">
-              <div className="checkout-byb-badge-row">
-                <span className="byb-crown-pill">
-                  <Crown size={13} /> BUILD YOUR BUNDLE (BYB) ORDER ACTIVATED
-                </span>
-                <span className="byb-unlocked-pill">
-                  <Check size={11} /> 10% Discount & 2 Free Boxes
-                </span>
+            <div className="checkout-byb-perk-card">
+              <div className="byb-perk-left">
+                <div className="byb-perk-icon-wrap">
+                  <Crown size={16} color="#047857" />
+                </div>
+                <div className="byb-perk-text">
+                  <div className="byb-perk-title">
+                    <span>Build Your Bundle (BYB) Applied</span>
+                    <span className="byb-perk-pill">10% OFF + 2 FREE GIFTS</span>
+                  </div>
+                  <div className="byb-perk-desc">
+                    Your order of <strong>{totalMasalaUnits} masalas</strong> qualified for our royal bundle tier with 10% instant savings and 2 free sample boxes!
+                  </div>
+                </div>
               </div>
-              <h4 className="checkout-byb-title">
-                ✨ Royal Awadhi Build Your Bundle Curation
-              </h4>
-              <p className="checkout-byb-text">
-                Your order contains <strong>{totalMasalaUnits} royal masalas</strong> and has automatically qualified as a <strong>Build Your Bundle (BYB) Order</strong>. Enjoy <strong>10% Flat Savings</strong> and <strong>2 Complimentary Chef's Mini Masala Sample Boxes</strong> packed into your parcel!
-              </p>
             </div>
           )}
 
@@ -753,7 +753,7 @@ const CheckoutPage = () => {
               <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--color-primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span>Order Summary ({totalMasalaUnits})</span>
                 {isBundle && (
-                  <span className="byb-type-badge">👑 BYB ORDER</span>
+                  <span className="byb-summary-pill"><Crown size={11} /> BYB Order</span>
                 )}
               </h3>
               {cartItems.length > 0 && (
@@ -837,19 +837,17 @@ const CheckoutPage = () => {
               })}
 
               {isBundle && (
-                <div className="summary-item checkout-byb-gift-item" style={{ backgroundColor: 'rgba(240, 253, 244, 0.9)', border: '1.5px dashed #10b981', padding: '10px 12px', borderRadius: '10px', marginTop: '10px', display: 'flex', alignItems: 'center' }}>
-                  <div className="summary-item-img placeholder-img" style={{ position: 'relative', width: '46px', height: '46px', flexShrink: 0 }}>
-                    <span className="item-badge" style={{ backgroundColor: '#047857' }}>2</span>
-                    <div style={{ width: '100%', height: '100%', backgroundColor: '#fff', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #a7f3d0' }}>
-                      <Gift size={22} color="#b45309" />
-                    </div>
+                <div className="summary-item summary-gift-row">
+                  <div className="summary-item-img placeholder-img gift-icon-container">
+                    <span className="item-badge gift-badge-qty">2</span>
+                    <Gift size={20} color="#047857" />
                   </div>
-                  <div className="summary-item-details" style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, paddingLeft: '10px', paddingRight: '8px' }}>
-                    <span className="item-name" style={{ color: '#065f46', fontWeight: '700', fontSize: '0.88rem' }}>2x Mini Masala Boxes (Assorted Pack)</span>
-                    <span style={{ fontSize: '0.74rem', color: '#047857', fontWeight: '600' }}>👑 Complimentary BYB Chef's Gift</span>
+                  <div className="summary-item-details" style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, paddingLeft: '8px' }}>
+                    <span className="item-name" style={{ color: '#047857', fontWeight: 600 }}>2x Mini Masala Boxes (Assorted Pack)</span>
+                    <span style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 500 }}>Complimentary BYB Gift</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <span className="summary-item-price" style={{ fontWeight: 800, color: '#047857', fontSize: '0.85rem' }}>
+                    <span className="summary-item-price" style={{ fontWeight: 700, color: '#047857', fontSize: '0.85rem' }}>
                       FREE
                     </span>
                   </div>
@@ -911,14 +909,6 @@ const CheckoutPage = () => {
                   <div className="summary-row" style={{ color: '#047857', fontWeight: 600 }}>
                     <span><Gift size={13} style={{marginRight: '5px', verticalAlign: 'middle'}}/> 2 Mini Masala Boxes</span>
                     <span style={{ color: '#047857', fontWeight: 700 }}>FREE (Included)</span>
-                  </div>
-                )}
-                {isBundle && (
-                  <div className="summary-row" style={{ color: '#b45309', fontWeight: 600 }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                      <Crown size={13} color="#b45309" /> Order Classification
-                    </span>
-                    <span className="byb-type-badge">👑 BYB ORDER</span>
                   </div>
                 )}
                 <div className="summary-row">

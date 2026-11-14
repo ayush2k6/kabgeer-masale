@@ -1,7 +1,43 @@
 .checkout-page {
   background-color: var(--color-white);
   min-height: 100vh;
-  font-family: var(--font-body);
+  font-family: var(--font-sans), 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+/* Universal Sans-Serif Enforcement across Checkout Page */
+.checkout-page,
+.checkout-page h1,
+.checkout-page h2,
+.checkout-page h3,
+.checkout-page h4,
+.checkout-page h5,
+.checkout-page h6,
+.checkout-page p,
+.checkout-page span,
+.checkout-page div,
+.checkout-page a,
+.checkout-page label,
+.checkout-page input,
+.checkout-page select,
+.checkout-page textarea,
+.checkout-page button,
+.checkout-page strong,
+.checkout-page em,
+.checkout-main,
+.checkout-sidebar,
+.checkout-section,
+.form-input,
+.form-input::placeholder,
+.order-summary,
+.order-summary h3,
+.summary-item,
+.summary-totals,
+.summary-row,
+.total-title,
+.total-amount,
+.total-price,
+.btn-primary {
+  font-family: var(--font-sans), 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
 }
 
 .checkout-container {
@@ -53,10 +89,11 @@
 }
 
 .checkout-header-mobile h2 {
-  font-family: var(--font-heading);
+  font-family: var(--font-sans), 'Plus Jakarta Sans', sans-serif !important;
   color: var(--color-primary);
-  font-size: 2rem;
+  font-size: 1.85rem;
   margin: 0;
+  font-weight: 700;
 }
 
 @media (min-width: 992px) {
@@ -82,8 +119,8 @@
 }
 
 .checkout-section h3 {
-  font-family: var(--font-body);
-  font-size: 1.15rem;
+  font-family: var(--font-sans), 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 1.08rem;
   color: #1a2f22;
   margin: 0 0 1rem 0;
   font-weight: 700;
@@ -109,7 +146,7 @@
   background-color: #faf6f0;
   border: 1px solid rgba(26, 47, 34, 0.15);
   border-radius: 8px;
-  font-family: var(--font-body);
+  font-family: var(--font-sans), 'Plus Jakarta Sans', sans-serif !important;
   font-size: 0.92rem;
   margin-bottom: 0.85rem;
   transition: all 0.2s ease;
@@ -657,95 +694,139 @@
 }
 
 /* =========================================================================
-   Build Your Bundle (BYB) Checkout Banner & Tag Styling
+   Build Your Bundle (BYB) Checkout Perk Card Styling (Sleek, Luxury, High-Trust)
    ========================================================================= */
-.checkout-byb-banner {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #ecfdf5 100%);
-  border: 1.5px solid #d4af37;
-  border-radius: 12px;
-  padding: 1.1rem 1.35rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.12);
+.checkout-byb-perk-card {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.35rem;
 }
 
-.checkout-byb-badge-row {
+.byb-perk-left {
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.byb-perk-icon-wrap {
+  width: 30px;
+  height: 30px;
+  background-color: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 6px;
+  display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
-  flex-wrap: wrap;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.byb-perk-text {
+  flex: 1;
+}
+
+.byb-perk-title {
+  display: flex;
+  align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #14532d;
+  line-height: 1.3;
 }
 
-.checkout-byb-title {
-  font-size: 1.05rem;
+.byb-perk-pill {
+  background-color: #047857;
+  color: #ffffff;
+  font-size: 0.65rem;
   font-weight: 800;
-  color: #1a2f22;
-  margin: 0 0 0.35rem 0;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-.checkout-byb-text {
-  font-size: 0.86rem;
-  color: #334155;
-  line-height: 1.5;
-  margin: 0;
+.byb-perk-desc {
+  font-size: 0.8rem;
+  color: #166534;
+  line-height: 1.4;
+  margin-top: 3px;
 }
 
-.checkout-byb-text strong {
+.byb-perk-desc strong {
   color: #0f172a;
 }
 
-.byb-crown-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background-color: #1a2f22;
-  color: #d4af37;
-  padding: 3px 9px;
-  border-radius: 6px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.byb-unlocked-pill {
+/* Sidebar BYB Summary Elements */
+.byb-summary-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background-color: #047857;
-  color: #ffffff;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 0.7rem;
+  background: rgba(212, 175, 55, 0.12);
+  color: #854d0e;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-.byb-item-pill {
-  display: inline-flex;
+.summary-gift-row {
+  display: flex;
   align-items: center;
-  gap: 3px;
-  background-color: rgba(212, 175, 55, 0.15);
-  color: #854d0e;
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  white-space: nowrap;
+  gap: 10px;
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  margin-top: 0.75rem;
 }
 
-.byb-type-badge {
-  background: linear-gradient(135deg, #1a2f22 0%, #264632 100%);
-  color: #d4af37;
+.gift-icon-container {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  background-color: #ecfdf5 !important;
+  border: 1px solid #a7f3d0 !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  position: relative;
+}
+
+.gift-badge-qty {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: #047857 !important;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gift-tagline {
   font-size: 0.72rem;
-  font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 6px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  color: #059669;
+  font-weight: 600;
+}
+
+.gift-free-price {
+  font-weight: 700 !important;
+  color: #047857 !important;
+  font-size: 0.85rem !important;
 }
 
 
