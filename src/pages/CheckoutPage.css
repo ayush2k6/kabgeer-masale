@@ -4,8 +4,8 @@
    ========================================================================= */
 
 .checkout-page {
-  background-color: #ffffff;
-  min-height: 100vh;
+  background-color: #faf8f5;
+  min-height: calc(100vh - 80px);
   font-family: var(--font-sans), 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   color: #1f2937;
   line-height: 1.5;
@@ -90,23 +90,18 @@
   display: flex;
   flex-direction: column-reverse;
   width: 100%;
-  max-width: 100%;
-  margin: 0;
-  min-height: 100vh;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem 1rem;
+  gap: 1.5rem;
 }
 
 @media (min-width: 992px) {
-  .checkout-page {
-    height: 100vh;
-    max-height: 100vh;
-    overflow: hidden;
-  }
-
   .checkout-container {
     flex-direction: row;
-    height: 100vh;
-    max-height: 100vh;
-    overflow: hidden;
+    align-items: flex-start;
+    padding: 2.25rem 1.5rem 5rem 1.5rem;
+    gap: 2.5rem;
   }
 }
 
@@ -115,30 +110,55 @@
    ------------------------------------------------------------------------- */
 .checkout-main {
   flex: 1.15;
-  padding: 2rem 1.25rem 4rem 1.25rem;
+  background-color: #ffffff;
+  border: 1px solid #ede8df;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  padding: 2rem 1.25rem 3rem 1.25rem;
 }
 
 .checkout-main-content {
   width: 100%;
-  max-width: 580px;
-  margin: 0 auto;
 }
 
 @media (min-width: 992px) {
   .checkout-main {
-    height: 100%;
-    max-height: 100vh;
+    max-height: calc(100vh - 110px);
     overflow-y: auto;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    padding: 3rem 3.5rem 6rem 5vw;
-    display: flex;
-    justify-content: flex-end;
+    scroll-behavior: smooth;
+    padding: 2.25rem 2.5rem 3.5rem 2.5rem;
   }
+}
 
-  .checkout-main-content {
-    margin: 0;
-  }
+/* Custom Sleek Scrollbar for Left Form Column */
+.checkout-main {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26, 47, 34, 0.25) transparent;
+}
+
+.checkout-main::-webkit-scrollbar {
+  width: 6px;
+}
+
+.checkout-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.checkout-main::-webkit-scrollbar-thumb {
+  background: rgba(26, 47, 34, 0.22);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+.checkout-main::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary, #1a2f22);
+}
+
+.checkout-main::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 /* Header */
@@ -146,13 +166,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
   padding-bottom: 1.25rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f1ece1;
 }
 
 .brand-logo-img {
-  height: 44px;
+  height: 42px;
   width: auto;
   object-fit: contain;
   display: block;
@@ -161,12 +181,12 @@
 .checkout-secure-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   font-size: 0.8rem;
   font-weight: 600;
   color: #15803d;
   background-color: #f0fdf4;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 20px;
   border: 1px solid #bbf7d0;
 }
@@ -176,8 +196,8 @@
   background-color: #fef2f2;
   border: 1px solid #fecaca;
   color: #991b1b;
-  border-radius: 6px;
-  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  padding: 0.85rem 1.15rem;
   font-size: 0.86rem;
   font-weight: 500;
   display: flex;
@@ -187,20 +207,41 @@
 }
 
 .byb-minimal-banner {
-  background-color: #fffbeb;
+  background: linear-gradient(135deg, #fffdf5 0%, #fef9e7 100%);
   border: 1px solid #fde68a;
-  border-radius: 6px;
-  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  padding: 0.85rem 1.15rem;
   font-size: 0.86rem;
   color: #78350f;
   display: flex;
   align-items: center;
-  gap: 9px;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.06);
 }
 
-.byb-minimal-banner strong {
-  color: #451a03;
+.byb-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.byb-crown-icon {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+.byb-active-chip {
+  background-color: #d97706;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.8px;
+  flex-shrink: 0;
 }
 
 /* Form Sections */
@@ -492,37 +533,60 @@
    RIGHT COLUMN: Sidebar (Clean Order Summary - Sticked & Pinned)
    ------------------------------------------------------------------------- */
 .checkout-sidebar {
-  flex: 1;
-  background-color: #fafafa;
-  padding: 2rem 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
+  flex: 0.95;
+  background-color: #ffffff;
+  border: 1px solid #ede8df;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  padding: 1.75rem 1.25rem 2rem 1.25rem;
 }
 
 .sidebar-sticky-wrap {
   width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
+  margin: 0;
   display: flex;
   flex-direction: column;
 }
 
 @media (min-width: 992px) {
   .checkout-sidebar {
-    height: 100%;
-    max-height: 100vh;
+    position: sticky;
+    top: 90px;
+    max-height: calc(100vh - 110px);
     overflow-y: auto;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    padding: 3rem 5vw 6rem 3rem;
-    border-bottom: none;
-    border-left: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: flex-start;
+    scroll-behavior: smooth;
+    padding: 2rem 2rem 2.5rem 2rem;
   }
+}
 
-  .sidebar-sticky-wrap {
-    margin: 0;
-  }
+/* Custom Sleek Scrollbar for Sidebar */
+.checkout-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26, 47, 34, 0.18) transparent;
+}
+
+.checkout-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.checkout-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.checkout-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(26, 47, 34, 0.18);
+  border-radius: 9999px;
+}
+
+.checkout-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary, #1a2f22);
+}
+
+.checkout-sidebar::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .sidebar-header {
@@ -531,7 +595,13 @@
   align-items: center;
   padding-bottom: 0.85rem;
   margin-bottom: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #ede8df;
+}
+
+.sidebar-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .sidebar-title {
@@ -550,6 +620,25 @@
   padding: 2px 7px;
   border-radius: 4px;
   text-transform: uppercase;
+}
+
+.clear-cart-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.clear-cart-btn:hover {
+  background-color: #fee2e2;
 }
 
 /* Items List */
@@ -784,8 +873,28 @@
 .totals-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.88rem;
   color: #4b5563;
+}
+
+.byb-classification-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.86rem;
+  color: #78350f;
+  padding: 0.2rem 0;
+}
+
+.byb-class-badge {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .total-grand-row {

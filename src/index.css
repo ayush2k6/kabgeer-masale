@@ -37,7 +37,7 @@
 html {
   width: 100%;
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -53,39 +53,14 @@ body {
   padding: 0;
   width: 100%;
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .app-container {
   width: 100%;
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
-}
-
-.checkout-app-root {
-  width: 100%;
-  min-height: 100vh;
-  background-color: #ffffff;
-}
-
-.checkout-main-wrapper {
-  width: 100%;
-  min-height: 100vh;
-}
-
-@media (min-width: 992px) {
-  html:has(.checkout-app-root),
-  body:has(.checkout-app-root) {
-    overflow: hidden;
-    height: 100vh;
-  }
-  .checkout-app-root,
-  .checkout-main-wrapper {
-    height: 100vh;
-    max-height: 100vh;
-    overflow: hidden;
-  }
 }
 
 

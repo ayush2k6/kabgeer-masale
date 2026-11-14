@@ -8,7 +8,10 @@ import {
   AlertCircle, 
   Lock, 
   Crown, 
-  Gift
+  Gift,
+  Truck,
+  Tag,
+  ChevronRight
 } from 'lucide-react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import MockPaymentModal from '../components/MockPaymentModal';
@@ -491,16 +494,16 @@ const CheckoutPage = () => {
         {/* Main Column (Only this side scrolls on desktop) */}
         <main className="checkout-main">
           <div className="checkout-main-content">
-            {/* Minimal Header */}
-          <header className="checkout-header">
-            <Link to="/" className="brand-logo-link" title="Return to home">
-              <img src={logo} alt="Kabgeer Masale" className="brand-logo-img" />
-            </Link>
-            <div className="checkout-secure-badge">
-              <ShieldCheck size={14} color="#16a34a" />
-              <span>Secure Checkout</span>
-            </div>
-          </header>
+            {/* Header with Brand Logo & 256-Bit SSL Encrypted Badge */}
+            <header className="checkout-header">
+              <Link to="/" className="brand-logo-link" title="Return to home">
+                <img src={logo} alt="Kabgeer Masale" className="brand-logo-img" />
+              </Link>
+              <div className="checkout-secure-badge">
+                <ShieldCheck size={15} color="#15803d" />
+                <span>256-Bit SSL Encrypted Checkout</span>
+              </div>
+            </header>
 
           {/* Mobile Summary Dropdown */}
           <div className="checkout-mobile-summary">
@@ -575,11 +578,14 @@ const CheckoutPage = () => {
             </div>
           )}
 
-          {/* Minimalist BYB Notification Banner */}
+          {/* Elevated BYB Notification Banner */}
           {isBundle && (
             <div className="byb-minimal-banner">
-              <Crown size={15} color="#854d0e" />
-              <span><strong>Build Your Bundle Applied:</strong> 10% Flat Savings + 2 Free Mini Boxes included with this order.</span>
+              <div className="byb-banner-left">
+                <Crown size={16} className="byb-crown-icon" />
+                <span><strong>Royal BYB Perks Activated:</strong> 10% Flat Bundle Savings + 2 Complimentary Mini Boxes included!</span>
+              </div>
+              <span className="byb-active-chip">ACTIVATED</span>
             </div>
           )}
 
@@ -825,8 +831,21 @@ const CheckoutPage = () => {
           <div className="sidebar-sticky-wrap">
             
             <div className="sidebar-header">
-              <h2 className="sidebar-title">Order summary ({totalMasalaUnits})</h2>
-              {isBundle && <span className="byb-tag">BYB Order</span>}
+              <div className="sidebar-title-group">
+                <h2 className="sidebar-title">Order summary ({totalMasalaUnits})</h2>
+                {isBundle && <span className="byb-tag">👑 BYB ORDER</span>}
+              </div>
+              {cartItems.length > 0 && (
+                <button 
+                  type="button" 
+                  onClick={clearCart} 
+                  className="clear-cart-btn" 
+                  title="Remove all items from cart"
+                >
+                  <Trash2 size={13} />
+                  <span>Clear Cart</span>
+                </button>
+              )}
             </div>
 
             {/* Items */}
@@ -955,6 +974,13 @@ const CheckoutPage = () => {
                     <div className="totals-row text-emerald">
                       <span>2 Mini Masala Boxes</span>
                       <span>FREE (Included)</span>
+                    </div>
+                  )}
+
+                  {isBundle && (
+                    <div className="totals-row byb-classification-row">
+                      <span>Order Classification</span>
+                      <span className="byb-class-badge">👑 BYB ORDER</span>
                     </div>
                   )}
 

@@ -12,6 +12,7 @@ Current Branch: v1-release / main (Deployed on Vercel)
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.18 | Global Header/Footer Restoration, Sleek Left-Bar Scroll & Design Polish | ✅ COMPLETE & VERIFIED |
 | Part 6.17 | Pinned Order Summary Split-Scroll & Error Pop with Auto-Scroll Focus | ✅ COMPLETE & VERIFIED |
 | Part 6.16 | Minimalist, Clean & Professional Checkout Redesign | ✅ COMPLETE & VERIFIED |
 | Part 6.15 | Complete Checkout Page Redesign (PIN Code First & Auto-Location) | ✅ COMPLETE & VERIFIED |

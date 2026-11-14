@@ -41,9 +41,9 @@ const AppContent = () => {
     <>
       <ScrollToTop />
       {!isAdminRoute && !isCheckoutRoute && <Popup />}
-      <div className={isAdminRoute ? 'admin-app-root' : (isCheckoutRoute ? 'checkout-app-root' : 'app-container')}>
-        {!isAdminRoute && !isCheckoutRoute && <Header />}
-        <main className={isAdminRoute ? 'admin-main-wrapper' : (isCheckoutRoute ? 'checkout-main-wrapper' : 'main-content')}>
+      <div className={isAdminRoute ? 'admin-app-root' : 'app-container'}>
+        {!isAdminRoute && <Header />}
+        <main className={isAdminRoute ? 'admin-main-wrapper' : 'main-content'}>
           <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', fontSize: '1.2rem', color: 'var(--color-primary)' }}>Loading...</div>}>
             <Routes>
               <Route path="/" element={<HomePage />} />
@@ -76,7 +76,7 @@ const AppContent = () => {
             </Routes>
           </Suspense>
         </main>
-        {!isAdminRoute && !isCheckoutRoute && <Footer />}
+        {!isAdminRoute && <Footer />}
       </div>
     </>
   );

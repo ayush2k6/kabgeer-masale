@@ -1,5 +1,32 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.18: Global Header/Footer Restoration, Sleek Custom Left-Bar Scrollbar & Overall Design Polish)
+
+### 1. Global Header & Footer Restoration (`src/App.jsx`)
+- Restored the royal brand `<Header />` (navigation, search, cart counter) and `<Footer />` (quick links, social, policies, copyright) on the `/checkout` route as requested.
+- Promotional newsletter popup remains cleanly suppressed on checkout to prevent cart abandonment.
+
+### 2. Sleek, Custom Left-Bar Scrollbar (`src/pages/CheckoutPage.css`, `src/index.css`)
+- **Resolved "Scroll Icon in Left Bar" Issue**:
+  - Replaced the bulky, default Windows 17px grey scrollbar and arrow icons (`::-webkit-scrollbar-button`) with an ultra-thin (6px), translucent rounded pill thumb (`rgba(26, 47, 34, 0.22)`).
+  - Added smooth hover transitions turning into deep royal forest green (`#1a2f22`).
+  - Implemented `scrollbar-width: thin` and `overflow-x: clip` in `src/index.css` to guarantee smooth, non-breaking CSS sticky behavior without horizontal clipping conflicts.
+  - Added matching 5px custom scrollbar for the right sidebar.
+
+### 3. Elevated Overall Checkout Design (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Luxury Split Cards**:
+  - Encased both the left form area and the right summary sidebar in pristine, elevated white surfaces (`#ffffff`, `border: 1px solid #ede8df`, `border-radius: 14px`, `box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03)`) set against a warm heritage cream canvas (`#faf8f5`).
+- **Header & Trust Polish**:
+  - Replaced bulky header with sleek brand logo and green trust badge: `256-Bit SSL Encrypted Checkout`.
+- **BYB Perk Banner**:
+  - Upgraded Build Your Bundle notification with golden crown icon, warm gradient surface (`#fffdf5` to `#fef9e7`), and bold `ACTIVATED` status chip.
+- **Sidebar & Clear Cart**:
+  - Added an integrated `Clear Cart` action with a trash icon in the sidebar header.
+  - Added an `Order Classification: 👑 BYB ORDER` row matching cart and invoice breakdowns.
+- **Pinned Sticky Behavior**:
+  - The right sidebar remains pinned at `top: 90px` directly beneath the Header, staying visible throughout the entire checkout journey while the form scrolls smoothly.
+
+
 ## 2026-11-14 (Part 6.17: Pinned Order Summary Split-Scroll & Error Pop with Auto-Scroll Focus)
 
 ### 1. Pinned Sticky Order Summary with Desktop Split-Scroll (`src/pages/CheckoutPage.css`, `src/index.css`)
