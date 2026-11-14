@@ -94,8 +94,13 @@ function renderFinancialTable(order: any): string {
         </tr>
         ${Number(order.discount || 0) > 0 ? `
         <tr>
-          <td style="padding: 4px 0; color: #16a34a;">Discount</td>
+          <td style="padding: 4px 0; color: #16a34a;">${(order.display_order_id && order.display_order_id.startsWith('BYB')) ? 'Special Discount (Build Your Bundle 10% OFF)' : 'Discount'}</td>
           <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #16a34a;">-₹${Number(order.discount).toFixed(2)}</td>
+        </tr>` : ''}
+        ${(order.display_order_id && order.display_order_id.startsWith('BYB')) ? `
+        <tr>
+          <td style="padding: 4px 0; color: #047857; font-weight: 600;">🎁 2x Mini Masala Boxes (Assorted Sample Pack)</td>
+          <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #047857;">FREE (Included)</td>
         </tr>` : ''}
         <tr>
           <td style="padding: 4px 0; color: #64748b;">Standard Express Shipping</td>

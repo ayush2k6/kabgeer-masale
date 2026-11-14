@@ -50,8 +50,8 @@ Current Branch: v1-release / main (Deployed on Vercel)
 
 ## 2. Current Active Part
 
-* **Part Number**: Part 6.12
-* **Part Name**: Coupon Code Tracking, Admin Order Details Upgrade & Order Deletion
+* **Part Number**: Part 6.13
+* **Part Name**: Automatic Build Your Bundle (BYB) Upgrade on 4+ Masalas & Tax Invoice Special Discount Tagging
 * **Current Status**: ✅ 100% COMPLETE & VERIFIED
 * **Completed Components**:
   - `src/components/AdminRoute.jsx`: Stealth redirect to Home (`/`) for any unauthorized visitor attempting to access `/admin`.

@@ -41,21 +41,39 @@ export const CartProvider = ({ children }) => {
     const targetCartItemId = product.cartItemId || `${product.id}__${weight}`;
     const addQty = Math.max(1, quantity);
 
+    const currentTotal = cartItems.reduce((count, item) => count + (Number(item.quantity) || 1), 0);
+    const willQualifyBundle = (currentTotal + addQty) >= 4;
+
     setCartItems(prev => {
       const existing = prev.find(item => (item.cartItemId || `${item.id}__${item.weight || '50g'}`) === targetCartItemId);
       if (existing) {
         return prev.map(item => 
           (item.cartItemId || `${item.id}__${item.weight || '50g'}`) === targetCartItemId
-            ? { ...item, quantity: item.quantity + addQty }
-            : item
+            ? { ...item, quantity: item.quantity + addQty, isBundleItem: willQualifyBundle ? true : item.isBundleItem }
+            : (willQualifyBundle ? { ...item, isBundleItem: true } : item)
         );
       }
       
-      const minQty = product.isBundleItem ? 1 : 2;
+      const minQty = (product.isBundleItem || willQualifyBundle) ? 1 : 2;
       const initialQty = Math.max(minQty, addQty);
-      return [...prev, { ...product, cartItemId: targetCartItemId, quantity: initialQty }];
+      const newItem = { 
+        ...product, 
+        cartItemId: targetCartItemId, 
+        quantity: initialQty, 
+        isBundleItem: willQualifyBundle ? true : Boolean(product.isBundleItem) 
+      };
+
+      if (willQualifyBundle) {
+        return prev.map(item => ({ ...item, isBundleItem: true })).concat(newItem);
+      }
+      return [...prev, newItem];
     });
-    showToast(`${product.name} (${weight}) added to your spice box!`);
+
+    if (currentTotal < 4 && willQualifyBundle) {
+      showToast(`🎉 4 Masalas reached! Upgraded to Build Your Bundle (10% OFF + 2 Free Mini Boxes)!`);
+    } else {
+      showToast(`${product.name} (${weight}) added to your spice box!`);
+    }
   };
 
   const removeFromCart = (cartItemId) => {
@@ -67,7 +85,9 @@ export const CartProvider = ({ children }) => {
       const itemToUpdate = prev.find(item => (item.cartItemId || item.id) === cartItemId);
       if (!itemToUpdate) return prev;
       
-      const minQty = itemToUpdate.isBundleItem ? 1 : 2;
+      const currentTotal = prev.reduce((count, item) => count + (Number(item.quantity) || 1), 0);
+      const isBundle = itemToUpdate.isBundleItem || currentTotal >= 4;
+      const minQty = isBundle ? 1 : 2;
       if (newQuantity < minQty) {
         return prev.filter(item => (item.cartItemId || item.id) !== cartItemId);
       }
@@ -83,7 +103,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const getCartCount = () => {
-    return cartItems.reduce((count, item) => count + item.quantity, 0);
+    return cartItems.reduce((count, item) => count + (Number(item.quantity) || 1), 0);
   };
 
   const clearCart = () => {
@@ -114,16 +134,20 @@ export const CartProvider = ({ children }) => {
     showToast('Coupon removed.');
   };
 
+  // Build Your Bundle (BYB) Logic:
+  // Any 4 masalas in the cart automatically qualify this order as a BYB order!
   const getBundleCartCount = () => {
-    return cartItems.filter(item => item.isBundleItem).length;
+    return cartItems.reduce((count, item) => count + (Number(item.quantity) || 1), 0);
   };
 
   const getBundleCartTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.isBundleItem ? item.price * item.quantity : 0), 0);
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   const isBundleOfferActive = () => {
-    return getBundleCartCount() >= 4;
+    const totalCount = cartItems.reduce((count, item) => count + (Number(item.quantity) || 1), 0);
+    const bundleItemsCount = cartItems.filter(item => item.isBundleItem).length;
+    return totalCount >= 4 || bundleItemsCount >= 4;
   };
 
   const getDiscountAmount = () => {
@@ -132,7 +156,7 @@ export const CartProvider = ({ children }) => {
       return Math.max(0, subtotal - 1);
     }
     if (isBundleOfferActive()) {
-      return getBundleCartTotal() * 0.10;
+      return Math.round(getBundleCartTotal() * 0.10 * 100) / 100;
     }
     return 0;
   };

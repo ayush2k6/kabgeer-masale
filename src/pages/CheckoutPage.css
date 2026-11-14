@@ -656,4 +656,96 @@
   border-top: 1px solid rgba(26, 47, 34, 0.1);
 }
 
+/* =========================================================================
+   Build Your Bundle (BYB) Checkout Banner & Tag Styling
+   ========================================================================= */
+.checkout-byb-banner {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #ecfdf5 100%);
+  border: 1.5px solid #d4af37;
+  border-radius: 12px;
+  padding: 1.1rem 1.35rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.12);
+}
+
+.checkout-byb-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.checkout-byb-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1a2f22;
+  margin: 0 0 0.35rem 0;
+}
+
+.checkout-byb-text {
+  font-size: 0.86rem;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.checkout-byb-text strong {
+  color: #0f172a;
+}
+
+.byb-crown-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #1a2f22;
+  color: #d4af37;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.byb-unlocked-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #047857;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.byb-item-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background-color: rgba(212, 175, 55, 0.15);
+  color: #854d0e;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.byb-type-badge {
+  background: linear-gradient(135deg, #1a2f22 0%, #264632 100%);
+  color: #d4af37;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 

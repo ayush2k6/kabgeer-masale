@@ -1681,6 +1681,21 @@ const AdminDashboardPage = () => {
                       </span>
                     </div>
                   ))}
+                  {(selectedOrder.display_order_id?.startsWith('BYB') || selectedOrder.display_order_id?.includes('BYB')) && (
+                    <div className="drawer-item-row byb-gift-drawer-row" style={{ backgroundColor: '#f0fdf4', border: '1px dashed #16a34a', padding: '8px 10px', borderRadius: '8px', marginTop: '6px' }}>
+                      <div className="drawer-item-meta">
+                        <span className="drawer-item-name" style={{ color: '#047857', fontWeight: 600 }}>
+                          🎁 2x Mini Masala Boxes (Assorted Sample Pack)
+                        </span>
+                        <span className="drawer-item-qty" style={{ color: '#15803d' }}>
+                          Qty: 2 • Complimentary BYB Offer Gift
+                        </span>
+                      </div>
+                      <span className="drawer-item-total" style={{ color: '#047857', fontWeight: 700 }}>
+                        FREE
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1691,7 +1706,25 @@ const AdminDashboardPage = () => {
                 </div>
 
                 {/* Prominent Coupon / Promotion Banner */}
-                {getOrderCoupon(selectedOrder) ? (
+                {selectedOrder.display_order_id?.startsWith('BYB') || selectedOrder.display_order_id?.includes('BYB') ? (
+                  <div className="drawer-coupon-callout-card bundle-promo">
+                    <div className="coupon-callout-header">
+                      <div className="coupon-pill-large bundle">
+                        <Sparkles size={13} />
+                        <span>👑 BUILD YOUR BUNDLE (BYB) ORDER</span>
+                      </div>
+                      <span className="coupon-applied-status">✓ 10% Off + 2 Free Mini Boxes</span>
+                    </div>
+                    <div className="coupon-callout-desc">
+                      Customer ordered 4+ royal masalas, qualifying for <strong>Build Your Bundle (BYB)</strong>.
+                      {getOrderCoupon(selectedOrder) ? (
+                        <> Promo code <code>{getOrderCoupon(selectedOrder)}</code> applied (Saved <strong>₹{Number(selectedOrder.discount).toFixed(2)}</strong>).</>
+                      ) : (
+                        <> Saved <strong>₹{Number(selectedOrder.discount).toFixed(2)}</strong> with 10% Bundle Discount.</>
+                      )}
+                    </div>
+                  </div>
+                ) : getOrderCoupon(selectedOrder) ? (
                   <div className="drawer-coupon-callout-card">
                     <div className="coupon-callout-header">
                       <div className="coupon-pill-large">
@@ -1728,7 +1761,11 @@ const AdminDashboardPage = () => {
                     <div className="summary-flex-row" style={{ color: '#047857', fontWeight: 600 }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                         {getOrderCoupon(selectedOrder) ? <Tag size={12} /> : <Sparkles size={12} />}
-                        Discount {getOrderCoupon(selectedOrder) ? `(${getOrderCoupon(selectedOrder)})` : '(Bundle 10% Off)'}
+                        Special Discount {
+                          (selectedOrder.display_order_id?.startsWith('BYB') || selectedOrder.display_order_id?.includes('BYB'))
+                            ? (getOrderCoupon(selectedOrder) ? `(BYB • ${getOrderCoupon(selectedOrder)})` : '(Build Your Bundle 10% Off)')
+                            : (getOrderCoupon(selectedOrder) ? `(${getOrderCoupon(selectedOrder)})` : '')
+                        }
                       </span>
                       <span>-₹{Number(selectedOrder.discount).toFixed(2)}</span>
                     </div>

@@ -144,6 +144,13 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
   const discount = Number(order.discount) || 0;
   const shippingFee = Number(order.shipping_fee) || 0;
   const totalQty = items.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
+  const isBybOrder = Boolean(
+    order.display_order_id?.startsWith('BYB') ||
+    order.display_order_id?.includes('BYB') ||
+    order.is_bundle ||
+    totalQty >= 4
+  );
+  const couponCode = order.coupon_code || null;
 
   // Accurate GST breakdown (5% inclusive on spices)
   const isIntraState = String(addr.state || '').toLowerCase().includes('uttar pradesh') || String(addr.state || '').toLowerCase() === 'up';
@@ -288,7 +295,14 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                 <div className="t-row t-barcode-section">
                   <div className="t-barcode-meta">
                     <span className="t-meta-label">ORDER / INVOICE NO:</span>
-                    <span className="t-order-id-val">#{displayOrderId}</span>
+                    <span className="t-order-id-val">
+                      #{displayOrderId}
+                      {isBybOrder && (
+                        <span style={{ marginLeft: '6px', fontSize: '7pt', backgroundColor: '#1a2f22', color: '#d4af37', padding: '1px 5px', borderRadius: '3px', fontWeight: 800 }}>
+                          BYB
+                        </span>
+                      )}
+                    </span>
                     <span className="t-date-val">{formattedDate}</span>
                   </div>
                   <SvgBarcode value={awbNumber || displayOrderId} height={34} />
@@ -346,6 +360,15 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                         <span className="t-item-price">₹{(Number(it.total_price) || (Number(it.unit_price) * it.quantity) || 0).toFixed(0)}</span>
                       </div>
                     ))}
+                    {isBybOrder && (
+                      <div className="t-item-line" style={{ color: '#047857', fontWeight: 'bold', fontSize: '7.5pt' }}>
+                        <span className="t-item-name">
+                          ★ 2X FREE MINI MASALA BOXES (BYB PROMO)
+                        </span>
+                        <span className="t-item-qty">2</span>
+                        <span className="t-item-price">FREE</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -355,6 +378,11 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                     <div className="t-subtotal">Taxable Value: ₹{taxableSubtotal.toFixed(0)}</div>
                     <div className="t-gst">GST (5% Inclusive): ₹{totalGst.toFixed(0)}</div>
                     <div className="t-shipping">Shipping: {shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(0)}`}</div>
+                    {discount > 0 && (
+                      <div className="t-discount" style={{ color: '#047857', fontWeight: 'bold' }}>
+                        Discount: -₹{discount.toFixed(0)} {isBybOrder ? '(BYB Promo)' : ''}
+                      </div>
+                    )}
                   </div>
                   <div className="t-grand-total">
                     <span className="t-total-label">TOTAL PAID:</span>
@@ -633,7 +661,16 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                       </div>
                       {discount > 0 && (
                         <div className="a4-fin-row a4-fin-discount">
-                          <span>Special Discount:</span>
+                          <span>
+                            {isBybOrder
+                              ? (couponCode
+                                  ? `Special Discount (Build Your Bundle • ${couponCode}):`
+                                  : 'Special Discount (Build Your Bundle - 10% Off):')
+                              : (couponCode
+                                  ? `Special Discount (Coupon: ${couponCode}):`
+                                  : 'Special Discount:')
+                            }
+                          </span>
                           <span>-₹{discount.toFixed(2)}</span>
                         </div>
                       )}
@@ -666,6 +703,11 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                         <span>GRAND TOTAL:</span>
                         <span>₹{totalAmount.toFixed(2)}</span>
                       </div>
+                      {isBybOrder && (
+                        <div className="a4-byb-inclusion-badge">
+                          👑 <strong>BYB PROMO INCLUDED:</strong> 2x Free Mini Masala Boxes Packed With Order
+                        </div>
+                      )}
                     </div>
 
                     {/* Authorized Signatory Box */}

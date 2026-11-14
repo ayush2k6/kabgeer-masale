@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { X, ShoppingBag, Plus, Minus, Trash2, Tag, ArrowRight, Truck, Sparkles, Check } from 'lucide-react';
+import { X, ShoppingBag, Plus, Minus, Trash2, Tag, ArrowRight, Truck, Sparkles, Check, Crown, Gift } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { PRODUCTS } from '../data/products';
 import './CartDrawer.css';
@@ -39,11 +39,9 @@ const CartDrawer = () => {
   const finalTotal = isTestCoupon ? 1 : Math.max(0, subtotal - discount + shippingFee);
   
   const cartCount = getCartCount();
-  const bundleCount = getBundleCartCount();
   const bundleOfferActive = isBundleOfferActive();
-  const itemsToBundleOffer = Math.max(0, 4 - bundleCount);
-  const bundleProgress = Math.min(100, (bundleCount / 4) * 100);
-  const showBundleProgress = location.pathname === '/bundle' || bundleCount > 0;
+  const itemsToBundleOffer = Math.max(0, 4 - cartCount);
+  const bundleProgress = Math.min(100, (cartCount / 4) * 100);
 
   // Filter 2 add-on products not yet in cart
   const addOnProducts = PRODUCTS.filter(p => !cartItems.some(item => item.id === p.id)).slice(0, 2);
@@ -78,6 +76,11 @@ const CartDrawer = () => {
             <span className="drawer-items-count">
               ({totalItems} {totalItems === 1 ? 'item' : 'items'})
             </span>
+            {bundleOfferActive && (
+              <span className="drawer-byb-header-badge" title="Build Your Bundle Order Active">
+                <Crown size={12} /> BYB Order
+              </span>
+            )}
           </div>
           <button className="drawer-close-btn" onClick={closeCartDrawer} aria-label="Close cart">
             <X size={20} />
@@ -85,27 +88,40 @@ const CartDrawer = () => {
         </div>
 
         <div className="cart-drawer-body">
-          {/* Bundle Offer Progress Bar */}
-          {showBundleProgress && (
-            <div className="free-shipping-bar-container" style={{ background: 'rgba(212, 175, 55, 0.05)' }}>
-              <div className="shipping-bar-header">
-                {!bundleOfferActive ? (
+          {/* Bundle Offer State: Progress or Celebratory Showcase */}
+          {cartItems.length > 0 && (
+            bundleOfferActive ? (
+              <div className="byb-active-showcase-card">
+                <div className="byb-showcase-badge-row">
+                  <span className="byb-crown-pill">
+                    <Crown size={12} /> ROYAL BYB ORDER ACTIVATED
+                  </span>
+                  <span className="byb-unlocked-pill">
+                    <Check size={11} /> 10% OFF + 2 FREE BOXES
+                  </span>
+                </div>
+                <div className="byb-showcase-title">
+                  ✨ Wah! Order Upgraded to <em>Build Your Bundle (BYB)</em>
+                </div>
+                <p className="byb-showcase-desc">
+                  Aapke box me <strong>{totalItems} royal masalas</strong> add ho chuke hain! This order has been automatically upgraded to a <strong>Build Your Bundle (BYB)</strong> order — enjoying <strong>10% instant savings</strong> and <strong>2 complimentary Mini Masala Boxes</strong>!
+                </p>
+              </div>
+            ) : (
+              <div className="free-shipping-bar-container" style={{ background: 'rgba(212, 175, 55, 0.05)' }}>
+                <div className="shipping-bar-header">
                   <p className="shipping-bar-text">
-                    <strong>Build your bundle:</strong> Add <strong className="gold-text">{itemsToBundleOffer}</strong> more {itemsToBundleOffer === 1 ? 'item' : 'items'} to unlock <strong className="gold-text">10% OFF + 2 FREE Mini Boxes! 🎁</strong>
+                    <strong>👑 Build Your Bundle (BYB):</strong> Add <strong className="gold-text">{itemsToBundleOffer}</strong> more {itemsToBundleOffer === 1 ? 'masala' : 'masalas'} to automatically unlock <strong className="gold-text">10% OFF + 2 FREE Mini Boxes! 🎁</strong>
                   </p>
-                ) : (
-                  <p className="shipping-bar-text green-text">
-                    🎉 Bundle Complete! You unlocked <strong>10% OFF + 2 FREE Mini Boxes!</strong>
-                  </p>
-                )}
+                </div>
+                <div className="progress-track" style={{ background: 'rgba(212, 175, 55, 0.15)' }}>
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${bundleProgress}%`, background: 'linear-gradient(90deg, #b59226 0%, #d4af37 100%)' }}
+                  ></div>
+                </div>
               </div>
-              <div className="progress-track" style={{ background: 'rgba(212, 175, 55, 0.15)' }}>
-                <div
-                  className="progress-fill"
-                  style={{ width: `${bundleProgress}%`, background: 'linear-gradient(90deg, #b59226 0%, #d4af37 100%)' }}
-                ></div>
-              </div>
-            </div>
+            )
           )}
 
           {cartItems.length === 0 ? (
@@ -132,7 +148,14 @@ const CartDrawer = () => {
                         <img src={item.image || item.images?.[0]} alt={item.name} />
                       </div>
                       <div className="drawer-item-info">
-                        <h4 className="drawer-item-title">{item.name}</h4>
+                        <div className="drawer-item-title-row">
+                          <h4 className="drawer-item-title">{item.name}</h4>
+                          {bundleOfferActive && (
+                            <span className="byb-item-pill" title="Part of Build Your Bundle Order">
+                              <Crown size={9} /> BYB Item
+                            </span>
+                          )}
+                        </div>
                         <p className="drawer-item-weight">• {item.weight || (item.weightInGrams ? `${item.weightInGrams}g` : '50g')}</p>
                         
                         <div className="drawer-item-controls">
@@ -161,6 +184,20 @@ const CartDrawer = () => {
                   );
                 })}
               </div>
+
+              {/* Complimentary Free Gift Box Card when BYB is Active */}
+              {bundleOfferActive && (
+                <div className="drawer-byb-free-gift-box">
+                  <div className="drawer-byb-gift-icon-wrap">
+                    <Gift size={20} color="#b45309" />
+                  </div>
+                  <div className="drawer-byb-gift-info">
+                    <div className="drawer-byb-gift-title">2x Mini Masala Boxes (Assorted Sample Pack)</div>
+                    <div className="drawer-byb-gift-subtitle">Complimentary royal chef curation • Packed free with this BYB order</div>
+                  </div>
+                  <span className="drawer-byb-gift-badge">FREE</span>
+                </div>
+              )}
 
               {/* Frequently Bought Together Add-ons (Spacious & Non-cramped) */}
               {addOnProducts.length > 0 && (
@@ -228,14 +265,27 @@ const CartDrawer = () => {
               </div>
               {discount > 0 && (
                 <div className="summary-row discount-row">
-                  <span>Discount {bundleOfferActive ? '(Bundle 10% OFF)' : (appliedCoupon ? `(${appliedCoupon.code})` : '')}</span>
+                  <span>
+                    {bundleOfferActive
+                      ? (appliedCoupon ? `Discount (BYB Order • ${appliedCoupon.code})` : 'Special Discount (Build Your Bundle 10% OFF)')
+                      : (appliedCoupon ? `Discount (${appliedCoupon.code})` : 'Discount')
+                    }
+                  </span>
                   <span className="summary-val">-₹{discount.toFixed(2)}</span>
                 </div>
               )}
               {bundleOfferActive && (
-                <div className="summary-row" style={{ color: '#27ae60', fontWeight: '500' }}>
-                  <span><Sparkles size={13} style={{marginRight: '4px', verticalAlign: 'middle'}}/> 2 Mini Masala Boxes</span>
-                  <span className="summary-val">FREE</span>
+                <div className="summary-row" style={{ color: '#047857', fontWeight: '600' }}>
+                  <span><Gift size={13} style={{marginRight: '5px', verticalAlign: 'middle'}}/> 2 Mini Masala Boxes</span>
+                  <span className="summary-val" style={{ color: '#047857', fontWeight: 700 }}>FREE (Included)</span>
+                </div>
+              )}
+              {bundleOfferActive && (
+                <div className="summary-row byb-summary-status-row">
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#b45309', fontWeight: 600 }}>
+                    <Crown size={13} /> Order Classification
+                  </span>
+                  <span className="byb-type-badge">👑 BYB ORDER</span>
                 </div>
               )}
               <div className="summary-row">

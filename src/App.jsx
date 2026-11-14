@@ -58,6 +58,7 @@ const AppContent = () => {
               <Route path="/products" element={<CataloguePage />} />
               <Route path="/product/:id" element={<ProductPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/cart" element={<Navigate to="/checkout" replace />} />
               <Route path="/order-success" element={<OrderSuccessPage />} />
               <Route path="/bundle" element={<BuildBundlePage />} />
               <Route path="/bulk" element={<BulkEnquiryPage />} />

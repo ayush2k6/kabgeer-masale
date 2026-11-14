@@ -1,5 +1,61 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-14 (Part 6.13: Automatic Build Your Bundle (BYB) Upgrade on 4+ Masalas & Tax Invoice Special Discount Tagging)
+
+### 1. Automatic BYB Upgrade on Any 4 Masalas (`src/context/CartContext.jsx`)
+- **Universal 4+ Masalas Detection**:
+  - Automatically upgrades the order to **Build Your Bundle (BYB)** whenever 4 or more masalas are added to the cart (total units >= 4, unique masalas >= 4, or bundle items >= 4), regardless of whether they were added from the Catalogue, Homepage, or Build Your Bundle page.
+  - Automatically unlocks the **10% Flat Bundle Discount** on the full masala box and adds **2 Complimentary Chef's Mini Masala Boxes**.
+  - Automatically adjusts MOQ so customers have full flexibility to select quantities of 1 once the 4-masala bundle threshold is reached.
+  - Added instant celebratory toast: *"🎉 4 Masalas reached! Upgraded to Build Your Bundle (10% OFF + 2 Free Mini Boxes)!"*
+
+### 2. Creative Awadhi Cart Reflection (`src/components/CartDrawer.jsx`, `src/components/CartDrawer.css`)
+- **Celebratory Showcase Card (`.byb-active-showcase-card`)**:
+  - Prominent gold & emerald Awadhi showcase banner: `👑 ROYAL BYB ORDER ACTIVATED` with verified badge `✓ 10% OFF + 2 FREE GIFTS`.
+  - Creative copy celebrating the customer's selection of 4+ royal masalas and instant savings.
+- **Cart Item Curation Badge**:
+  - Added miniature gold tag (`👑 BYB Item`) on every masala item in the cart.
+- **Complimentary Free Gift Box Card (`.drawer-byb-free-gift-box`)**:
+  - Itemized free sample pack display: `🎁 2x Mini Masala Boxes (Assorted Sample Pack) — FREE (Included)`.
+- **Financial Summary Updates**:
+  - Discount row explicitly reflects `Special Discount (Build Your Bundle 10% OFF)` (or `Discount (BYB Order • {COUPON})`).
+  - Added dedicated `Order Classification: 👑 BYB ORDER` pill.
+
+### 3. Checkout Page Reflection (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Creative BYB Activation Banner (`.checkout-byb-banner`)**:
+  - Displayed at the top of checkout: *"Royal Awadhi Build Your Bundle Curation Active"*.
+- **Order Summary Sidebar**:
+  - Added `👑 BYB ORDER` badge next to the item count.
+  - Each item displays `(BYB Item)` tag.
+  - Displayed elevated 2x Free Mini Masala Boxes gift item.
+  - Financial summary displays `Special Discount (Build Your Bundle 10% OFF)` and `Order Classification: 👑 BYB ORDER`.
+  - Payload sends authoritative `isBundle: true` to the server-side Edge Function.
+
+### 4. Deliverable Tax Invoice & Shipping Label (`src/components/PrintableThermalBill.jsx`, `src/components/PrintableThermalBill.css`)
+- **Premium A4 Tax Invoice Special Discount Section**:
+  - Updated the Special Discount row under the invoice table to explicitly reflect BYB order status:
+    * Standard BYB order: `Special Discount (Build Your Bundle - 10% Off): -₹XX.XX`
+    * BYB order with coupon: `Special Discount (Build Your Bundle • {COUPON}): -₹XX.XX`
+  - Added promotional inclusion badge under the grand total: `👑 BYB PROMO INCLUDED: 2x Free Mini Masala Boxes Packed With Order`.
+- **4"x6" Thermal Sticker**:
+  - Added `[BYB]` label badge next to Order ID.
+  - Added `★ 2X FREE MINI MASALA BOXES (BYB PROMO)` line item in manifest.
+  - Added `Discount: -₹XX (BYB Promo)` in the totals breakdown.
+
+### 5. Admin Dashboard & Confirmation Email Alignment
+- **Admin Order Details Drawer (`src/pages/AdminDashboardPage.jsx`)**:
+  - Callout card highlights `👑 BUILD YOUR BUNDLE (BYB) ORDER` with discount details and coupon code.
+  - Drawer items list includes `🎁 2x Mini Masala Boxes (Assorted Sample Pack) — Complimentary BYB Offer Gift: FREE`.
+  - Financial summary row displays `Special Discount (Build Your Bundle 10% Off)`.
+- **Order Success Page (`src/pages/OrderSuccessPage.jsx`)**:
+  - Rendered royal celebratory BYB confirmation card on successful payment.
+- **Order Confirmation Email (`supabase/functions/send-order-email/index.ts`)**:
+  - Displays `Special Discount (Build Your Bundle 10% OFF)` and complimentary 2x Mini Masala Boxes line item.
+- **Storefront Route (`src/App.jsx`)**:
+  - Added `/cart` route redirecting directly to `/checkout` with full cart context.
+
+---
+
 ## 2026-10-29 (Part 6.12: Coupon Code Visibility & Admin Single Order Deletion)
 
 ### 1. Coupon Code Tracking & Visibility

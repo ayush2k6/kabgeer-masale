@@ -100,6 +100,23 @@ const OrderSuccessPage = () => {
             Your authentic Lucknavi spices are being prepared with care and fresh aroma.
           </p>
 
+          {/* Celebratory BYB Confirmation Banner */}
+          {(order?.display_order_id?.startsWith('BYB') || order?.display_order_id?.includes('BYB')) && (
+            <div className="order-success-byb-banner" style={{ background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #ecfdf5 100%)', border: '1.5px solid #d4af37', borderRadius: '12px', padding: '1rem 1.25rem', margin: '1rem 0 1.5rem 0', textAlign: 'left', boxShadow: '0 4px 14px rgba(212, 175, 55, 0.12)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                <span style={{ backgroundColor: '#1a2f22', color: '#d4af37', fontSize: '0.72rem', fontWeight: 800, padding: '3px 8px', borderRadius: '5px', letterSpacing: '0.04em' }}>
+                  👑 ROYAL BUILD YOUR BUNDLE (BYB)
+                </span>
+                <span style={{ backgroundColor: '#047857', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: '5px' }}>
+                  ✓ 10% SAVINGS + 2 FREE MINI BOXES
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.86rem', color: '#334155', lineHeight: '1.45' }}>
+                Aapka order <strong>Build Your Bundle (BYB)</strong> ke roop me record ho chuka hai! Your shipment includes an instant <strong>10% savings</strong> and <strong>2 Complimentary Chef's Mini Masala Sample Boxes</strong>!
+              </p>
+            </div>
+          )}
+
           {/* Quick Info Grid */}
           <div className="order-quick-info-grid">
             <div className="order-quick-info-cell">
