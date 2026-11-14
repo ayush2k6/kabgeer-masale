@@ -1,5 +1,35 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.20: Commercial GST & Pricing Mathematical Rigor, Invoice Audit Alignment & Checkout Micro-Polish)
+
+### 1. Accurate Post-Discount GST Computation (`src/pages/CheckoutPage.jsx`)
+- **Resolved Pre-Discount Tax Discrepancy**:
+  - Previously, the checkout grand total note computed inclusive GST on the raw catalog subtotal (`subtotal * 0.05 / 1.05`), displaying `Inclusive of ₹15.05 GST` even when an active 10% BYB discount (`-₹31.60`) reduced goods to `₹284.40` or a test coupon reduced goods to `₹1.00`.
+  - Updated calculation to compute statutory GST on the actual net discounted goods value (`netGoodsAmount = Math.max(0, subtotal - discount)`):
+    * Standard BYB order (`₹284.40` net goods): Displays exact `Inclusive of ₹13.54 GST` (5% inclusive on ₹270.86 taxable value).
+    * Live test coupon `TESTPAY1` (`₹1.00` net): Displays exact `Inclusive of ₹0.05 GST` (5% inclusive on ₹0.95 taxable value).
+    * Regular non-bundle order (`₹158.00` goods): Displays exact `Inclusive of ₹7.52 GST` (5% inclusive on ₹150.48 taxable value).
+  - Synchronized mobile summary totals row with `(Incl. ₹{inclusiveGst} GST)`.
+
+### 2. A4 Tax Invoice Table-Footer Mathematical Unity (`src/components/PrintableThermalBill.jsx`)
+- **Unified Line Items, Trade Discounts & Column Sums**:
+  - Fixed discrepancy where the invoice table rows showed pre-discount amounts (`₹158.00 + ₹158.00 = ₹316.00`) while the table footer displayed post-discount values (`₹1.00` or `₹334.40`), causing columns to appear disconnected.
+  - Added an official trade discount row (`a4-discount-row`) in `<tbody>` itemizing special BYB or promotional coupon discounts under Section 15(3) of the CGST Act with exact negative Rate, Taxable Value, GST, and Amount.
+  - Table footer and financial summary card now agree 100% across all columns:
+    * `Sum(Taxable Value) === totalTaxable`
+    * `Sum(GST) === totalGst`
+    * `Sum(Amount) === totalAmount`
+    * `totalTaxable + totalGst === totalAmount` (zero rounding discrepancy).
+
+### 3. Checkout UX Micro-Polish & Transparency (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Per-Unit Price Clarification**:
+  - When quantity > 1, item lines now explicitly display unit rates (`• ₹79.00 each`), eliminating ambiguity between line totals and individual pack prices.
+- **Automatic Coupon Uppercasing**:
+  - Real-time uppercase formatting on coupon input to prevent lowercase typing confusion.
+- **Automated Mathematical Rigor Suite**:
+  - Created `security-tests/test-math-accuracy.mjs` verifying standard BYB, live test mode, and regular orders across all accounting dimensions with 100% pass rate.
+
+
 ## 2026-11-15 (Part 6.19: World-Class Luxury Checkout Redesign — Stripe / Shopify Plus Standard)
 
 ### 1. Unified Natural Page Scroll with Pinned Order Summary (`src/pages/CheckoutPage.css`)

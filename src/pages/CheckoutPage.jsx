@@ -86,6 +86,11 @@ const CheckoutPage = () => {
     cartItems.some(item => item.isBundleItem)
   );
 
+  // Accurate post-discount GST (5% inclusive on net goods amount)
+  const netGoodsAmount = isTestCoupon ? 1 : Math.max(0, subtotal - discount);
+  const inclusiveGst = Math.round((netGoodsAmount * 0.05 / 1.05) * 100) / 100;
+  const taxableGoodsAmount = Math.round((netGoodsAmount - inclusiveGst) * 100) / 100;
+
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -571,7 +576,10 @@ const CheckoutPage = () => {
                     <span>₹{shippingFee.toFixed(2)}</span>
                   </div>
                   <div className="mob-row mob-row-total">
-                    <strong>Total</strong>
+                    <div>
+                      <strong>Total</strong>
+                      <span className="mob-tax-note"> (Incl. ₹{inclusiveGst.toFixed(2)} GST)</span>
+                    </div>
                     <strong>₹{finalTotal.toFixed(2)}</strong>
                   </div>
                 </div>
@@ -959,7 +967,12 @@ const CheckoutPage = () => {
                         </span>
                       </div>
                       <div className="item-sub-row">
-                        <span className="item-weight">{item.weight || '50g'}</span>
+                        <span className="item-weight">
+                          {item.weight || '50g'}
+                          {item.quantity > 1 && (
+                            <span className="unit-price-hint"> • ₹{Number(item.price).toFixed(2)} each</span>
+                          )}
+                        </span>
                         <div className="item-controls">
                           <button 
                             type="button"
@@ -1032,7 +1045,7 @@ const CheckoutPage = () => {
                       type="text"
                       placeholder="Discount or coupon code"
                       value={couponInput}
-                      onChange={(e) => setCouponInput(e.target.value)}
+                      onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
                       className="coupon-field"
                     />
                   </div>
@@ -1088,7 +1101,7 @@ const CheckoutPage = () => {
                   <div className="totals-row total-grand-row">
                     <div className="grand-label-col">
                       <span className="grand-title">Total Amount</span>
-                      <span className="taxes-note">Inclusive of ₹{(subtotal * 0.05 / 1.05).toFixed(2)} GST</span>
+                      <span className="taxes-note">Inclusive of ₹{inclusiveGst.toFixed(2)} GST</span>
                     </div>
                     <div className="grand-val-col">
                       <span className="currency-unit">INR</span>
