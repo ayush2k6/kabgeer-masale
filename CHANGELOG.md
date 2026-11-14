@@ -1,5 +1,21 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.21: Luxury Centered Empty Checkout State)
+
+### 1. Replaced Broken Empty Split-View with Luxury Centered View (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Resolved "Cart Empty Form Still Visible" Flaw**:
+  - Previously, when the cart was emptied (via "Clear Cart" or direct navigation with 0 items), the page retained the entire two-column checkout form on the left (asking for email, name, address, phone, and payment) while only showing "Your cart is empty" in the right sidebar.
+  - Added an early return rendering a centered, luxury Empty Cart State (`checkout-empty-card`) on the heritage cream background.
+- **Visual Design & Conversion Features**:
+  - Royal spice bag badge with circular emblem and `0` item counter.
+  - `👑 KABGEER MASALE` golden status pill with `Your Spice Box is Empty` title and heritage copy.
+  - High-conversion call-to-actions:
+    * Primary CTA: `Explore Royal Masalas →` (links to `/products`).
+    * Secondary CTA: `👑 Build Your Bundle (Save 10%)` (links to `/build-bundle`).
+  - High-trust assurance strip: `100% Authentic Awadhi Heritage`, `2 Free Mini Boxes on Any 4 Masalas`, `Express Insured Pan-India Doorstep Delivery`.
+  - Full mobile responsiveness ensuring buttons stack comfortably on small screens.
+
+
 ## 2026-11-15 (Part 6.20: Commercial GST & Pricing Mathematical Rigor, Invoice Audit Alignment & Checkout Micro-Polish)
 
 ### 1. Accurate Post-Discount GST Computation (`src/pages/CheckoutPage.jsx`)

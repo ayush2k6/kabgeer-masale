@@ -476,6 +476,55 @@ const CheckoutPage = () => {
     }
   };
 
+  // Render Luxury Empty Cart State when cart is empty
+  if (cartItems.length === 0) {
+    return (
+      <div className="checkout-page empty-checkout-page">
+        <div className="checkout-empty-container">
+          <div className="checkout-empty-card">
+            <div className="empty-card-icon-wrap">
+              <ShoppingBag size={42} className="empty-cart-icon text-emerald" />
+              <span className="empty-icon-badge">0</span>
+            </div>
+
+            <span className="empty-royal-pill">👑 KABGEER MASALE</span>
+            <h1 className="empty-card-title">Your Spice Box is Empty</h1>
+            <p className="empty-card-desc">
+              You don't have any masalas in your cart to checkout. 
+              Explore our handcrafted 65-year-old authentic Lucknowi formulations or build a bespoke bundle with 10% flat savings and complimentary chef's sample boxes!
+            </p>
+
+            <div className="empty-card-actions">
+              <Link to="/products" className="btn-empty-primary">
+                <span>Explore Royal Masalas</span>
+                <ChevronRight size={16} />
+              </Link>
+              <Link to="/build-bundle" className="btn-empty-secondary">
+                <Crown size={15} color="#b59226" />
+                <span>Build Your Bundle (Save 10%)</span>
+              </Link>
+            </div>
+
+            <div className="empty-trust-features">
+              <div className="empty-feature-item">
+                <ShieldCheck size={15} className="text-emerald" />
+                <span>100% Authentic Awadhi Heritage</span>
+              </div>
+              <div className="empty-feature-item">
+                <Crown size={15} color="#b59226" />
+                <span>2 Free Mini Masala Boxes on Any 4 Masalas</span>
+              </div>
+              <div className="empty-feature-item">
+                <Truck size={15} className="text-emerald" />
+                <span>Express Insured Pan-India Doorstep Delivery</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="checkout-page">
       {/* Floating Pop Notification for validation errors or unfilled info */}

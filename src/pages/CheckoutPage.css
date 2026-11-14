@@ -1340,3 +1340,175 @@
   color: #64748b;
   font-weight: 400;
 }
+
+/* ==========================================================================
+   LUXURY EMPTY CHECKOUT STATE
+   ========================================================================== */
+
+.empty-checkout-page {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem 1.25rem 5rem;
+  background-color: var(--color-background-warm, #faf8f5);
+}
+
+.checkout-empty-container {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.checkout-empty-card {
+  background: #ffffff;
+  border: 1px solid #ede8df;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(26, 47, 34, 0.04);
+  padding: 3.5rem 2.25rem;
+  text-align: center;
+}
+
+.empty-card-icon-wrap {
+  width: 86px;
+  height: 86px;
+  background: rgba(4, 120, 87, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  position: relative;
+  border: 1px solid rgba(4, 120, 87, 0.15);
+}
+
+.empty-icon-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #1a2f22;
+  color: #d4af37;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+}
+
+.empty-royal-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #b59226;
+  background: #fffdf5;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 0.85rem;
+  text-transform: uppercase;
+}
+
+.empty-card-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #1a2f22;
+  margin-bottom: 0.85rem;
+  letter-spacing: -0.02em;
+}
+
+.empty-card-desc {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #64748b;
+  margin-bottom: 2.25rem;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.empty-card-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.btn-empty-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1a2f22;
+  color: #ffffff !important;
+  padding: 0.85rem 1.75rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(26, 47, 34, 0.2);
+}
+
+.btn-empty-primary:hover {
+  background: #233e2d;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(26, 47, 34, 0.28);
+}
+
+.btn-empty-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fffdf5;
+  color: #1a2f22 !important;
+  border: 1px solid #d4af37;
+  padding: 0.85rem 1.75rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-empty-secondary:hover {
+  background: #fbf6ea;
+  transform: translateY(-1px);
+}
+
+.empty-trust-features {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #f1ece5;
+  padding-top: 1.75rem;
+  align-items: center;
+}
+
+.empty-feature-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+@media (max-width: 600px) {
+  .checkout-empty-card {
+    padding: 2.5rem 1.5rem;
+  }
+  .empty-card-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-empty-primary,
+  .btn-empty-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
