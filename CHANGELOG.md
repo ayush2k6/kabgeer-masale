@@ -1,5 +1,25 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-14 (Part 6.16: Minimalist, Clean & Professional Checkout Redesign — Shopify Standard)
+
+### 1. Simple, Clean, Non-Overwhelming Form Architecture (`src/pages/CheckoutPage.jsx`)
+- **De-cluttered Layout**:
+  - Removed bulky nested cards, large numeric step circles, repetitive sub-headings, and excessive badges.
+  - Adopted clean, flowing Shopify/Stripe standard sections: `Contact`, `Delivery`, `Shipping method`, and `Payment`.
+  - Maintained the requested **PIN Code First** delivery flow:
+    * Clean PIN code field with subtle inline auto-detection status (`✓ Lucknow, Uttar Pradesh`).
+    * City and State displayed side by side directly beneath PIN code, auto-filled yet easily editable.
+    * Street address, optional apartment/landmark, and phone number laid out with crisp spacing.
+  - Replaced bulky cards with a single sleek action button: `Pay ₹{finalTotal}`.
+
+### 2. Pure, Minimalist Styling (`src/pages/CheckoutPage.css`)
+- **Refined Typography & Inputs**:
+  - Crisp, white background with standard 1px borders (`#d1d5db`), 6px border-radius, clean 14px text.
+  - Minimal, single-line alert banner for Build Your Bundle offer (`.byb-minimal-banner`).
+  - Clean radio rows for shipping and payment methods without visual clutter.
+  - Streamlined sticky sidebar with neat product line items, coupon form, and clear financial breakdown.
+
+
 ## 2026-11-14 (Part 6.15: Complete Checkout Page Redesign with PIN Code First & Auto-Location)
 
 ### 1. PIN Code First Flow with Instant City/State Auto-Detection (`src/pages/CheckoutPage.jsx`)
