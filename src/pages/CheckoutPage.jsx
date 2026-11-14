@@ -460,15 +460,40 @@ const CheckoutPage = () => {
                     </div>
                   );
                 })}
+
+                {isBundle && (
+                  <div className="mobile-summary-item-row" style={{ backgroundColor: '#f0fdf4', padding: '6px 8px', borderRadius: '6px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '4px', backgroundColor: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Gift size={16} color="#047857" />
+                    </div>
+                    <div className="mobile-summary-item-meta" style={{ flex: 1, paddingLeft: '8px' }}>
+                      <span className="mobile-item-title" style={{ color: '#047857', fontWeight: 600 }}>2x Mini Masala Boxes (Assorted Pack)</span>
+                      <span className="mobile-item-qty" style={{ color: '#059669' }}>Complimentary Gift (Qty: 2)</span>
+                    </div>
+                    <span className="mobile-item-price" style={{ color: '#047857', fontWeight: 700 }}>FREE</span>
+                  </div>
+                )}
+
                 <div className="mobile-summary-totals">
                   <div className="mob-sum-row">
                     <span>Subtotal</span>
                     <span>₹{subtotal.toFixed(2)}</span>
                   </div>
                   {discount > 0 && (
-                    <div className="mob-sum-row" style={{ color: '#16a34a' }}>
-                      <span>Discount ({appliedCoupon?.code || 'Coupon'})</span>
+                    <div className="mob-sum-row" style={{ color: '#16a34a', fontWeight: 600 }}>
+                      <span>
+                        {isBundle
+                          ? (appliedCoupon ? `Special Discount (BYB • ${appliedCoupon.code})` : 'Special Discount (Build Your Bundle 10% OFF)')
+                          : (appliedCoupon ? `Discount (${appliedCoupon.code})` : 'Discount')
+                        }
+                      </span>
                       <span>-₹{discount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {isBundle && (
+                    <div className="mob-sum-row" style={{ color: '#047857', fontWeight: 600 }}>
+                      <span>2 Mini Masala Boxes</span>
+                      <span style={{ color: '#047857' }}>FREE (Included)</span>
                     </div>
                   )}
                   <div className="mob-sum-row">
@@ -500,11 +525,11 @@ const CheckoutPage = () => {
                 </div>
                 <div className="byb-perk-text">
                   <div className="byb-perk-title">
-                    <span>Build Your Bundle (BYB) Applied</span>
+                    <span>Royal Awadhi Bundle Applied</span>
                     <span className="byb-perk-pill">10% OFF + 2 FREE GIFTS</span>
                   </div>
                   <div className="byb-perk-desc">
-                    Your order of <strong>{totalMasalaUnits} masalas</strong> qualified for our royal bundle tier with 10% instant savings and 2 free sample boxes!
+                    10% flat savings and 2 complimentary chef's mini masala boxes have been applied to your parcel.
                   </div>
                 </div>
               </div>
@@ -515,13 +540,13 @@ const CheckoutPage = () => {
             {/* Contact Section */}
             <div className="checkout-section">
               <div className="section-header">
-                <h3>Contact Details <span style={{ color: '#dc2626', fontSize: '0.9rem' }}>*</span></h3>
+                <h3>Contact Information</h3>
               </div>
               <input 
                 type="email" 
                 name="email" 
                 className={`form-input ${formErrors.email ? 'input-error' : ''}`} 
-                placeholder="Email address (e.g. rahul@example.com) *" 
+                placeholder="Email address" 
                 autoComplete="email"
                 value={formData.email} 
                 onChange={handleChange} 
@@ -543,7 +568,7 @@ const CheckoutPage = () => {
 
             {/* Delivery Section */}
             <div className="checkout-section">
-              <h3>Shipping & Delivery Address <span style={{ color: '#dc2626', fontSize: '0.9rem' }}>*</span></h3>
+              <h3>Shipping Address</h3>
               <select name="country" className="form-input" value={formData.country} onChange={handleChange}>
                 <option value="India">India</option>
               </select>
@@ -554,7 +579,7 @@ const CheckoutPage = () => {
                     type="text" 
                     name="firstName" 
                     className={`form-input ${formErrors.firstName ? 'input-error' : ''}`} 
-                    placeholder="First name (e.g. Rahul) *" 
+                    placeholder="First name" 
                     autoComplete="given-name"
                     value={formData.firstName} 
                     onChange={handleNameChange} 
@@ -569,7 +594,7 @@ const CheckoutPage = () => {
                     type="text" 
                     name="lastName" 
                     className={`form-input ${formErrors.lastName ? 'input-error' : ''}`} 
-                    placeholder="Last name (e.g. Sharma) *" 
+                    placeholder="Last name" 
                     autoComplete="family-name"
                     value={formData.lastName} 
                     onChange={handleNameChange} 
@@ -581,22 +606,12 @@ const CheckoutPage = () => {
                 </div>
               </div>
 
-              <input 
-                type="text" 
-                name="company" 
-                className="form-input" 
-                placeholder="Company or Business name (optional)" 
-                autoComplete="organization"
-                value={formData.company} 
-                onChange={handleChange} 
-              />
-
               <div style={{ marginTop: '0.75rem' }}>
                 <input 
                   type="text" 
                   name="address" 
                   className={`form-input ${formErrors.address ? 'input-error' : ''}`} 
-                  placeholder="Street address, house number, area *" 
+                  placeholder="Street address, house / flat number, area" 
                   autoComplete="address-line1"
                   value={formData.address} 
                   onChange={handleChange} 
@@ -611,7 +626,7 @@ const CheckoutPage = () => {
                 type="text" 
                 name="apartment" 
                 className="form-input" 
-                placeholder="Apartment, suite, unit, landmark (optional)" 
+                placeholder="Apartment, suite, landmark (optional)" 
                 autoComplete="address-line2"
                 value={formData.apartment} 
                 onChange={handleChange} 
@@ -624,7 +639,7 @@ const CheckoutPage = () => {
                     type="text" 
                     name="city" 
                     className={`form-input ${formErrors.city ? 'input-error' : ''}`} 
-                    placeholder="City / Town *" 
+                    placeholder="City / Town" 
                     autoComplete="address-level2"
                     value={formData.city} 
                     onChange={handleChange} 
@@ -646,7 +661,7 @@ const CheckoutPage = () => {
                     type="text" 
                     name="pinCode" 
                     className={`form-input ${formErrors.pinCode ? 'input-error' : ''}`} 
-                    placeholder="6-digit PIN *" 
+                    placeholder="6-digit PIN code" 
                     autoComplete="postal-code"
                     maxLength={6}
                     value={formData.pinCode} 
@@ -665,19 +680,18 @@ const CheckoutPage = () => {
                 </p>
               )}
 
-              <div className="input-with-icon mt-2">
+              <div className="mt-2">
                 <input 
                   type="tel" 
                   name="phone" 
                   className={`form-input ${formErrors.phone ? 'input-error' : ''}`} 
-                  placeholder="10-digit mobile number (e.g. 9876543210) *" 
+                  placeholder="10-digit mobile number" 
                   autoComplete="tel"
                   maxLength={10}
                   value={formData.phone} 
                   onChange={handlePhoneChange} 
                   required 
                 />
-                <Info size={16} className="input-icon text-text-light" />
               </div>
               {formErrors.phone && (
                 <span style={{ color: '#dc2626', fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>{formErrors.phone}</span>
@@ -732,9 +746,9 @@ const CheckoutPage = () => {
             </button>
 
             <div className="trust-badge-container">
-              <div className="trust-badge"><ShieldCheck size={16} color="#16a34a" /> 256-Bit SSL Encrypted</div>
+              <div className="trust-badge"><ShieldCheck size={16} color="#16a34a" /> Bank-Grade Security</div>
               <div className="trust-badge"><Lock size={16} color="#16a34a" /> FSSAI Certified Quality</div>
-              <div className="trust-badge"><Check size={16} color="#16a34a" /> 100% Pure Lucknavi Masala</div>
+              <div className="trust-badge"><Check size={16} color="#16a34a" /> 100% Authentic Awadhi Blends</div>
             </div>
 
             <div className="checkout-footer-links mt-4 text-sm text-accent">
@@ -756,25 +770,6 @@ const CheckoutPage = () => {
                   <span className="byb-summary-pill"><Crown size={11} /> BYB Order</span>
                 )}
               </h3>
-              {cartItems.length > 0 && (
-                <button
-                  type="button"
-                  onClick={clearCart}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#cc0c39',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}
-                >
-                  <Trash2 size={14} /> Clear Cart
-                </button>
-              )}
             </div>
 
             <div className="summary-items">
@@ -921,7 +916,7 @@ const CheckoutPage = () => {
                     <span className="currency-code">INR</span> ₹{finalTotal.toFixed(2)}
                   </span>
                 </div>
-                <p className="tax-info text-sm text-text-light mt-1">Inclusive of all taxes. Verified securely by server during checkout.</p>
+                <p className="tax-info text-sm text-text-light mt-1">All taxes inclusive • 100% Encrypted & Secure Checkout</p>
               </div>
             )}
           </div>

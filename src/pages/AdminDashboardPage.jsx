@@ -84,6 +84,15 @@ const AdminDashboardPage = () => {
     return order.coupon_code || order.billing_address?.coupon_code || order.shipping_address?.coupon_code || null;
   };
 
+  // Helper to identify BYB orders (by prefix, flag, or 4+ masalas)
+  const checkIsBybOrder = (order) => {
+    if (!order) return false;
+    const isPrefix = order.display_order_id?.startsWith('BYB') || order.display_order_id?.includes('BYB');
+    const isBundleFlag = Boolean(order.is_bundle);
+    const totalItemsCount = order.order_items?.reduce((acc, it) => acc + (Number(it.quantity) || 1), 0) || 0;
+    return Boolean(isPrefix || isBundleFlag || totalItemsCount >= 4);
+  };
+
   // Permanently delete single order by ID
   const handleDeleteOrder = async (orderToDelete) => {
     if (!orderToDelete) return;
@@ -875,7 +884,7 @@ const AdminDashboardPage = () => {
                             <span>{getOrderCoupon(order)}</span>
                           </span>
                         )}
-                            {(order.display_order_id?.startsWith('BYB') || order.display_order_id?.includes('BYB')) && (
+                            {checkIsBybOrder(order) && (
                               <span className="badge-byb">BYB</span>
                             )}
                             <button
@@ -1007,7 +1016,7 @@ const AdminDashboardPage = () => {
                     <div className="mobile-card-top-row">
                       <div className="mobile-card-id-group">
                         <span className="order-id-code">#{order.display_order_id || order.id.slice(0, 8).toUpperCase()}</span>
-                        {(order.display_order_id?.startsWith('BYB') || order.display_order_id?.includes('BYB')) && (
+                        {checkIsBybOrder(order) && (
                           <span className="badge-byb">BYB</span>
                         )}
                         <button
@@ -1128,7 +1137,7 @@ const AdminDashboardPage = () => {
                       <span>{getOrderCoupon(selectedOrder)}</span>
                     </span>
                   )}
-                  {(selectedOrder.display_order_id?.startsWith('BYB') || selectedOrder.display_order_id?.includes('BYB')) && (
+                  {checkIsBybOrder(selectedOrder) && (
                     <span style={{
                       marginLeft: '8px',
                       fontSize: '0.72rem',
@@ -1762,7 +1771,7 @@ const AdminDashboardPage = () => {
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                         {getOrderCoupon(selectedOrder) ? <Tag size={12} /> : <Sparkles size={12} />}
                         Special Discount {
-                          (selectedOrder.display_order_id?.startsWith('BYB') || selectedOrder.display_order_id?.includes('BYB'))
+                          checkIsBybOrder(selectedOrder)
                             ? (getOrderCoupon(selectedOrder) ? `(BYB • ${getOrderCoupon(selectedOrder)})` : '(Build Your Bundle 10% Off)')
                             : (getOrderCoupon(selectedOrder) ? `(${getOrderCoupon(selectedOrder)})` : '')
                         }

@@ -95,7 +95,7 @@ const CartDrawer = () => {
                 <div className="cart-byb-banner-left">
                   <span className="byb-pill-gold"><Crown size={12} /> BYB UNLOCKED</span>
                   <span className="cart-byb-banner-text">
-                    <strong>10% OFF</strong> applied • <strong>2 Free Mini Boxes</strong> added!
+                    <strong>10% Flat Savings</strong> applied • <strong>2 Free Mini Boxes</strong> included
                   </span>
                 </div>
               </div>
@@ -103,7 +103,8 @@ const CartDrawer = () => {
               <div className="free-shipping-bar-container" style={{ background: 'rgba(212, 175, 55, 0.05)' }}>
                 <div className="shipping-bar-header">
                   <p className="shipping-bar-text">
-                    <strong>👑 Build Your Bundle (BYB):</strong> Add <strong className="gold-text">{itemsToBundleOffer}</strong> more {itemsToBundleOffer === 1 ? 'masala' : 'masalas'} to automatically unlock <strong className="gold-text">10% OFF + 2 FREE Mini Boxes! 🎁</strong>
+                    <Crown size={13} style={{ verticalAlign: 'middle', marginRight: '5px', color: '#b59226' }} />
+                    Add <strong className="gold-text">{itemsToBundleOffer}</strong> more {itemsToBundleOffer === 1 ? 'masala' : 'masalas'} to unlock <strong className="gold-text">10% OFF + 2 Free Mini Boxes</strong>
                   </p>
                 </div>
                 <div className="progress-track" style={{ background: 'rgba(212, 175, 55, 0.15)' }}>
