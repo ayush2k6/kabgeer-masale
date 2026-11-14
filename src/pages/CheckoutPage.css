@@ -154,11 +154,30 @@
   font-size: 0.84rem;
   font-weight: 500;
   color: #6b7280;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
 }
 
 .step-tag-pill.active {
   font-weight: 700;
   color: var(--color-primary, #1a2f22);
+}
+
+.step-tag-pill.completed {
+  cursor: pointer;
+  color: var(--color-primary, #1a2f22);
+  font-weight: 600;
+}
+
+.step-tag-pill.completed:hover {
+  opacity: 0.8;
+}
+
+.step-tag-pill.completed .step-num {
+  background-color: #047857;
+  color: #ffffff;
 }
 
 .step-num {
@@ -609,8 +628,124 @@
 }
 
 /* -------------------------------------------------------------------------
-   PRIMARY ACTION BUTTON & GUARANTEES
+   PRIMARY ACTION BUTTONS & 2-STEP RECAP CARD
    ------------------------------------------------------------------------- */
+.btn-continue-step {
+  width: 100%;
+  height: 54px;
+  background-color: var(--color-primary, #1a2f22);
+  color: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 2rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(26, 47, 34, 0.2);
+}
+
+.btn-continue-step:hover {
+  background-color: #24412f;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px -4px rgba(26, 47, 34, 0.3);
+}
+
+/* Step 2 Delivery Recap Card */
+.checkout-recap-card {
+  border: 1px solid #ebe5da;
+  border-radius: 12px;
+  background-color: #fdfcf9;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.recap-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.recap-item {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  flex: 1;
+}
+
+.recap-label {
+  color: #64748b;
+  font-weight: 600;
+  min-width: 68px;
+  flex-shrink: 0;
+  font-size: 0.80rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.recap-value {
+  color: #111827;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.recap-edit-btn {
+  background: none;
+  border: none;
+  color: #047857;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.recap-edit-btn:hover {
+  text-decoration: underline;
+  background-color: #f0fdf4;
+}
+
+.recap-divider {
+  height: 1px;
+  background-color: #f1ece1;
+}
+
+.step-back-row {
+  margin-top: 1.25rem;
+  text-align: center;
+}
+
+.step-back-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-back-btn:hover {
+  color: #1a2f22;
+  text-decoration: underline;
+}
+
 .btn-pay-now {
   width: 100%;
   height: 54px;
@@ -1858,12 +1993,53 @@
     border-radius: 4px !important;
   }
 
+  .btn-continue-step,
   .btn-pay-now {
     height: 52px !important;
     font-size: 1.02rem !important;
     font-weight: 700 !important;
     border-radius: 10px !important;
     margin-top: 1.25rem !important;
+  }
+
+  .checkout-recap-card {
+    padding: 0.85rem 1rem !important;
+    border-radius: 10px !important;
+    margin-bottom: 1.75rem !important;
+  }
+
+  .recap-row {
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .recap-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 3px !important;
+    font-size: 0.84rem !important;
+    min-width: 0 !important;
+  }
+
+  .recap-label {
+    min-width: auto !important;
+    font-size: 0.72rem !important;
+    color: #64748b !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  .recap-value {
+    font-size: 0.85rem !important;
+    color: #111827 !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    word-break: break-word !important;
+  }
+
+  .recap-edit-btn {
+    padding: 2px 6px !important;
+    font-size: 0.80rem !important;
   }
 
   .checkout-trust-row {

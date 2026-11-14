@@ -103,6 +103,7 @@ const CheckoutPage = () => {
   const [pincodeStatusMessage, setPincodeStatusMessage] = useState('');
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
   const [toastError, setToastError] = useState(null);
+  const [checkoutStep, setCheckoutStep] = useState(1);
 
   // Auto-dismiss toast error after 5s
   useEffect(() => {
@@ -281,11 +282,27 @@ const CheckoutPage = () => {
     return !hasErrors;
   };
 
+  const handleContinueToPayment = (e) => {
+    if (e) e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+    setCheckoutStep(2);
+    setToastError(null);
+    setErrorMessage('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Submit form & call create-razorpay-order Edge Function
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (cartItems.length === 0) {
       alert("Your cart is empty!");
+      return;
+    }
+
+    if (checkoutStep === 1) {
+      handleContinueToPayment(e);
       return;
     }
 
@@ -736,13 +753,21 @@ const CheckoutPage = () => {
             {/* Header with Step Progress & 256-Bit SSL Encrypted Badge */}
             <header className="checkout-header">
               <div className="checkout-step-nav">
-                <span className="step-tag-pill active">
-                  <span className="step-num">1</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCheckoutStep(1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`step-tag-pill ${checkoutStep === 1 ? 'active' : 'completed'}`}
+                  title={checkoutStep > 1 ? 'Return to Information' : undefined}
+                >
+                  <span className="step-num">{checkoutStep > 1 ? '✓' : '1'}</span>
                   <span className="step-text-desktop">Information & Delivery</span>
                   <span className="step-text-mobile">Information</span>
-                </span>
+                </button>
                 <ChevronRight size={12} className="step-nav-chevron" />
-                <span className="step-tag-pill">
+                <span className={`step-tag-pill ${checkoutStep === 2 ? 'active' : ''}`}>
                   <span className="step-num">2</span> Payment
                 </span>
               </div>
@@ -772,12 +797,15 @@ const CheckoutPage = () => {
 
           <form onSubmit={handleSubmit} noValidate className="checkout-form">
             
-            {/* 1. Contact Section */}
-            <div className="form-section">
-              <div className="section-title-wrap">
-                <span className="section-step-badge">01</span>
-                <h2 className="section-title">Contact Information</h2>
-              </div>
+            {/* STEP 1: CONTACT & DELIVERY ADDRESS */}
+            {checkoutStep === 1 && (
+              <div className="step-block step-1-block">
+                {/* 1. Contact Section */}
+                <div className="form-section">
+                  <div className="section-title-wrap">
+                    <span className="section-step-badge">01</span>
+                    <h2 className="section-title">Contact Information</h2>
+                  </div>
               <div className="form-field">
                 <label className="field-label" htmlFor="email">
                   Email Address <span className="required-star">*</span>
@@ -984,10 +1012,64 @@ const CheckoutPage = () => {
               </label>
             </div>
 
+            {/* Step 1 Primary Action */}
+            <button
+              type="button"
+              onClick={handleContinueToPayment}
+              className="btn-continue-step"
+            >
+              <span>Continue to Payment</span>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        )}
+
+        {/* STEP 2: SHIPPING & PAYMENT */}
+        {checkoutStep === 2 && (
+          <div className="step-block step-2-block">
+            {/* Clean Delivery Recap Card */}
+            <div className="checkout-recap-card">
+              <div className="recap-row">
+                <div className="recap-item">
+                  <span className="recap-label">Contact</span>
+                  <span className="recap-value">{formData.email} • {formData.phone}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCheckoutStep(1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="recap-edit-btn"
+                >
+                  Change
+                </button>
+              </div>
+              <div className="recap-divider" />
+              <div className="recap-row">
+                <div className="recap-item">
+                  <span className="recap-label">Ship to</span>
+                  <span className="recap-value">
+                    {formData.address}{formData.apartment ? `, ${formData.apartment}` : ''}, {formData.city}, {formData.state} - {formData.pinCode}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCheckoutStep(1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="recap-edit-btn"
+                >
+                  Change
+                </button>
+              </div>
+            </div>
+
             {/* 3. Shipping Method Section */}
             <div className="form-section">
               <div className="section-title-wrap">
-                <span className="section-step-badge">03</span>
+                <span className="section-step-badge">02</span>
                 <h2 className="section-title">Shipping Method</h2>
               </div>
               <div className="shipping-option-card selected">
@@ -1009,7 +1091,7 @@ const CheckoutPage = () => {
             {/* 4. Payment Section */}
             <div className="form-section">
               <div className="section-title-wrap">
-                <span className="section-step-badge">04</span>
+                <span className="section-step-badge">03</span>
                 <h2 className="section-title">Payment Options</h2>
               </div>
               
@@ -1045,6 +1127,20 @@ const CheckoutPage = () => {
               <span>{isSubmitting ? 'Securing Order...' : `Pay Securely • ₹${finalTotal.toFixed(2)}`}</span>
             </button>
 
+            {/* Return Link */}
+            <div className="step-back-row">
+              <button
+                type="button"
+                onClick={() => {
+                  setCheckoutStep(1);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="step-back-btn"
+              >
+                ← Return to delivery information
+              </button>
+            </div>
+
             {/* High-Trust Guarantee Row */}
             <div className="checkout-trust-row">
               <div className="trust-item">
@@ -1060,6 +1156,8 @@ const CheckoutPage = () => {
                 <span>Express Pan-India Delivery</span>
               </div>
             </div>
+          </div>
+        )}
 
             {/* Clean Footer Policy Links */}
             <div className="checkout-footer-links">

@@ -1,5 +1,41 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.25: Two-Step Minimal Mobile Checkout Architecture)
+
+### 1. Two-Step Guided Checkout Flow (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Divided Cognitive Load into 2 Minimal, Focused Steps**:
+  - **Step 1 (Information & Delivery)**:
+    * Focused exclusively on customer contact info and delivery address.
+    * PIN Code-first lookup with auto-detected city/state badge (`✓ Lucknow, Uttar Pradesh`).
+    * Clear validation triggers on incomplete fields before advancing.
+    * Terminated with a high-contrast, full-width `Continue to Payment →` button.
+  - **Step 2 (Shipping & Payment)**:
+    * Automatically scrolls to top upon advancing from Step 1.
+    * Features a clean, compact delivery recap card summarizing Contact and Ship To details.
+    * Displays pre-selected Standard Express Courier shipping and Razorpay Secure Online Checkout.
+    * Concludes with the commanding `Pay Securely • ₹XXX.XX` button and a subtle `← Return to delivery information` link.
+
+### 2. Sleek Delivery Recap Card with Instant Editing (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Clean Summary Without Form Clutter**:
+  - Replaces 8 input fields with an understated, elegant recap box on Step 2.
+  - Stacks uppercase category labels (`CONTACT`, `SHIP TO`) above values with dedicated line-height so long emails and addresses never touch or cramp.
+  - Individual `Change` buttons allow 1-click return to Step 1 for instant corrections.
+  - Full React state persistence: zero data loss when jumping back and forth between Step 1 and Step 2.
+
+### 3. Interactive Breadcrumb Stepper (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Status-Aware Breadcrumb Navigation**:
+  - Displays active step indicator: `1 Information > 2 Payment` with `256-Bit SSL` badge.
+  - In Step 2, the `1 Information` step is highlighted with a green checkmark (`✓`) and is directly clickable to return to Step 1.
+
+### 4. Verification & Testing
+- **E2E Visual Verification**:
+  - Inspected and verified on mobile viewport (390×844) across initial Step 1, filled Step 1, transition to Step 2, and return navigation.
+- **Mathematical Rigor & Automated Checks**:
+  - `npm run build`: Zero errors, clean compilation.
+  - `security-tests/test-math-accuracy.mjs`: 3/3 suites passed with 0.00 paisa variance.
+  - `security-tests/test-byb-flow.mjs`: Verified 4-masala bundle discounts and GST precision.
+
+
 ## 2026-11-15 (Part 6.24: Professional Mobile Checkout Redesign with Negative Spacing & De-cluttering)
 
 ### 1. Re-architected Mobile View with Pure Negative Spacing (`src/pages/CheckoutPage.css`)
