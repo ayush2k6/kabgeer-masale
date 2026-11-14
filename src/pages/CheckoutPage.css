@@ -179,6 +179,10 @@
   color: #ffffff;
 }
 
+.step-text-mobile {
+  display: none;
+}
+
 .step-nav-chevron {
   color: #9ca3af;
 }
@@ -1461,6 +1465,12 @@
   text-transform: uppercase;
 }
 
+.mobile-coupon-field::placeholder {
+  text-transform: none;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
 .mobile-coupon-field:focus {
   border-color: var(--color-primary, #1a2f22);
   box-shadow: 0 0 0 2px rgba(26, 47, 34, 0.1);
@@ -1560,58 +1570,307 @@
 
 /* -------------------------------------------------------------------------
    RESPONSIVE OVERRIDES FOR MOBILE DEVICES (< 992px)
+   World-Class Shopify Plus / Stripe Executive Mobile Layout with Negative Spacing
    ------------------------------------------------------------------------- */
 @media (max-width: 991px) {
+  /* Hide desktop sidebar on mobile */
   .checkout-sidebar {
     display: none !important;
   }
+
+  /* Seamless edge-to-edge canvas with pure negative spacing */
+  .checkout-page {
+    background-color: #ffffff !important;
+  }
+
   .checkout-container {
-    padding: 1rem 0.75rem 3.5rem 0.75rem;
-    gap: 1rem;
+    padding: 0 0 3.5rem 0 !important;
+    gap: 0 !important;
+    max-width: 100% !important;
   }
+
   .checkout-main {
-    padding: 1.25rem 1rem 2rem 1rem;
-    border-radius: 14px;
+    padding: 0 1.25rem 3.5rem 1.25rem !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
   }
+
+  /* Top Full-Width Mobile Order Summary Drawer (Shopify Plus Mobile Standard) */
+  .checkout-mobile-summary {
+    margin: 0 -1.25rem 1.5rem -1.25rem !important;
+    border-top: 1px solid #ebe5da !important;
+    border-bottom: 1px solid #ebe5da !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    background-color: #faf8f5 !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-summary-btn {
+    padding: 0.95rem 1.25rem !important;
+    background-color: transparent !important;
+  }
+
+  .mobile-summary-btn:hover {
+    background-color: #f5f0e6 !important;
+  }
+
+  .mobile-btn-left {
+    gap: 8px !important;
+  }
+
+  .mobile-toggle-text {
+    font-size: 0.86rem !important;
+    font-weight: 600 !important;
+    color: #1a2f22 !important;
+  }
+
+  .mobile-chevron-icon {
+    color: #64748b !important;
+    transition: transform 0.2s ease !important;
+  }
+
+  .mobile-chevron-icon.rotated {
+    transform: rotate(180deg) !important;
+  }
+
+  .mobile-summary-total {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    color: #1a2f22 !important;
+  }
+
+  .mobile-summary-body {
+    padding: 1.25rem 1.25rem 1.5rem 1.25rem !important;
+    border-top: 1px solid #ebe5da !important;
+    background-color: #ffffff !important;
+  }
+
+  /* Refined, Single-Line Checkout Header (No Stacked Pill Clutter) */
   .checkout-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1rem;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 0.85rem !important;
+    border-bottom: 1px solid #f1ece1 !important;
+    gap: 8px !important;
   }
+
+  .step-text-desktop {
+    display: none !important;
+  }
+
+  .step-text-mobile {
+    display: inline !important;
+  }
+
+  .checkout-step-nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .step-tag-pill {
+    font-size: 0.8rem !important;
+    color: #94a3b8 !important;
+    gap: 4px !important;
+    font-weight: 500 !important;
+  }
+
+  .step-tag-pill.active {
+    color: #1a2f22 !important;
+    font-weight: 700 !important;
+  }
+
+  .step-num {
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .step-nav-chevron {
+    color: #cbd5e1 !important;
+  }
+
+  .checkout-secure-badge {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    color: #15803d !important;
+    gap: 4px !important;
+  }
+
+  /* Royal BYB Perks Micro-Badge on Mobile (Subtle Luxury, Zero Clutter) */
+  .byb-minimal-banner {
+    background: #fffdf5 !important;
+    border: 1px solid rgba(212, 175, 55, 0.35) !important;
+    border-radius: 8px !important;
+    padding: 7px 12px !important;
+    margin-bottom: 1.5rem !important;
+    font-size: 0.76rem !important;
+    box-shadow: none !important;
+    gap: 6px !important;
+  }
+
+  .byb-crown-icon {
+    width: 14px !important;
+    height: 14px !important;
+    color: #b59226 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .byb-active-chip {
+    display: none !important; /* Hide unclickable fake button on mobile */
+  }
+
+  /* Form Sections & Negative Spacing Hierarchy */
+  .form-section {
+    margin-bottom: 2.25rem !important;
+    padding-bottom: 2rem !important;
+    border-bottom: 1px solid #f3f0e8 !important;
+  }
+
+  .form-section:last-of-type {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+  }
+
+  .section-title-wrap {
+    margin-bottom: 1.15rem !important;
+    gap: 8px !important;
+  }
+
+  .section-step-badge {
+    display: none !important; /* Eliminate dark blocky squares on mobile */
+  }
+
+  .section-title {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  /* Touch-Optimized Form Fields & Labels */
+  .field-label {
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    color: #4b5563 !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+  }
+
+  .form-field {
+    margin-bottom: 1.15rem !important;
+  }
+
+  .grid-2-cols {
+    gap: 0.75rem !important;
+  }
+
   .field-input,
   .field-select,
   .coupon-field,
   .mobile-coupon-field {
     font-size: 16px !important; /* Prevents auto-zoom in iOS Safari */
-    height: 48px;
+    height: 48px !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    padding: 0 14px !important;
   }
+
+  .field-input:focus,
+  .field-select:focus {
+    border-color: #047857 !important;
+    box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12) !important;
+  }
+
   .phone-input-group .field-input.phone-input {
-    height: 46px;
+    height: 46px !important;
   }
+
+  .checkbox-row {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+    font-size: 0.84rem !important;
+    color: #4b5563 !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Shipping & Payment Cards */
   .shipping-option-card,
   .payment-option-card {
-    padding: 0.95rem 1rem;
-    border-radius: 10px;
+    padding: 0.95rem 1rem !important;
+    border-radius: 10px !important;
+    border: 1.5px solid #e2e8f0 !important;
   }
+
+  .shipping-option-card.selected,
+  .payment-option-card.selected {
+    border-color: #047857 !important;
+    background-color: #f0fdf4 !important;
+  }
+
+  .option-primary-title {
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+  }
+
+  .option-subtitle {
+    font-size: 0.78rem !important;
+    color: #64748b !important;
+    line-height: 1.35 !important;
+  }
+
   .payment-title-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-bottom: 4px !important;
   }
+
   .payment-trust-chips {
-    margin-top: 2px;
+    display: inline-flex !important;
+    gap: 4px !important;
+    margin-top: 0 !important;
   }
+
+  .pay-chip {
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    padding: 2px 6px !important;
+    background-color: #e0f2fe !important;
+    color: #0369a1 !important;
+    border-radius: 4px !important;
+  }
+
   .btn-pay-now {
-    height: 52px;
-    font-size: 1rem;
+    height: 52px !important;
+    font-size: 1.02rem !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    margin-top: 1.25rem !important;
   }
+
   .checkout-trust-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 0.85rem 1rem;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    padding: 0.85rem 1rem !important;
   }
 }
 

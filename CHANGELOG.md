@@ -1,5 +1,30 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.24: Professional Mobile Checkout Redesign with Negative Spacing & De-cluttering)
+
+### 1. Re-architected Mobile View with Pure Negative Spacing (`src/pages/CheckoutPage.css`)
+- **Eliminated Nested "Card-in-Card" Cramping**:
+  - Removed the boxed card borders, outer container margins, and drop shadows on mobile screens (`< 992px`), replacing them with a seamless, clean white canvas (`#ffffff`).
+  - Restored natural negative spacing with generous 20px edge margins and 28px-32px breathing room between sections, eliminating the claustrophobic boxed layout.
+
+### 2. Full-Width Sleek Order Summary Strip (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Shopify Plus Mobile Standard Top Bar**:
+  - Moved `.checkout-mobile-summary` to the very top of mobile checkout as an edge-to-edge, full-width strip (`#fcfaf7` background with subtle hairlines).
+  - Toggles between `Show order summary (5 items) ⌄  INR ₹405.50` and `Hide order summary ^` seamlessly.
+  - Replaced unicode arrows with smooth animated Lucide `ChevronDown` icon.
+  - Set `text-transform: none` on coupon input placeholder for cleaner readability.
+
+### 3. De-cluttered Start of Mobile Checkout (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Single-Line Breadcrumb & Trust Row**:
+  - Condensed the stacked 2-row stepper and green security badge into a single, elegant horizontal line: `1 Information > 2 Payment` with `256-Bit SSL` trust mark.
+  - Responsive text switcher: shows `Information` on mobile and `Information & Delivery` on desktop, eliminating awkward mid-sentence line breaks.
+- **De-cluttered BYB Perks Banner**:
+  - Replaced the bulky 3-line yellow alert card and unclickable green `ACTIVATED` button with a sleek, understated 1-line luxury ribbon: `👑 Royal BYB Perks Applied: 10% Bundle Discount & 2 Free Masala Boxes Included`.
+- **Eliminated Dark Square Step Badges**:
+  - Removed blocky `01` and `02` dark squares on mobile in favor of clean, bold typography for `Contact Information` and `Delivery Address`.
+  - Maintained 48px height, 16px iOS-safe font inputs, and spacious touch targets.
+
+
 ## 2026-11-15 (Part 6.23: Streamlined Clean Mobile Checkout & Distraction-Free Flow)
 
 ### 1. Eliminated Distracting Overlays on Checkout (`src/components/Header.jsx`)

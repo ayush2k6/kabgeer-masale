@@ -12,6 +12,7 @@ import {
   Truck,
   Tag,
   ChevronRight,
+  ChevronDown,
   CheckCircle2,
   Sparkles
 } from 'lucide-react';
@@ -550,203 +551,206 @@ const CheckoutPage = () => {
         {/* Main Column (Only this side scrolls on desktop) */}
         <main className="checkout-main">
           <div className="checkout-main-content">
+            
+            {/* Enhanced Luxury Mobile Summary Accordion (Shopify Plus Mobile Standard) */}
+            <div className="checkout-mobile-summary">
+              <button
+                type="button"
+                className="mobile-summary-btn"
+                onClick={() => setIsMobileSummaryOpen(prev => !prev)}
+                aria-expanded={isMobileSummaryOpen}
+              >
+                <div className="mobile-btn-left">
+                  <ShoppingBag size={16} className="text-emerald" />
+                  <span className="mobile-toggle-text">
+                    {isMobileSummaryOpen ? 'Hide order summary' : `Show order summary (${totalMasalaUnits} items)`}
+                  </span>
+                  <ChevronDown size={14} className={`mobile-chevron-icon ${isMobileSummaryOpen ? 'rotated' : ''}`} />
+                </div>
+                <div className="mobile-btn-right">
+                  <span className="mobile-summary-currency">INR</span>
+                  <span className="mobile-summary-total">₹{finalTotal.toFixed(2)}</span>
+                </div>
+              </button>
+
+              {isMobileSummaryOpen && (
+                <div className="mobile-summary-body">
+                  {/* Meta Bar: BYB Tag & Clear Cart */}
+                  <div className="mobile-summary-meta-bar">
+                    {isBundle ? (
+                      <span className="byb-tag">👑 BYB ORDER ACTIVATED</span>
+                    ) : (
+                      <span className="mobile-meta-hint">{totalMasalaUnits} royal masalas</span>
+                    )}
+                    {cartItems.length > 0 && (
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to clear your cart?')) {
+                            clearCart();
+                          }
+                        }}
+                        className="mobile-clear-cart-btn"
+                      >
+                        <Trash2 size={12} />
+                        <span>Clear Cart</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Items List with Interactive Steppers */}
+                  <div className="mobile-items-list">
+                    {cartItems.map((item) => {
+                      const itemId = item.cartItemId || `${item.id}__${item.weight || '50g'}`;
+                      return (
+                        <div key={itemId} className="mobile-item-line">
+                          <div className="mobile-thumb-wrap">
+                            <img src={item.image || item.images?.[0]} alt={item.name} className="mobile-thumb" />
+                            <span className="mobile-thumb-qty">{item.quantity}</span>
+                          </div>
+                          <div className="mobile-meta">
+                            <div className="mobile-title-row">
+                              <span className="mobile-title">{item.name}</span>
+                              <span className="mobile-price">₹{(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                            <div className="mobile-controls-row">
+                              <span className="mobile-unit-hint">
+                                {item.weight || '50g'}
+                                {item.quantity > 1 && ` • ₹${Number(item.price).toFixed(2)} each`}
+                              </span>
+                              <div className="mobile-qty-stepper">
+                                <button
+                                  type="button"
+                                  onClick={() => updateQuantity(itemId, item.quantity - 1)}
+                                  className="item-qty-btn"
+                                  aria-label="Decrease quantity"
+                                >
+                                  -
+                                </button>
+                                <span className="item-qty-num">{item.quantity}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => updateQuantity(itemId, item.quantity + 1)}
+                                  className="item-qty-btn"
+                                  aria-label="Increase quantity"
+                                >
+                                  +
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFromCart(itemId)}
+                                  className="item-remove-btn"
+                                  title="Remove item"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Complimentary Gift Box */}
+                    {isBundle && (
+                      <div className="mobile-item-line mobile-gift-line">
+                        <div className="mobile-thumb-wrap gift-thumb-wrap">
+                          <Gift size={16} color="#047857" />
+                          <span className="mobile-thumb-qty">2</span>
+                        </div>
+                        <div className="mobile-meta">
+                          <div className="mobile-title-row">
+                            <span className="mobile-title text-emerald">2x Mini Masala Boxes (Sample Pack)</span>
+                            <span className="mobile-price text-emerald font-bold">FREE</span>
+                          </div>
+                          <span className="mobile-unit-hint text-emerald">Complimentary Royal Chef Curation</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Mobile Coupon Code Form */}
+                  <form onSubmit={handleCouponSubmit} className="mobile-coupon-form">
+                    <div className="mobile-coupon-input-wrap">
+                      <Tag size={14} className="coupon-tag-icon" />
+                      <input
+                        type="text"
+                        placeholder="Discount or coupon code"
+                        value={couponInput}
+                        onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                        className="mobile-coupon-field"
+                      />
+                    </div>
+                    <button type="submit" className="mobile-coupon-btn" disabled={!couponInput.trim()}>
+                      Apply
+                    </button>
+                  </form>
+
+                  {appliedCoupon && (
+                    <div className="mobile-applied-coupon">
+                      <span>Coupon: <strong>{appliedCoupon.code}</strong></span>
+                      <button type="button" onClick={removeCoupon} className="coupon-remove-btn" title="Remove coupon">
+                        <X size={13} />
+                      </button>
+                    </div>
+                  )}
+                  {couponError && <p className="coupon-error">{couponError}</p>}
+
+                  {/* Mobile Totals Breakdown */}
+                  <div className="mobile-totals-list">
+                    <div className="mob-row">
+                      <span>Items Subtotal</span>
+                      <span>₹{subtotal.toFixed(2)}</span>
+                    </div>
+                    {discount > 0 && (
+                      <div className="mob-row text-emerald font-semibold">
+                        <span>Special Discount ({appliedCoupon?.code || 'Build Your Bundle 10% OFF'})</span>
+                        <span>-₹{discount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {isBundle && (
+                      <div className="mob-row text-emerald">
+                        <span>2 Mini Masala Boxes</span>
+                        <span>FREE (Included)</span>
+                      </div>
+                    )}
+                    <div className="mob-row">
+                      <span>Standard Shipping</span>
+                      <span>{shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}</span>
+                    </div>
+                    <div className="mob-row mob-row-total">
+                      <div className="mob-total-col">
+                        <span className="mob-grand-title">Total</span>
+                        <span className="mob-tax-note">Inclusive of ₹{inclusiveGst.toFixed(2)} GST</span>
+                      </div>
+                      <div className="mob-val-col">
+                        <span className="mob-currency">INR</span>
+                        <span className="mob-grand-amount">₹{finalTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Header with Step Progress & 256-Bit SSL Encrypted Badge */}
             <header className="checkout-header">
               <div className="checkout-step-nav">
                 <span className="step-tag-pill active">
-                  <span className="step-num">1</span> Information & Delivery
+                  <span className="step-num">1</span>
+                  <span className="step-text-desktop">Information & Delivery</span>
+                  <span className="step-text-mobile">Information</span>
                 </span>
-                <ChevronRight size={13} className="step-nav-chevron" />
+                <ChevronRight size={12} className="step-nav-chevron" />
                 <span className="step-tag-pill">
                   <span className="step-num">2</span> Payment
                 </span>
               </div>
               <div className="checkout-secure-badge">
-                <ShieldCheck size={14} color="#15803d" />
-                <span>256-Bit SSL Encrypted</span>
+                <ShieldCheck size={13} color="#15803d" />
+                <span>256-Bit SSL</span>
               </div>
             </header>
-
-          {/* Enhanced Luxury Mobile Summary Accordion (Shopify Plus Mobile Standard) */}
-          <div className="checkout-mobile-summary">
-            <button
-              type="button"
-              className="mobile-summary-btn"
-              onClick={() => setIsMobileSummaryOpen(prev => !prev)}
-              aria-expanded={isMobileSummaryOpen}
-            >
-              <div className="mobile-btn-left">
-                <ShoppingBag size={17} className="text-emerald" />
-                <span className="mobile-toggle-text">
-                  {isMobileSummaryOpen ? 'Hide order summary' : `Show order summary (${totalMasalaUnits} items)`}
-                </span>
-                <span className="mobile-chevron">{isMobileSummaryOpen ? '▲' : '▼'}</span>
-              </div>
-              <div className="mobile-btn-right">
-                <span className="mobile-summary-currency">INR</span>
-                <span className="mobile-summary-total">₹{finalTotal.toFixed(2)}</span>
-              </div>
-            </button>
-
-            {isMobileSummaryOpen && (
-              <div className="mobile-summary-body">
-                {/* Meta Bar: BYB Tag & Clear Cart */}
-                <div className="mobile-summary-meta-bar">
-                  {isBundle ? (
-                    <span className="byb-tag">👑 BYB ORDER ACTIVATED</span>
-                  ) : (
-                    <span className="mobile-meta-hint">{totalMasalaUnits} royal masalas</span>
-                  )}
-                  {cartItems.length > 0 && (
-                    <button 
-                      type="button" 
-                      onClick={() => {
-                        if (window.confirm('Are you sure you want to clear your cart?')) {
-                          clearCart();
-                        }
-                      }}
-                      className="mobile-clear-cart-btn"
-                    >
-                      <Trash2 size={12} />
-                      <span>Clear Cart</span>
-                    </button>
-                  )}
-                </div>
-
-                {/* Items List with Interactive Steppers */}
-                <div className="mobile-items-list">
-                  {cartItems.map((item) => {
-                    const itemId = item.cartItemId || `${item.id}__${item.weight || '50g'}`;
-                    return (
-                      <div key={itemId} className="mobile-item-line">
-                        <div className="mobile-thumb-wrap">
-                          <img src={item.image || item.images?.[0]} alt={item.name} className="mobile-thumb" />
-                          <span className="mobile-thumb-qty">{item.quantity}</span>
-                        </div>
-                        <div className="mobile-meta">
-                          <div className="mobile-title-row">
-                            <span className="mobile-title">{item.name}</span>
-                            <span className="mobile-price">₹{(item.price * item.quantity).toFixed(2)}</span>
-                          </div>
-                          <div className="mobile-controls-row">
-                            <span className="mobile-unit-hint">
-                              {item.weight || '50g'}
-                              {item.quantity > 1 && ` • ₹${Number(item.price).toFixed(2)} each`}
-                            </span>
-                            <div className="mobile-qty-stepper">
-                              <button
-                                type="button"
-                                onClick={() => updateQuantity(itemId, item.quantity - 1)}
-                                className="item-qty-btn"
-                                aria-label="Decrease quantity"
-                              >
-                                -
-                              </button>
-                              <span className="item-qty-num">{item.quantity}</span>
-                              <button
-                                type="button"
-                                onClick={() => updateQuantity(itemId, item.quantity + 1)}
-                                className="item-qty-btn"
-                                aria-label="Increase quantity"
-                              >
-                                +
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => removeFromCart(itemId)}
-                                className="item-remove-btn"
-                                title="Remove item"
-                              >
-                                <Trash2 size={12} />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {/* Complimentary Gift Box */}
-                  {isBundle && (
-                    <div className="mobile-item-line mobile-gift-line">
-                      <div className="mobile-thumb-wrap gift-thumb-wrap">
-                        <Gift size={16} color="#047857" />
-                        <span className="mobile-thumb-qty">2</span>
-                      </div>
-                      <div className="mobile-meta">
-                        <div className="mobile-title-row">
-                          <span className="mobile-title text-emerald">2x Mini Masala Boxes (Sample Pack)</span>
-                          <span className="mobile-price text-emerald font-bold">FREE</span>
-                        </div>
-                        <span className="mobile-unit-hint text-emerald">Complimentary Royal Chef Curation</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Mobile Coupon Code Form */}
-                <form onSubmit={handleCouponSubmit} className="mobile-coupon-form">
-                  <div className="mobile-coupon-input-wrap">
-                    <Tag size={14} className="coupon-tag-icon" />
-                    <input
-                      type="text"
-                      placeholder="Discount or coupon code"
-                      value={couponInput}
-                      onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                      className="mobile-coupon-field"
-                    />
-                  </div>
-                  <button type="submit" className="mobile-coupon-btn" disabled={!couponInput.trim()}>
-                    Apply
-                  </button>
-                </form>
-
-                {appliedCoupon && (
-                  <div className="mobile-applied-coupon">
-                    <span>Coupon: <strong>{appliedCoupon.code}</strong></span>
-                    <button type="button" onClick={removeCoupon} className="coupon-remove-btn" title="Remove coupon">
-                      <X size={13} />
-                    </button>
-                  </div>
-                )}
-                {couponError && <p className="coupon-error">{couponError}</p>}
-
-                {/* Mobile Totals Breakdown */}
-                <div className="mobile-totals-list">
-                  <div className="mob-row">
-                    <span>Items Subtotal</span>
-                    <span>₹{subtotal.toFixed(2)}</span>
-                  </div>
-                  {discount > 0 && (
-                    <div className="mob-row text-emerald font-semibold">
-                      <span>Special Discount ({appliedCoupon?.code || 'Build Your Bundle 10% OFF'})</span>
-                      <span>-₹{discount.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {isBundle && (
-                    <div className="mob-row text-emerald">
-                      <span>2 Mini Masala Boxes</span>
-                      <span>FREE (Included)</span>
-                    </div>
-                  )}
-                  <div className="mob-row">
-                    <span>Standard Shipping</span>
-                    <span>{shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}</span>
-                  </div>
-                  <div className="mob-row mob-row-total">
-                    <div className="mob-total-col">
-                      <span className="mob-grand-title">Total</span>
-                      <span className="mob-tax-note">Inclusive of ₹{inclusiveGst.toFixed(2)} GST</span>
-                    </div>
-                    <div className="mob-val-col">
-                      <span className="mob-currency">INR</span>
-                      <span className="mob-grand-amount">₹{finalTotal.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
 
           {errorMessage && (
             <div className="checkout-alert">
@@ -759,10 +763,10 @@ const CheckoutPage = () => {
           {isBundle && (
             <div className="byb-minimal-banner">
               <div className="byb-banner-left">
-                <Crown size={16} className="byb-crown-icon" />
-                <span><strong>Royal BYB Perks Activated:</strong> 10% Flat Bundle Savings + 2 Complimentary Mini Boxes included!</span>
+                <Crown size={14} className="byb-crown-icon" />
+                <span><strong>Royal BYB Perks Applied:</strong> 10% Bundle Discount & 2 Free Masala Boxes Included</span>
               </div>
-              <span className="byb-active-chip">ACTIVATED</span>
+              <span className="byb-active-chip">APPLIED</span>
             </div>
           )}
 
