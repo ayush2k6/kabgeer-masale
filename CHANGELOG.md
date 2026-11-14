@@ -1,5 +1,28 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-14 (Part 6.17: Pinned Order Summary Split-Scroll & Error Pop with Auto-Scroll Focus)
+
+### 1. Pinned Sticky Order Summary with Desktop Split-Scroll (`src/pages/CheckoutPage.css`, `src/index.css`)
+- **Independent Desktop Scroll Columns**:
+  - Implemented viewport-locked split scrolling on desktop (`@media (min-width: 992px)`):
+    * `.checkout-page`, `.checkout-app-root`, `.checkout-main-wrapper`, and `.checkout-container` are locked to `height: 100vh; overflow: hidden;`.
+    * Left column (`.checkout-main`): Dedicated independent scroll container (`height: 100%; overflow-y: auto;`). Only the form side scrolls when the user scrolls down to fill fields.
+    * Right column (`.checkout-sidebar`): Sticked and pinned in viewport (`height: 100%; overflow-y: auto;`). The order summary stays permanently visible and never scrolls off-screen or upside.
+  - Maintains responsive stacked single-column layout on mobile devices with collapsible order summary accordion.
+
+### 2. Floating Error Toast Pop & Smooth Auto-Scroll to Invalid Section (`src/pages/CheckoutPage.jsx`, `src/pages/CheckoutPage.css`)
+- **Interactive Error Pop Alert**:
+  - Added `.checkout-toast-pop` floating notification component with high-contrast dark theme, red accent line, `AlertCircle` warning icon, clear error message, and dismiss button (`X`).
+  - Auto-dismisses after 5 seconds or immediately when the user starts typing in the affected field.
+- **Auto-Scroll to Missing Info**:
+  - When validation fails on clicking "Pay", `validateForm()` detects the first missing or invalid field in visual reading order (`['email', 'firstName', 'lastName', 'pinCode', 'city', 'state', 'address', 'phone']`).
+  - Automatically smoothly scrolls the form container to bring the invalid input into view (`scrollIntoView({ behavior: 'smooth', block: 'center' })`) and automatically focuses it (`targetEl.focus()`).
+  - Added subtle shake animation (`inputErrShake`) and soft red focus styling to draw immediate attention.
+
+### 3. Distraction-Free Header/Footer Isolation (`src/App.jsx`)
+- Isolated `/checkout` route from global store Header, Footer, and promotional Popups to create a focused, high-conversion checkout experience.
+
+
 ## 2026-11-14 (Part 6.16: Minimalist, Clean & Professional Checkout Redesign — Shopify Standard)
 
 ### 1. Simple, Clean, Non-Overwhelming Form Architecture (`src/pages/CheckoutPage.jsx`)

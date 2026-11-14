@@ -91,6 +91,17 @@ const CheckoutPage = () => {
   const [isLookingUpPincode, setIsLookingUpPincode] = useState(false);
   const [pincodeStatusMessage, setPincodeStatusMessage] = useState('');
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
+  const [toastError, setToastError] = useState(null);
+
+  // Auto-dismiss toast error after 5s
+  useEffect(() => {
+    if (toastError) {
+      const timer = setTimeout(() => {
+        setToastError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastError]);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -114,6 +125,9 @@ const CheckoutPage = () => {
     if (formErrors[name]) {
       setFormErrors(prev => ({ ...prev, [name]: '' }));
     }
+    if (toastError?.field === name) {
+      setToastError(null);
+    }
   };
 
   const handlePhoneChange = (e) => {
@@ -121,6 +135,9 @@ const CheckoutPage = () => {
     setFormData(prev => ({ ...prev, phone: digitsOnly }));
     if (formErrors.phone) {
       setFormErrors(prev => ({ ...prev, phone: '' }));
+    }
+    if (toastError?.field === 'phone') {
+      setToastError(null);
     }
   };
 
@@ -130,6 +147,9 @@ const CheckoutPage = () => {
     setFormData(prev => ({ ...prev, pinCode: digitsOnly }));
     if (formErrors.pinCode) {
       setFormErrors(prev => ({ ...prev, pinCode: '' }));
+    }
+    if (toastError?.field === 'pinCode') {
+      setToastError(null);
     }
 
     if (digitsOnly.length === 6) {
@@ -179,6 +199,9 @@ const CheckoutPage = () => {
     if (formErrors[name]) {
       setFormErrors(prev => ({ ...prev, [name]: '' }));
     }
+    if (toastError?.field === name) {
+      setToastError(null);
+    }
   };
 
   const handleCouponSubmit = (e) => {
@@ -206,21 +229,45 @@ const CheckoutPage = () => {
     if (!formData.pinCode.trim()) {
       errors.pinCode = 'PIN code is required.';
     } else if (!/^[1-9]\d{5}$/.test(formData.pinCode.trim())) {
-      errors.pinCode = 'Enter valid 6-digit Indian PIN.';
+      errors.pinCode = 'Please enter a valid 6-digit Indian PIN code.';
     }
 
-    if (!formData.city.trim()) errors.city = 'City is required.';
+    if (!formData.city.trim()) errors.city = 'City / Town is required.';
     if (!formData.state.trim()) errors.state = 'State is required.';
-    if (!formData.address.trim()) errors.address = 'Address is required.';
+    if (!formData.address.trim()) errors.address = 'Street address is required.';
 
     if (!formData.phone.trim()) {
-      errors.phone = '10-digit mobile number is required.';
+      errors.phone = 'Mobile number is required.';
     } else if (!/^[6-9]\d{9}$/.test(formData.phone.trim())) {
-      errors.phone = 'Enter valid 10-digit Indian mobile number.';
+      errors.phone = 'Please enter a valid 10-digit Indian mobile number.';
     }
 
     setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    const hasErrors = Object.keys(errors).length > 0;
+
+    if (hasErrors) {
+      // Find first error in visual order
+      const visualOrder = ['email', 'firstName', 'lastName', 'pinCode', 'city', 'state', 'address', 'phone'];
+      const firstKey = visualOrder.find(k => errors[k]) || Object.keys(errors)[0];
+      const errorMsg = errors[firstKey];
+
+      // Show popup toast
+      setToastError({
+        field: firstKey,
+        message: errorMsg
+      });
+
+      // Move / scroll the user smoothly to that section
+      setTimeout(() => {
+        const targetEl = document.getElementById(firstKey) || document.querySelector(`[name="${firstKey}"]`);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetEl.focus();
+        }
+      }, 50);
+    }
+
+    return !hasErrors;
   };
 
   // Submit form & call create-razorpay-order Edge Function
@@ -421,12 +468,30 @@ const CheckoutPage = () => {
 
   return (
     <div className="checkout-page">
+      {/* Floating Pop Notification for validation errors or unfilled info */}
+      {toastError && (
+        <div className="checkout-toast-pop" role="alert" aria-live="assertive">
+          <div className="toast-pop-content">
+            <AlertCircle size={18} className="toast-pop-icon" />
+            <span className="toast-pop-text">{toastError.message}</span>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => setToastError(null)} 
+            className="toast-pop-close"
+            aria-label="Dismiss error"
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
+
       <div className="checkout-container">
         
-        {/* Main Column */}
+        {/* Main Column (Only this side scrolls on desktop) */}
         <main className="checkout-main">
-          
-          {/* Minimal Header */}
+          <div className="checkout-main-content">
+            {/* Minimal Header */}
           <header className="checkout-header">
             <Link to="/" className="brand-logo-link" title="Return to home">
               <img src={logo} alt="Kabgeer Masale" className="brand-logo-img" />
@@ -752,6 +817,7 @@ const CheckoutPage = () => {
               <Link to="/terms">Terms of service</Link>
             </div>
           </form>
+          </div>
         </main>
 
         {/* Right Sticky Sidebar (Order Summary) */}

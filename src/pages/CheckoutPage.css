@@ -16,32 +16,128 @@
   box-sizing: border-box;
 }
 
+/* Floating Pop Notification for Form Errors / Unfilled Info */
+.checkout-toast-pop {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999999;
+  background-color: #18181b;
+  color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  padding: 0.75rem 1rem 0.75rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  min-width: 320px;
+  max-width: 92vw;
+  border-left: 4px solid #ef4444;
+  animation: slideDownToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideDownToast {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.toast-pop-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toast-pop-icon {
+  color: #f87171;
+  flex-shrink: 0;
+}
+
+.toast-pop-text {
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #f9fafb;
+}
+
+.toast-pop-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.toast-pop-close:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
 /* Two-column layout container */
 .checkout-container {
   display: flex;
   flex-direction: column-reverse;
-  max-width: 1140px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   min-height: 100vh;
 }
 
 @media (min-width: 992px) {
+  .checkout-page {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+
   .checkout-container {
     flex-direction: row;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
   }
 }
 
 /* -------------------------------------------------------------------------
-   LEFT COLUMN: Form Area
+   LEFT COLUMN: Form Area (Only this column scrolls on desktop)
    ------------------------------------------------------------------------- */
 .checkout-main {
   flex: 1.15;
-  padding: 2.5rem 1.5rem 4rem 1.5rem;
+  padding: 2rem 1.25rem 4rem 1.25rem;
+}
+
+.checkout-main-content {
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
 }
 
 @media (min-width: 992px) {
   .checkout-main {
-    padding: 3rem 4rem 4rem 2rem;
+    height: 100%;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 3rem 3.5rem 6rem 5vw;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .checkout-main-content {
+    margin: 0;
   }
 }
 
@@ -187,6 +283,17 @@
 
 .field-input.input-err {
   border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+  animation: inputErrShake 0.35s ease-in-out;
+}
+
+@keyframes inputErrShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
 }
 
 .field-input.input-err:focus {
@@ -382,30 +489,40 @@
 }
 
 /* -------------------------------------------------------------------------
-   RIGHT COLUMN: Sidebar (Clean Order Summary)
+   RIGHT COLUMN: Sidebar (Clean Order Summary - Sticked & Pinned)
    ------------------------------------------------------------------------- */
 .checkout-sidebar {
   flex: 1;
   background-color: #fafafa;
-  padding: 2rem 1.5rem;
+  padding: 2rem 1.25rem;
   border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar-sticky-wrap {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (min-width: 992px) {
   .checkout-sidebar {
-    padding: 3rem 2rem 4rem 3rem;
+    height: 100%;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 3rem 5vw 6rem 3rem;
     border-bottom: none;
     border-left: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
+    display: flex;
+    justify-content: flex-start;
   }
-}
 
-.sidebar-sticky-wrap {
-  display: flex;
-  flex-direction: column;
+  .sidebar-sticky-wrap {
+    margin: 0;
+  }
 }
 
 .sidebar-header {
