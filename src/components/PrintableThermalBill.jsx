@@ -158,11 +158,18 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
   const taxableGoodsSubtotal = netGoodsValue / 1.05;
   const goodsGst = netGoodsValue - taxableGoodsSubtotal;
 
+  const grossGoodsTaxable = subtotal / 1.05;
+  const grossGoodsGst = subtotal - grossGoodsTaxable;
+
   const taxableShipping = shippingFee > 0 ? (shippingFee / 1.05) : 0;
   const shippingGst = shippingFee > 0 ? (shippingFee - taxableShipping) : 0;
 
   const totalTaxable = taxableGoodsSubtotal + taxableShipping;
   const totalGst = goodsGst + shippingGst;
+  const tableTaxable = discount > 0 ? (grossGoodsTaxable + taxableShipping) : totalTaxable;
+  const tableGst = discount > 0 ? (grossGoodsGst + shippingGst) : totalGst;
+  const tableAmount = discount > 0 ? (subtotal + shippingFee) : totalAmount;
+
   const cgstAmount = isIntraState ? (totalGst / 2) : 0;
   const sgstAmount = isIntraState ? (totalGst / 2) : 0;
   const igstAmount = !isIntraState ? totalGst : 0;
@@ -636,32 +643,9 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                         );
                       })}
 
-                      {discount > 0 && (
-                        <tr className="a4-discount-row" style={{ color: '#047857', backgroundColor: 'rgba(4, 120, 87, 0.04)' }}>
-                          <td style={{ textAlign: 'center' }} className="a4-cell-idx">★</td>
-                          <td>
-                            <div className="a4-item-title" style={{ color: '#047857', fontWeight: 700 }}>
-                              {isBybOrder
-                                ? (couponCode ? `Special Discount (Build Your Bundle • ${couponCode})` : 'Special Discount (Build Your Bundle 10% OFF)')
-                                : (couponCode ? `Promotional Discount (Coupon: ${couponCode})` : 'Special Trade Discount')}
-                            </div>
-                            <div className="a4-item-subtitle" style={{ color: '#059669' }}>
-                              Trade discount deducted before tax per Sec 15(3) CGST Act
-                            </div>
-                          </td>
-                          <td style={{ textAlign: 'center' }} className="monospace a4-hsn-cell">09109990</td>
-                          <td style={{ textAlign: 'center' }}>-₹{discount.toFixed(0)}</td>
-                          <td style={{ textAlign: 'center', fontWeight: 700 }}>1</td>
-                          <td style={{ textAlign: 'right' }}>-₹{(discount / 1.05).toFixed(2)}</td>
-                          <td style={{ textAlign: 'right' }}>-₹{(discount / 1.05).toFixed(2)}</td>
-                          <td style={{ textAlign: 'right' }}>-₹{(discount - (discount / 1.05)).toFixed(2)}</td>
-                          <td style={{ textAlign: 'right', fontWeight: 700 }} className="a4-amount-cell">-₹{discount.toFixed(2)}</td>
-                        </tr>
-                      )}
-
                       {shippingFee > 0 && (
                         <tr className="a4-shipping-row">
-                          <td style={{ textAlign: 'center' }} className="a4-cell-idx">{items.length + (discount > 0 ? 2 : 1)}</td>
+                          <td style={{ textAlign: 'center' }} className="a4-cell-idx">{items.length + 1}</td>
                           <td>
                             <div className="a4-item-title">Express Courier Shipping & Packaging</div>
                             <div className="a4-item-subtitle">Safe doorstep parcel delivery</div>
@@ -678,12 +662,14 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                     </tbody>
                     <tfoot>
                       <tr className="a4-table-footer-row">
-                        <td colSpan={4} style={{ textAlign: 'right', fontWeight: 700 }}>TOTAL:</td>
+                        <td colSpan={4} style={{ textAlign: 'right', fontWeight: 700 }}>
+                          {discount > 0 ? 'SUBTOTAL:' : 'TOTAL:'}
+                        </td>
                         <td style={{ textAlign: 'center', fontWeight: 800 }}>{totalQty}</td>
                         <td></td>
-                        <td style={{ textAlign: 'right', fontWeight: 700 }}>₹{totalTaxable.toFixed(2)}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 700 }}>₹{totalGst.toFixed(2)}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 900, fontSize: '0.95rem' }} className="a4-final-cell">₹{totalAmount.toFixed(2)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700 }}>₹{tableTaxable.toFixed(2)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700 }}>₹{tableGst.toFixed(2)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 900, fontSize: '0.95rem' }} className="a4-final-cell">₹{tableAmount.toFixed(2)}</td>
                       </tr>
                     </tfoot>
                   </table>

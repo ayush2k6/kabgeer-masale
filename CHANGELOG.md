@@ -1,5 +1,24 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.29: A4 Paper Label Table Item List De-Cluttering — Discount Moved Exclusively to Subtotal & Financial Breakdown)
+
+### 1. A4 Tax Invoice / Paper Label Table Polish (`src/components/PrintableThermalBill.jsx`)
+- **Removed Negative Discount Row from Items List**:
+  * Removed the `a4-discount-row` (`★ Special Discount (Build Your Bundle 10% OFF)`) from the items table `<tbody>`.
+  * The product items table now exclusively lists physical products and courier shipping, keeping the table clean and professional.
+- **Fixed Shipping Row Index**:
+  * Updated `a4-shipping-row` index calculation from `items.length + (discount > 0 ? 2 : 1)` to `items.length + 1`, ensuring seamless sequential numbering.
+- **Subtotal & Financial Breakdown Unity**:
+  * The Special Discount (`-₹...`) remains clearly and authoritatively displayed in the bottom-right Financial Summary card (`Items Subtotal`, `Special Discount`, `Taxable Value`, `CGST / SGST / IGST`, `Shipping Fee`, `GRAND TOTAL`).
+  * Table footer displays `SUBTOTAL:` when a discount is active, matching the exact column sum of items and shipping, while the bottom-right card reflects the final post-discount `GRAND TOTAL`.
+
+### 2. Verification & Testing
+- Executed `npm run build`: Clean production build with 0 errors in 2.50s.
+- Ran `security-tests/test-16-xss.mjs`: PASS (0 unescaped sinks).
+- Ran `security-tests/test-local-remediations.mjs`: PASS (44/44 checks passed).
+- Ran `security-tests/test-byb-email-confirmation.mjs`: PASS (100% passed).
+- Verified NO `git push` performed (strictly local).
+
 ## 2026-11-15 (Part 6.28: Enterprise UI/UX Redesign of Admin Order Details Drawer Modal)
 
 ### 1. Root-Cause Problem Identification & UI Fixes
