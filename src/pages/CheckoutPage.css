@@ -257,7 +257,8 @@
   flex: 1;
 }
 
-.byb-crown-icon {
+.byb-crown-icon,
+.byb-gift-icon {
   color: #d97706;
   flex-shrink: 0;
 }
@@ -1854,10 +1855,11 @@
     gap: 6px !important;
   }
 
-  .byb-crown-icon {
+  .byb-crown-icon,
+  .byb-gift-icon {
     width: 14px !important;
     height: 14px !important;
-    color: #b59226 !important;
+    color: #d97706 !important;
     flex-shrink: 0 !important;
   }
 

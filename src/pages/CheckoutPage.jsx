@@ -7,7 +7,6 @@ import {
   ShoppingBag, 
   AlertCircle, 
   Lock, 
-  Crown, 
   Gift,
   Truck,
   Tag,
@@ -505,7 +504,7 @@ const CheckoutPage = () => {
               <span className="empty-icon-badge">0</span>
             </div>
 
-            <span className="empty-royal-pill">👑 KABGEER MASALE</span>
+            <span className="empty-royal-pill">KABGEER MASALE</span>
             <h1 className="empty-card-title">Your Spice Box is Empty</h1>
             <p className="empty-card-desc">
               You don't have any masalas in your cart to checkout. 
@@ -518,7 +517,7 @@ const CheckoutPage = () => {
                 <ChevronRight size={16} />
               </Link>
               <Link to="/build-bundle" className="btn-empty-secondary">
-                <Crown size={15} color="#b59226" />
+                <Gift size={15} className="text-emerald" />
                 <span>Build Your Bundle (Save 10%)</span>
               </Link>
             </div>
@@ -529,7 +528,7 @@ const CheckoutPage = () => {
                 <span>100% Authentic Awadhi Heritage</span>
               </div>
               <div className="empty-feature-item">
-                <Crown size={15} color="#b59226" />
+                <Gift size={15} className="text-emerald" />
                 <span>2 Free Mini Masala Boxes on Any 4 Masalas</span>
               </div>
               <div className="empty-feature-item">
@@ -595,9 +594,9 @@ const CheckoutPage = () => {
                   {/* Meta Bar: BYB Tag & Clear Cart */}
                   <div className="mobile-summary-meta-bar">
                     {isBundle ? (
-                      <span className="byb-tag">👑 BYB ORDER ACTIVATED</span>
+                      <span className="byb-tag">BYB BUNDLE ACTIVATED</span>
                     ) : (
-                      <span className="mobile-meta-hint">{totalMasalaUnits} royal masalas</span>
+                      <span className="mobile-meta-hint">{totalMasalaUnits} authentic masalas</span>
                     )}
                     {cartItems.length > 0 && (
                       <button 
@@ -788,8 +787,8 @@ const CheckoutPage = () => {
           {isBundle && (
             <div className="byb-minimal-banner">
               <div className="byb-banner-left">
-                <Crown size={14} className="byb-crown-icon" />
-                <span><strong>Royal BYB Perks Applied:</strong> 10% Bundle Discount & 2 Free Masala Boxes Included</span>
+                <Gift size={14} className="byb-gift-icon" />
+                <span><strong>BYB Perks Applied:</strong> 10% Bundle Discount & 2 Free Masala Boxes Included</span>
               </div>
               <span className="byb-active-chip">APPLIED</span>
             </div>
@@ -1181,7 +1180,7 @@ const CheckoutPage = () => {
               <div className="sidebar-title-group">
                 <h2 className="sidebar-title">Order Summary</h2>
                 <span className="sidebar-count-chip">{totalMasalaUnits} items</span>
-                {isBundle && <span className="byb-tag">👑 BYB ORDER</span>}
+                {isBundle && <span className="byb-tag">BYB BUNDLE</span>}
               </div>
               {cartItems.length > 0 && (
                 <button 
@@ -1340,7 +1339,7 @@ const CheckoutPage = () => {
                   {isBundle && (
                     <div className="totals-row byb-classification-row">
                       <span className="totals-label">Order Classification</span>
-                      <span className="byb-class-badge">👑 BYB ORDER</span>
+                      <span className="byb-class-badge">BYB BUNDLE</span>
                     </div>
                   )}
 

@@ -1,5 +1,24 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.33: Checkout Visual Hierarchy Polish — Complete Crown Emoji Removal)
+
+### 1. Removal of Crown Emojis and Gimmick Badges (`src/pages/CheckoutPage.jsx` & `.css`)
+- **Motivation**: The user noted that crown emojis (`👑`) in checkout felt cheap, gimmicky, and misaligned with the authentic 65-year-old Awadhi spice house brand identity.
+- **Modifications**:
+  * **Empty State Pill**: Changed `👑 KABGEER MASALE` to clean, minimalist luxury typography `KABGEER MASALE`.
+  * **Build Bundle CTAs**: Replaced yellow crown icon (`<Crown size={15} color="#b59226" />`) with clean green `<Gift size={15} className="text-emerald" />` for both the secondary button and trust feature bullet.
+  * **Mobile Order Summary Meta Tag**: Replaced `👑 BYB ORDER ACTIVATED` with sleek badge `BYB BUNDLE ACTIVATED`.
+  * **BYB Minimal Banner**: Replaced yellow crown icon with emerald `<Gift size={14} className="byb-gift-icon" />`, updating text to crisp `BYB Perks Applied: 10% Bundle Discount & 2 Free Masala Boxes Included`.
+  * **Desktop Sidebar Order Summary**: Replaced `👑 BYB ORDER` chip with refined `BYB BUNDLE` badge.
+  * **Order Classification Row in Totals**: Replaced `👑 BYB ORDER` badge with clean `BYB BUNDLE`.
+  * **CSS Modernization**: Added `.byb-gift-icon` styles in `CheckoutPage.css` matching responsive mobile sizing.
+
+### 2. Verification
+- Production build: `npm run build` completed in 1.33s with 0 errors.
+- Unit & regression tests: `security-tests/test-csv-export-formatting.mjs`, `security-tests/test-16-xss.mjs`, `security-tests/test-local-remediations.mjs`, `security-tests/test-byb-email-confirmation.mjs` all PASSED 100%.
+- Verified 0 remaining occurrences of `👑` or `Crown` in Checkout files.
+- Local commit on `v1-release` (NO `git push`).
+
 ## 2026-11-15 (Part 6.32: Admin Orders UI Polish, Clean Single-Line CSV Export & Action Column Alignment Fix)
 
 ### 1. Main Dashboard Table Action Column Misalignment Fix
