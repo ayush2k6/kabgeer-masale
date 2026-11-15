@@ -1189,8 +1189,8 @@ const CheckoutPage = () => {
                   className="clear-cart-btn" 
                   title="Remove all items from cart"
                 >
-                  <Trash2 size={13} />
-                  <span>Clear Cart</span>
+                  <Trash2 size={12} />
+                  <span>Clear</span>
                 </button>
               )}
             </div>

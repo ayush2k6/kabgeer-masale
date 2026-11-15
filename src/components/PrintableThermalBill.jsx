@@ -814,7 +814,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                       </div>
                       {isBybOrder && (
                         <div className="a4-byb-inclusion-badge">
-                          👑 <strong>BYB PROMO INCLUDED:</strong> 2x Free Mini Masala Boxes Packed With Order
+                          ★ <strong>BYB PROMO INCLUDED:</strong> 2x Free Mini Masala Boxes Packed With Order
                         </div>
                       )}
                     </div>

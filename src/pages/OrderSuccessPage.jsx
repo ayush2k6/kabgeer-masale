@@ -115,7 +115,7 @@ const OrderSuccessPage = () => {
             <div className="order-success-byb-banner" style={{ background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #ecfdf5 100%)', border: '1.5px solid #d4af37', borderRadius: '12px', padding: '1rem 1.25rem', margin: '1rem 0 1.5rem 0', textAlign: 'left', boxShadow: '0 4px 14px rgba(212, 175, 55, 0.12)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
                 <span style={{ backgroundColor: '#1a2f22', color: '#d4af37', fontSize: '0.72rem', fontWeight: 800, padding: '3px 8px', borderRadius: '5px', letterSpacing: '0.04em' }}>
-                  👑 ROYAL BUILD YOUR BOX (BYB)
+                  ROYAL BUILD YOUR BOX (BYB)
                 </span>
                 <span style={{ backgroundColor: '#047857', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: '5px' }}>
                   ✓ 10% SAVINGS + 2 FREE MINI BOXES
@@ -179,7 +179,7 @@ const OrderSuccessPage = () => {
                           <strong>{item.product_name || 'Authentic Masala'}</strong> {item.weight_pack ? `(${item.weight_pack})` : ''} × {item.quantity}
                           {isByb && (
                             <span style={{ marginLeft: '6px', fontSize: '0.7rem', color: '#b45309', backgroundColor: '#fef3c7', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                              👑 Curated Box Item
+                              Curated Box Item
                             </span>
                           )}
                         </span>

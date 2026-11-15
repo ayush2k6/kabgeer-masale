@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { X, ShoppingBag, Plus, Minus, Trash2, Tag, ArrowRight, Truck, Sparkles, Check, Crown, Gift } from 'lucide-react';
+import { X, ShoppingBag, Plus, Minus, Trash2, Tag, ArrowRight, Truck, Sparkles, Check, Gift } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { PRODUCTS } from '../data/products';
 import './CartDrawer.css';
@@ -78,7 +78,7 @@ const CartDrawer = () => {
             </span>
             {bundleOfferActive && (
               <span className="drawer-byb-header-badge" title="Build Your Bundle Order Active">
-                <Crown size={12} /> BYB Order
+                <Sparkles size={11} /> BYB Order
               </span>
             )}
           </div>
@@ -93,7 +93,7 @@ const CartDrawer = () => {
             bundleOfferActive ? (
               <div className="cart-byb-banner">
                 <div className="cart-byb-banner-left">
-                  <span className="byb-pill-gold"><Crown size={12} /> BYB UNLOCKED</span>
+                  <span className="byb-pill-gold"><Sparkles size={11} /> BYB UNLOCKED</span>
                   <span className="cart-byb-banner-text">
                     <strong>10% Flat Savings</strong> applied • <strong>2 Free Mini Boxes</strong> included
                   </span>
@@ -103,7 +103,7 @@ const CartDrawer = () => {
               <div className="free-shipping-bar-container" style={{ background: 'rgba(212, 175, 55, 0.05)' }}>
                 <div className="shipping-bar-header">
                   <p className="shipping-bar-text">
-                    <Crown size={13} style={{ verticalAlign: 'middle', marginRight: '5px', color: '#b59226' }} />
+                    <Sparkles size={13} style={{ verticalAlign: 'middle', marginRight: '5px', color: '#b59226' }} />
                     Add <strong className="gold-text">{itemsToBundleOffer}</strong> more {itemsToBundleOffer === 1 ? 'masala' : 'masalas'} to unlock <strong className="gold-text">10% OFF + 2 Free Mini Boxes</strong>
                   </p>
                 </div>
@@ -139,13 +139,16 @@ const CartDrawer = () => {
                     <div key={itemId} className="drawer-item-card">
                       <div className="drawer-item-img-wrapper">
                         <img src={item.image || item.images?.[0]} alt={item.name} />
+                        {item.quantity > 1 && (
+                          <span className="drawer-item-qty-badge">{item.quantity}</span>
+                        )}
                       </div>
                       <div className="drawer-item-info">
                         <div className="drawer-item-title-row">
                           <h4 className="drawer-item-title">{item.name}</h4>
                           {bundleOfferActive && (
                             <span className="byb-item-pill" title="Part of Build Your Bundle Order">
-                              <Crown size={9} /> BYB Item
+                              <Sparkles size={9} /> BYB Item
                             </span>
                           )}
                         </div>

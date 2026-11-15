@@ -1489,7 +1489,7 @@ const AdminDashboardPage = () => {
                     <span className="drawer-tag-kicker">ORDER DETAILS</span>
                     {checkIsBybOrder(selectedOrder) && (
                       <span className="drawer-tag-byb" title="Build Your Bundle Order">
-                        👑 BYB BUNDLE
+                        BYB BUNDLE
                       </span>
                     )}
                     {getOrderCoupon(selectedOrder) && (
@@ -2231,7 +2231,7 @@ const AdminDashboardPage = () => {
                     <div className="coupon-callout-header">
                       <div className="coupon-pill-large bundle">
                         <Sparkles size={13} />
-                        <span>👑 BUILD YOUR BUNDLE (BYB) ORDER</span>
+                        <span>BUILD YOUR BUNDLE (BYB) ORDER</span>
                       </div>
                       <span className="coupon-applied-status">✓ 10% Off + 2 Free Mini Boxes</span>
                     </div>

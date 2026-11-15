@@ -1,5 +1,35 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.34: Checkout & Cart Negative Spacing Polish — Overlap Elimination & Visual Hierarchy Refinement)
+
+### 1. Checkout Sidebar Overlap & Clipping Elimination (`src/pages/CheckoutPage.jsx` & `.css`)
+- **Root Cause**: On desktop screens (~992px to 1200px), `.checkout-sidebar` had `padding: 2rem 2rem 2.5rem 2rem` (64px total horizontal padding) paired with `overflow-x: hidden`. Because the title group (`Order Summary`, `4 items`, `BYB BUNDLE`) lacked flexible wrapping and `clear-cart-btn` lacked `flex-shrink: 0`, the clear button was forced past the right border and clipped. Furthermore, in product rows, `item-meta` lacked `min-width: 0`, causing long item titles and `item-weight` hints (`25g • ₹79.00 each`) to collide with stepper controls, chopping off the right edge of quantity pickers (`[-] 2 [+] 🗑`) and price tags.
+- **Modifications**:
+  * **Sidebar Dimensions**: Reduced desktop padding from `2rem` (32px each side) to `1.35rem` (21.6px each side), reclaiming +21px of usable content width. Adjusted flex sizing to `flex: 1; min-width: 380px;`.
+  * **Header Layout**: Wrapped `.sidebar-title-group` with `flex-wrap: wrap; flex: 1; min-width: 0; gap: 6px;` and gave `.clear-cart-btn` `flex-shrink: 0;` with shortened text (`<Trash2 size={12} /> <span>Clear</span>`), guaranteeing the clear button is never pushed off-screen or clipped.
+  * **Negative Spacing Badges**: Redesigned `.item-qty-badge` to sit at `top: -5px; right: -5px; z-index: 2` with a 1.5px white border over 52×52px thumbnails, achieving standard Shopify Plus negative-offset elevation.
+  * **Item Row Flex Integrity**: Added `min-width: 0` and `word-break: break-word` to `.item-title`, `flex-shrink: 0` to `.item-price`, and `min-width: 0; overflow: hidden; text-overflow: ellipsis;` to `.item-weight`. Streamlined stepper buttons to 20×20px with 3px gaps.
+  * **Complimentary Gift Row**: Modernized `.gift-row` with 12px gap, 0.6rem padding, and matching emerald negative-offset badge.
+
+### 2. Cart Drawer Negative Spacing & Crown Emoji Removal (`src/components/CartDrawer.jsx` & `.css`)
+- **Modifications**:
+  * **Negative Spacing Quantity Badges**: Added dynamic `.drawer-item-qty-badge` (`top: -5px; right: -5px; z-index: 2; border: 1.5px solid #ffffff;`) to drawer product thumbnails when `item.quantity > 1`.
+  * **Overlap Prevention**: Updated `.drawer-item-title-row` with `align-items: flex-start; gap: 8px; width: 100%;` and `.drawer-item-title` with `word-break: break-word; flex: 1; min-width: 0;` so long product titles and `.byb-item-pill` never collide.
+  * **Sleek Sizing**: Refined drawer thumbnail wrapper from 64×64px to 56×56px and card padding from `0.9rem` to `0.75rem 0.85rem`, opening up extra breathing room for stepper controls and line totals.
+  * **Crown Removal**: Completely eradicated all `<Crown />` icons, replacing them with `<Sparkles />` and royal gold/emerald tags in drawer header, BYB banner, and progress track.
+
+### 3. Application-Wide Crown Emoji Removal (`OrderSuccessPage`, `AdminDashboardPage`, `PrintableThermalBill`)
+- **Modifications**:
+  * In `src/pages/OrderSuccessPage.jsx`: Replaced `👑 ROYAL BUILD YOUR BOX (BYB)` and `👑 Curated Box Item` with clean royal badges.
+  * In `src/pages/AdminDashboardPage.jsx`: Replaced `👑 BYB BUNDLE` and `👑 BUILD YOUR BUNDLE (BYB) ORDER` with clean typography.
+  * In `src/components/PrintableThermalBill.jsx`: Replaced `👑` with `★` on the A4 invoice inclusion tag.
+
+### 4. Verification & Testing
+- Production build: `npm run build` completed in 1.31s with 0 errors.
+- Unit & regression tests: `security-tests/test-csv-export-formatting.mjs`, `security-tests/test-16-xss.mjs`, `security-tests/test-local-remediations.mjs`, `security-tests/test-byb-email-confirmation.mjs` all PASSED 100% (44/44 checks).
+- Headless browser verification: Visual confirmation of Cart Drawer and Checkout Order Summary at desktop width (~1100px-1200px) showing 0 overlaps, 0 clipped buttons, and 0 crown emojis.
+- Local commit on `v1-release` (NO `git push`).
+
 ## 2026-11-15 (Part 6.33: Checkout Visual Hierarchy Polish — Complete Crown Emoji Removal)
 
 ### 1. Removal of Crown Emojis and Gimmick Badges (`src/pages/CheckoutPage.jsx` & `.css`)
