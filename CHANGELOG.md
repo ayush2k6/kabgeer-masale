@@ -17,17 +17,20 @@
   * Displays `FREE DELIVERY` if shipping is 0, or `+₹XX.XX` when applicable.
 
 ### 2. Print / "Save as PDF" Engine Overhaul (`PrintableThermalBill.css` & `PrintableThermalBill.jsx`)
+- **Root Cause Analysis & Fix for "Print Preview Unavailable"**:
+  * An overly broad CSS selector (`header, nav, main, footer { display: none !important; }`) and a parent child query (`#root > div > *:not(...)`) accidentally hid `<main className="admin-main-wrapper">`, which is the React parent container of `<AdminDashboardPage>` and the modal.
+  * When an ancestor has `display: none`, all nested elements become completely hidden from the browser's print engine, prompting Chromium to display "Print preview is not available".
+  * Refined selectors to target strictly the background siblings (`.admin-navbar, .admin-main-container, .admin-drawer-backdrop, .no-print`), while explicitly guaranteeing all ancestors (`html, body, #root, .admin-app-root, .admin-main-wrapper, .admin-layout`) are set to `display: block !important; margin: 0 !important; padding: 0 !important; overflow: visible !important;`.
 - **Root Cause of Spilling to Page 3 or 4**:
   * Previously, `@media print` relied on `body * { visibility: hidden; }` to hide the admin dashboard.
   * In browser rendering engines, `visibility: hidden` hides elements visually but leaves their layout boxes in the document flow.
   * With 50+ order rows and drawer panels (~3500px in height), `.thermal-modal-backdrop` flowed AFTER all those hidden boxes (at Y ≈ 3500px), causing the invoice to begin on page 3 or 4 with blank pages preceding it.
 - **Permanent Zero-Blank-Page Solution**:
-  * Enforced `display: none !important; height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important;` on all background admin elements (`.admin-navbar, .admin-main-container, .admin-drawer-backdrop, .admin-drawer-panel, header, nav, main, footer, .no-print`).
-  * Added `document.body.classList.add('thermal-print-active')` on modal mount to strictly hide all sibling nodes of `#root`.
-  * Set `.thermal-modal-backdrop` to `position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 999999 !important;`.
+  * Enforced `display: none !important; height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important;` on all background admin elements (`.admin-navbar, .admin-main-container, .admin-drawer-backdrop, .admin-drawer-panel, .no-print`).
+  * Removed `body * { visibility: hidden; }` entirely, relying on direct `display: none` on the background elements.
   * Overrode `min-height: 0 !important;` on `#printable-thermal-bill.mode-invoice-a4` to eliminate artificial page boundary expansions.
   * Configured `.a4-invoice-table tfoot` with `display: table-row-group !important;` to prevent duplicate footers across print breaks.
-  * The invoice now consistently starts immediately on Page 1 at the top of the print/PDF preview with zero blank pages.
+  * The invoice now consistently starts immediately on Page 1 at the top of the print/PDF preview with zero blank pages and 100% available preview.
 
 ### 3. Verification & Testing
 - Executed `npm run build`: Clean production build with 0 errors in 2.60s.

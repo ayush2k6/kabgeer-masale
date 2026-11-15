@@ -210,22 +210,20 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
             size: ${printFormat === 'thermal' ? '100mm 150mm' : 'A4 portrait'};
             margin: ${printFormat === 'thermal' ? '2mm' : '6mm 6mm 8mm 6mm'};
           }
-          html, body {
+          html, body, #root, .admin-app-root, .admin-main-wrapper, .admin-layout {
             margin: 0 !important;
             padding: 0 !important;
             height: auto !important;
+            min-height: 0 !important;
             overflow: visible !important;
             background: #ffffff !important;
+            display: block !important;
           }
-          /* Completely hide all background dashboard elements from print layout flow */
+          /* Completely hide background dashboard elements from print layout flow */
           .admin-navbar,
           .admin-main-container,
           .admin-drawer-backdrop,
           .admin-drawer-panel,
-          header,
-          nav,
-          main,
-          footer,
           .no-print {
             display: none !important;
             height: 0 !important;
@@ -234,24 +232,17 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
             padding: 0 !important;
             overflow: hidden !important;
           }
-          body.thermal-print-active > #root > div > *:not(.thermal-modal-backdrop) {
-            display: none !important;
-            height: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-          }
           .thermal-modal-backdrop {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
+            position: static !important;
+            display: block !important;
             width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
-            background: #ffffff !important;
-            display: block !important;
-            z-index: 999999 !important;
+            background: transparent !important;
             overflow: visible !important;
+            z-index: auto !important;
           }
           .thermal-modal-panel {
             border: none !important;
@@ -268,6 +259,15 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
           .thermal-preview-scrollable {
             padding: 0 !important;
             margin: 0 !important;
+            overflow: visible !important;
+            height: auto !important;
+            display: block !important;
+          }
+          #printable-thermal-bill {
+            display: block !important;
+            box-shadow: none !important;
+            margin: 0 auto !important;
+            position: static !important;
             overflow: visible !important;
             height: auto !important;
           }

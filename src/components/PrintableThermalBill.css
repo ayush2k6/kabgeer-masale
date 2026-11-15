@@ -1276,13 +1276,15 @@
     margin: 6mm 6mm 8mm 6mm;
   }
 
-  html, body {
+  html, body, #root, .admin-app-root, .admin-main-wrapper, .admin-layout {
     background: #ffffff !important;
     color: #000000 !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
+    display: block !important;
     overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -1293,10 +1295,6 @@
   .admin-main-container,
   .admin-drawer-backdrop,
   .admin-drawer-panel,
-  header,
-  nav,
-  main,
-  footer,
   .no-print {
     display: none !important;
     height: 0 !important;
@@ -1306,37 +1304,17 @@
     overflow: hidden !important;
   }
 
-  body.thermal-print-active > #root > div > *:not(.thermal-modal-backdrop) {
-    display: none !important;
-    height: 0 !important;
-    max-height: 0 !important;
-    overflow: hidden !important;
-  }
-
-  body * {
-    visibility: hidden;
-  }
-
-  .thermal-modal-backdrop,
-  .thermal-modal-panel,
-  .thermal-preview-scrollable,
-  #printable-thermal-bill,
-  #printable-thermal-bill * {
-    visibility: visible !important;
-  }
-
   .thermal-modal-backdrop {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+    position: static !important;
+    display: block !important;
     width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
     background: transparent !important;
     padding: 0 !important;
     margin: 0 !important;
     overflow: visible !important;
-    z-index: 999999 !important;
-    display: block !important;
+    z-index: auto !important;
   }
 
   .thermal-modal-panel {
