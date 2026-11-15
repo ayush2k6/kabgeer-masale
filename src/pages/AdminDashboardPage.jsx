@@ -32,7 +32,8 @@ import {
   Eye,
   Trash2,
   Tag,
-  ShieldCheck
+  ShieldCheck,
+  Download
 } from 'lucide-react';
 import logo from '../assets/logo.png';
 import PrintableThermalBill from '../components/PrintableThermalBill';
@@ -620,10 +621,136 @@ const AdminDashboardPage = () => {
     }
   };
 
+  // Clean, Uncluttered, Single-Line CSV Export (RFC 4180 compliant with UTF-8 BOM)
+  const handleExportCsv = () => {
+    if (!processedOrders || processedOrders.length === 0) {
+      alert("No orders available to export for the current filter view.");
+      return;
+    }
+
+    const headers = [
+      'Order ID',
+      'Date & Time',
+      'Order Type',
+      'Customer Name',
+      'Phone',
+      'Email',
+      'Customer Type',
+      'Shipping Address',
+      'City',
+      'State',
+      'PIN Code',
+      'Payment Status',
+      'Payment Mode',
+      'Fulfillment Status',
+      'Courier Partner',
+      'AWB Tracking',
+      'Total Units',
+      'Items Summary',
+      'Subtotal (INR)',
+      'Discount (INR)',
+      'Coupon Code',
+      'Shipping Fee (INR)',
+      'Total Amount (INR)'
+    ];
+
+    // Guarantee absolutely NO internal line breaks, carriage returns, or tabs in any cell
+    const cleanStr = (val) => {
+      if (val === null || val === undefined) return '';
+      return String(val)
+        .replace(/[\r\n\t]+/g, ' ')   // Eliminate all linebreaks and tabs
+        .replace(/\s{2,}/g, ' ')      // Collapse multiple whitespace
+        .trim();
+    };
+
+    const escapeCsv = (val) => {
+      const clean = cleanStr(val);
+      if (!clean) return '""';
+      return `"${clean.replace(/"/g, '""')}"`;
+    };
+
+    const rows = processedOrders.map(order => {
+      const orderDate = order.created_at ? new Date(order.created_at) : null;
+      const formattedDateTime = orderDate
+        ? `${orderDate.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })} ${orderDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`
+        : '—';
+
+      const isByb = checkIsBybOrder(order);
+      const orderType = isByb ? 'BYB Bundle' : 'Standard';
+      const isGuest = order.customer_type === 'guest' || !order.customer_id;
+      const customerType = isGuest ? 'Guest' : 'Member';
+
+      // Concise, clean items summary (no verbose price spam or multi-line breaks)
+      const itemsList = (order.order_items || []).map(it => {
+        const qty = it.quantity || 1;
+        const name = cleanStr(it.product_name || it.name || 'Spice');
+        return `${qty}x ${name}`;
+      });
+      if (isByb) {
+        itemsList.push('2x Mini Masala Sample Pack');
+      }
+      const itemsSummary = itemsList.join(', ');
+
+      const totalItems = (order.order_items || []).reduce((acc, it) => acc + (Number(it.quantity) || 1), 0) + (isByb ? 2 : 0);
+
+      const addr = order.shipping_address || {};
+      const fullAddress = [
+        addr.address_line1 || addr.address || '',
+        addr.address_line2 || '',
+        addr.landmark ? `Near ${addr.landmark}` : ''
+      ].map(cleanStr).filter(Boolean).join(', ');
+
+      const subtotal = (Number(order.subtotal) || (Number(order.total_amount) - (Number(order.shipping_fee) || 0) + (Number(order.discount_amount) || 0)) || 0).toFixed(2);
+      const discount = (Number(order.discount_amount) || 0).toFixed(2);
+      const coupon = cleanStr(getOrderCoupon(order) || 'None');
+      const shipping = (Number(order.shipping_fee) || 0).toFixed(2);
+      const total = (Number(order.total_amount) || 0).toFixed(2);
+
+      return [
+        escapeCsv(order.display_order_id || order.id),
+        escapeCsv(formattedDateTime),
+        escapeCsv(orderType),
+        escapeCsv(order.customer_name || 'Customer'),
+        escapeCsv(order.customer_phone || '—'),
+        escapeCsv(order.customer_email || '—'),
+        escapeCsv(customerType),
+        escapeCsv(fullAddress || '—'),
+        escapeCsv(addr.city || '—'),
+        escapeCsv(addr.state || '—'),
+        escapeCsv(addr.postal_code || addr.pincode || addr.pin || '—'),
+        escapeCsv(order.payment_status || 'Pending'),
+        escapeCsv(order.payment_method || order.payment_mode || 'Razorpay Online'),
+        escapeCsv(order.order_status || 'Pending'),
+        escapeCsv(order.courier_partner || 'Trackon'),
+        escapeCsv(order.trackon_awb || order.shiprocket_awb || '—'),
+        escapeCsv(totalItems),
+        escapeCsv(itemsSummary),
+        escapeCsv(subtotal),
+        escapeCsv(discount),
+        escapeCsv(coupon),
+        escapeCsv(shipping),
+        escapeCsv(total)
+      ].join(',');
+    });
+
+    const csvContent = '\uFEFF' + [headers.map(h => `"${h}"`).join(','), ...rows].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const tabName = activeViewTab === 'paid' ? 'Paid_Orders' : activeViewTab === 'to_fulfill' ? 'To_Pack' : activeViewTab === 'unpaid' ? 'Unpaid_Checkouts' : 'All_Orders';
+    const dateStr = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.setAttribute('download', `Kabgeer_Orders_${tabName}_${dateStr}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const resetFilters = () => {
     setSearchQuery('');
     setStatusFilter('ALL');
-    setPaymentFilter('ALL');
+    setPaymentFilter('Paid');
     setSortBy('newest');
     setActiveViewTab('paid');
   };
@@ -811,51 +938,53 @@ const AdminDashboardPage = () => {
           
           {/* Segmented View Tabs Bar */}
           <div className="admin-view-tabs-bar">
-            <button 
-              type="button" 
-              className={`view-tab-btn ${activeViewTab === 'paid' ? 'active' : ''}`}
-              onClick={() => { setActiveViewTab('paid'); setPaymentFilter('Paid'); setStatusFilter('ALL'); }}
-              title="Show only legitimate paid customer orders"
-            >
-              <CheckCircle2 size={15} color={activeViewTab === 'paid' ? '#15803d' : '#16a34a'} />
-              <span>Paid Orders</span>
-              <span className="tab-count-pill pill-paid">{metrics.paidOrders}</span>
-            </button>
+            <div className="admin-view-tabs-track">
+              <button 
+                type="button" 
+                className={`view-tab-btn ${activeViewTab === 'paid' ? 'active' : ''}`}
+                onClick={() => { setActiveViewTab('paid'); setPaymentFilter('Paid'); setStatusFilter('ALL'); }}
+                title="Show verified paid customer orders"
+              >
+                <CheckCircle2 size={14} className="tab-icon icon-tab-paid" />
+                <span>Paid Orders</span>
+                <span className="tab-count-pill pill-paid">{metrics.paidOrders}</span>
+              </button>
 
-            <button 
-              type="button" 
-              className={`view-tab-btn ${activeViewTab === 'to_fulfill' ? 'active' : ''}`}
-              onClick={() => { setActiveViewTab('to_fulfill'); setPaymentFilter('Paid'); setStatusFilter('ALL'); }}
-              title="Show paid orders awaiting packing or shipping"
-            >
-              <Clock size={15} color={activeViewTab === 'to_fulfill' ? '#b45309' : '#d97706'} />
-              <span>To Pack & Ship</span>
-              <span className="tab-count-pill pill-amber">{metrics.toFulfillOrders}</span>
-            </button>
+              <button 
+                type="button" 
+                className={`view-tab-btn ${activeViewTab === 'to_fulfill' ? 'active' : ''}`}
+                onClick={() => { setActiveViewTab('to_fulfill'); setPaymentFilter('Paid'); setStatusFilter('ALL'); }}
+                title="Show paid orders awaiting packing or shipping"
+              >
+                <Clock size={14} className="tab-icon icon-tab-amber" />
+                <span>To Pack & Ship</span>
+                <span className="tab-count-pill pill-amber">{metrics.toFulfillOrders}</span>
+              </button>
 
-            <button 
-              type="button" 
-              className={`view-tab-btn ${activeViewTab === 'unpaid' ? 'active tab-unpaid-active' : ''}`}
-              onClick={() => { setActiveViewTab('unpaid'); setPaymentFilter('Pending'); setStatusFilter('ALL'); }}
-              title="View checkout attempts where client never completed payment"
-            >
-              <AlertTriangle size={15} color={activeViewTab === 'unpaid' ? '#dc2626' : '#ef4444'} />
-              <span>Unpaid / Incomplete</span>
-              {metrics.unpaidOrders > 0 && (
-                <span className="tab-count-pill pill-red">{metrics.unpaidOrders}</span>
-              )}
-            </button>
+              <button 
+                type="button" 
+                className={`view-tab-btn ${activeViewTab === 'unpaid' ? 'active tab-unpaid-active' : ''}`}
+                onClick={() => { setActiveViewTab('unpaid'); setPaymentFilter('Pending'); setStatusFilter('ALL'); }}
+                title="View checkout attempts where client never completed payment"
+              >
+                <AlertTriangle size={14} className="tab-icon icon-tab-red" />
+                <span>Unpaid / Incomplete</span>
+                {metrics.unpaidOrders > 0 && (
+                  <span className="tab-count-pill pill-red">{metrics.unpaidOrders}</span>
+                )}
+              </button>
 
-            <button 
-              type="button" 
-              className={`view-tab-btn ${activeViewTab === 'all' ? 'active' : ''}`}
-              onClick={() => { setActiveViewTab('all'); setPaymentFilter('ALL'); setStatusFilter('ALL'); }}
-              title="Show all order records including abandoned checkouts"
-            >
-              <Package size={15} />
-              <span>All Records</span>
-              <span className="tab-count-pill">{orders.length}</span>
-            </button>
+              <button 
+                type="button" 
+                className={`view-tab-btn ${activeViewTab === 'all' ? 'active' : ''}`}
+                onClick={() => { setActiveViewTab('all'); setPaymentFilter('ALL'); setStatusFilter('ALL'); }}
+                title="Show all order records including abandoned checkouts"
+              >
+                <Package size={14} className="tab-icon" />
+                <span>All Records</span>
+                <span className="tab-count-pill pill-neutral">{orders.length}</span>
+              </button>
+            </div>
           </div>
 
           {/* Unpaid / Abandoned Checkouts Notice Banner */}
@@ -889,7 +1018,7 @@ const AdminDashboardPage = () => {
           {/* Search & Filter Header Bar */}
           <div className="admin-orders-header-bar">
             <div className="admin-search-wrapper">
-              <Search size={16} className="admin-search-icon" />
+              <Search size={15} className="admin-search-icon" />
               <input
                 type="text"
                 placeholder="Search by Order ID, Name, Email, Phone..."
@@ -956,12 +1085,23 @@ const AdminDashboardPage = () => {
                 </select>
               </div>
 
-              {(searchQuery || statusFilter !== 'ALL' || paymentFilter !== 'ALL' || sortBy !== 'newest' || activeViewTab !== 'paid') && (
+              {(searchQuery || statusFilter !== 'ALL' || (paymentFilter !== 'Paid' && activeViewTab === 'paid') || (paymentFilter !== 'Pending' && activeViewTab === 'unpaid') || (paymentFilter !== 'ALL' && activeViewTab === 'all') || sortBy !== 'newest') && (
                 <button type="button" onClick={resetFilters} className="btn-reset-filters" title="Reset all search & filter settings to default">
                   <RotateCw size={12} />
                   <span>Reset</span>
                 </button>
               )}
+
+              <button 
+                type="button" 
+                onClick={handleExportCsv} 
+                className="btn-export-csv" 
+                title={`Export ${processedOrders.length} order(s) as CSV`}
+              >
+                <Download size={13} />
+                <span>Export CSV</span>
+                <span className="export-count-pill">{processedOrders.length}</span>
+              </button>
             </div>
           </div>
 
@@ -971,47 +1111,49 @@ const AdminDashboardPage = () => {
               <span className="admin-results-count-text">
                 Showing <strong>{processedOrders.length}</strong> of <strong>{orders.length}</strong> orders
               </span>
-              {activeViewTab === 'paid' && (
-                <span className="admin-filter-chip chip-paid">
-                  ✓ Paid Orders Only
-                </span>
-              )}
+
               {activeViewTab === 'to_fulfill' && (
                 <span className="admin-filter-chip chip-amber">
                   📦 To Pack & Ship (Paid Only)
-                  <button type="button" onClick={() => setActiveViewTab('paid')} title="Switch to all paid orders"><X size={11} /></button>
+                  <button type="button" onClick={() => { setActiveViewTab('paid'); setPaymentFilter('Paid'); }} title="Switch to all paid orders"><X size={11} /></button>
                 </span>
               )}
+
               {activeViewTab === 'unpaid' && (
                 <span className="admin-filter-chip chip-red">
                   ⚠️ Unpaid Checkouts Only
-                  <button type="button" onClick={() => setActiveViewTab('paid')} title="Switch back to paid orders"><X size={11} /></button>
+                  <button type="button" onClick={() => { setActiveViewTab('paid'); setPaymentFilter('Paid'); }} title="Switch back to paid orders"><X size={11} /></button>
                 </span>
               )}
+
               {activeViewTab === 'all' && (
                 <span className="admin-filter-chip">
                   All Records (Paid + Unpaid)
-                  <button type="button" onClick={() => setActiveViewTab('paid')} title="Switch back to paid orders"><X size={11} /></button>
+                  <button type="button" onClick={() => { setActiveViewTab('paid'); setPaymentFilter('Paid'); }} title="Switch back to paid orders"><X size={11} /></button>
                 </span>
               )}
+
               {searchQuery && (
                 <span className="admin-filter-chip">
                   Search: "{searchQuery}"
                   <button type="button" onClick={() => setSearchQuery('')} title="Remove search filter"><X size={11} /></button>
                 </span>
               )}
+
               {statusFilter !== 'ALL' && (
                 <span className="admin-filter-chip">
                   Status: {statusFilter}
                   <button type="button" onClick={() => setStatusFilter('ALL')} title="Remove status filter"><X size={11} /></button>
                 </span>
               )}
-              {paymentFilter !== 'ALL' && (
+
+              {paymentFilter !== 'ALL' && !((activeViewTab === 'paid' && paymentFilter === 'Paid') || (activeViewTab === 'unpaid' && paymentFilter === 'Pending')) && (
                 <span className="admin-filter-chip">
                   Payment: {paymentFilter}
                   <button type="button" onClick={() => setPaymentFilter('ALL')} title="Remove payment filter"><X size={11} /></button>
                 </span>
               )}
+
               {sortBy !== 'newest' && (
                 <span className="admin-filter-chip">
                   Sort: {sortBy}
@@ -1019,6 +1161,17 @@ const AdminDashboardPage = () => {
                 </span>
               )}
             </div>
+
+            {(searchQuery || statusFilter !== 'ALL' || (paymentFilter !== 'Paid' && activeViewTab === 'paid') || (paymentFilter !== 'Pending' && activeViewTab === 'unpaid') || (paymentFilter !== 'ALL' && activeViewTab === 'all') || sortBy !== 'newest') && (
+              <button 
+                type="button" 
+                onClick={resetFilters} 
+                className="btn-clear-all-chips"
+                title="Clear applied filters"
+              >
+                Clear all
+              </button>
+            )}
           </div>
 
           {/* Error Banner */}
@@ -1057,7 +1210,7 @@ const AdminDashboardPage = () => {
                     <th style={{ width: '120px' }}>Payment</th>
                     <th style={{ width: '130px' }}>Fulfillment</th>
                     <th style={{ width: '110px', textAlign: 'right' }}>Total Amount</th>
-                    <th style={{ width: '160px', textAlign: 'right' }}>Actions</th>
+                    <th style={{ width: '175px', minWidth: '175px', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1153,7 +1306,7 @@ const AdminDashboardPage = () => {
                         <td className="order-amount-cell" style={{ textAlign: 'right' }}>
                           ₹{(Number(order.total_amount) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
-                        <td style={{ textAlign: 'right' }}>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <div className="order-actions-flex" onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
@@ -1180,21 +1333,8 @@ const AdminDashboardPage = () => {
                               title={!isOrderPaid ? "Permanently delete this unpaid checkout attempt" : "Permanently delete this order"}
                               disabled={isDeletingOrder}
                             >
-                              <Trash2 size={12} />
-                              {!isOrderPaid && <span>Delete</span>}
+                              <Trash2 size={13} />
                             </button>
-                            {order.order_status === 'Delivered' && (
-                              <button
-                                type="button"
-                                className={`btn-action-review ${order.review_email_sent_at ? 'sent' : ''}`}
-                                onClick={() => handleSendReviewEmail(order)}
-                                disabled={sendingReviewEmail}
-                                title={order.review_email_sent_at ? `Review email sent on ${new Date(order.review_email_sent_at).toLocaleDateString('en-IN')}` : 'Send Google Review Email'}
-                              >
-                                <Star size={11} fill={order.review_email_sent_at ? '#16a34a' : 'none'} />
-                                <span>{order.review_email_sent_at ? 'Sent' : 'Review'}</span>
-                              </button>
-                            )}
                           </div>
                         </td>
                       </tr>
@@ -1325,18 +1465,6 @@ const AdminDashboardPage = () => {
                         <Trash2 size={13} />
                         <span>Delete</span>
                       </button>
-                      {order.order_status === 'Delivered' && (
-                        <button
-                          type="button"
-                          className={`btn-mobile-action ${order.review_email_sent_at ? 'sent' : ''}`}
-                          onClick={() => handleSendReviewEmail(order)}
-                          disabled={sendingReviewEmail}
-                          title={order.review_email_sent_at ? 'Review email sent' : 'Send Review Email'}
-                        >
-                          <Star size={12} fill={order.review_email_sent_at ? '#16a34a' : 'none'} />
-                          <span>{order.review_email_sent_at ? 'Sent' : 'Review'}</span>
-                        </button>
-                      )}
                     </div>
                   </div>
                 );

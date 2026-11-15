@@ -1,5 +1,42 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.32: Admin Orders UI Polish, Clean Single-Line CSV Export & Action Column Alignment Fix)
+
+### 1. Main Dashboard Table Action Column Misalignment Fix
+- **Root Cause**: On orders with status `Delivered`, a 4th button (`btn-action-review`) was conditionally inserted into the table row. This caused the actions cell width to jump from ~160px to ~260px, wrapping onto a second line or pushing adjacent cells, creating jagged row-to-row misalignment across the table.
+- **Solution in `src/pages/AdminDashboardPage.jsx` & `.css`**:
+  * Removed `btn-action-review` from the table row action column (`order-actions-flex`). Review request email dispatching is already fully supported and centrally accessible inside the Order Details View drawer (with star rating preview, Google Review link, and 10% coupon generator).
+  * Standardized table header `<th style={{ width: '175px', minWidth: '175px', textAlign: 'right' }}>Actions</th>` and cell `<td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>`.
+  * Every row now displays an identical, symmetrical trio of action controls:
+    1. **`View`**: Sleek white button with dark green hover (`<Eye size={12} /> View`).
+    2. **`Label`**: Sleek white button with dark green accent (`<Printer size={12} /> Label`).
+    3. **`Delete`**: Square 28x28px icon button with trash icon (`<Trash2 size={13} />`).
+  * Removed internal text overflow on unpaid rows inside `.btn-action-delete`.
+  * Zero jagged column widths, zero wrapping, 100% pixel-aligned across all rows.
+
+### 2. CSV Export Lines Issue & Cluttered Data Overhaul
+- **Root Cause**: Multi-line strings in customer addresses (`\r\n` or `\n`), notes, or line-item names caused spreadsheet viewers (Excel, Google Sheets, Numbers) to break a single order across multiple physical rows. Furthermore, verbose text like `@ ₹85.00` and long gift explanations created cluttered, hard-to-read cells.
+- **Solution in `src/pages/AdminDashboardPage.jsx`**:
+  * Implemented strict `cleanStr(val)` sanitizer that replaces all `[\r\n\t]+` and consecutive whitespaces with a single space, guaranteeing **strictly 1 physical row per order** with zero line leakage.
+  * De-cluttered `Items Summary`: Replaced verbose price strings with a crisp packing manifest format (e.g. `2x Chana Masala (100g), 1x Sambhar Masala (100g), 2x Mini Masala Sample Pack`).
+  * De-cluttered `Shipping Address`: Filtered and joined address lines, landmark, city, state, and pincode cleanly into a single uncluttered cell.
+  * Formatted monetary columns as standard two-decimal numeric values (`subtotal`, `discount`, `shipping`, `total`) so spreadsheet software can compute mathematical sums directly.
+  * Prefixed CSV content with UTF-8 BOM (`\uFEFF`) to prevent character encoding issues on Windows/Excel.
+
+### 3. Orders Header & Filter Controls Redesign
+- **Segmented View Tabs**: Redesigned tab strip into an executive segmented pill track (`admin-view-tabs-track`) with white active card elevation, sleek count pills (`Paid`, `To Pack`, `Unpaid`, `All`), and no awkward background boxes.
+- **Unified 38px Form Controls**: Aligned search input, status dropdown, payment dropdown, sort dropdown, reset button, and new **Export CSV ({count})** button to matching heights, 8px border-radii, and cohesive luxury forest green focus rings.
+- **Filter Chips Bar**: Removed duplicate `Payment: Paid` chip when the `Paid Orders` tab is selected, and added an instant `Clear all` button when custom filters are active.
+
+### 4. Verification & Testing
+- Automated unit test `security-tests/test-csv-export-formatting.mjs`: PASS (100% clean single-line row integrity, RFC 4180 quotes, and clean summaries).
+- Ran regression test suites:
+  * `security-tests/test-16-xss.mjs`: PASS (0 unescaped HTML sinks).
+  * `security-tests/test-local-remediations.mjs`: PASS (44/44 checks passed).
+  * `security-tests/test-byb-email-confirmation.mjs`: PASS.
+- Production build: `npm run build` completed in 1.40s with 0 errors.
+- Strict git hygiene: Local commits only on branch `v1-release` (NO `git push`).
+
 ## 2026-11-15 (Part 6.31: Unpaid / Abandoned Checkouts Isolation, Fulfillment Safety Guards & 1-Click Dashboard Clean-Up)
 
 ### 1. Root Cause Analysis of Unpaid Orders Cluttering Dashboard
