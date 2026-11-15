@@ -166,9 +166,6 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
 
   const totalTaxable = taxableGoodsSubtotal + taxableShipping;
   const totalGst = goodsGst + shippingGst;
-  const tableTaxable = discount > 0 ? (grossGoodsTaxable + taxableShipping) : totalTaxable;
-  const tableGst = discount > 0 ? (grossGoodsGst + shippingGst) : totalGst;
-  const tableAmount = discount > 0 ? (subtotal + shippingFee) : totalAmount;
 
   const cgstAmount = isIntraState ? (totalGst / 2) : 0;
   const sgstAmount = isIntraState ? (totalGst / 2) : 0;
@@ -182,12 +179,14 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
     ? `Kabgeer-Shipping-Label_${cleanOrderId}_${cleanCustomer}_${cleanDate}`
     : `Kabgeer-Tax-Invoice_${cleanOrderId}_${cleanCustomer}_${cleanDate}`;
 
-  // Automatically synchronize browser document title so "Save as PDF" uses this filename
+  // Automatically attach print body class and synchronize browser document title so "Save as PDF" uses this filename
   useEffect(() => {
+    document.body.classList.add('thermal-print-active');
     const previousTitle = document.title;
     document.title = defaultFileName;
 
     return () => {
+      document.body.classList.remove('thermal-print-active');
       document.title = previousTitle;
     };
   }, [defaultFileName]);
@@ -210,6 +209,67 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
           @page {
             size: ${printFormat === 'thermal' ? '100mm 150mm' : 'A4 portrait'};
             margin: ${printFormat === 'thermal' ? '2mm' : '6mm 6mm 8mm 6mm'};
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            overflow: visible !important;
+            background: #ffffff !important;
+          }
+          /* Completely hide all background dashboard elements from print layout flow */
+          .admin-navbar,
+          .admin-main-container,
+          .admin-drawer-backdrop,
+          .admin-drawer-panel,
+          header,
+          nav,
+          main,
+          footer,
+          .no-print {
+            display: none !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+          }
+          body.thermal-print-active > #root > div > *:not(.thermal-modal-backdrop) {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+          }
+          .thermal-modal-backdrop {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            display: block !important;
+            z-index: 999999 !important;
+            overflow: visible !important;
+          }
+          .thermal-modal-panel {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            width: 100% !important;
+            height: auto !important;
+            max-width: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: visible !important;
+          }
+          .thermal-preview-scrollable {
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: visible !important;
+            height: auto !important;
           }
         }
       `}</style>
@@ -643,33 +703,17 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                         );
                       })}
 
-                      {shippingFee > 0 && (
-                        <tr className="a4-shipping-row">
-                          <td style={{ textAlign: 'center' }} className="a4-cell-idx">{items.length + 1}</td>
-                          <td>
-                            <div className="a4-item-title">Express Courier Shipping & Packaging</div>
-                            <div className="a4-item-subtitle">Safe doorstep parcel delivery</div>
-                          </td>
-                          <td style={{ textAlign: 'center' }} className="monospace a4-hsn-cell">996812</td>
-                          <td style={{ textAlign: 'center' }}>₹{shippingFee.toFixed(0)}</td>
-                          <td style={{ textAlign: 'center', fontWeight: 700 }}>1</td>
-                          <td style={{ textAlign: 'right' }}>₹{taxableShipping.toFixed(2)}</td>
-                          <td style={{ textAlign: 'right' }}>₹{taxableShipping.toFixed(2)}</td>
-                          <td style={{ textAlign: 'right' }}>₹{shippingGst.toFixed(2)}</td>
-                          <td style={{ textAlign: 'right', fontWeight: 700 }} className="a4-amount-cell">₹{shippingFee.toFixed(2)}</td>
-                        </tr>
-                      )}
                     </tbody>
                     <tfoot>
                       <tr className="a4-table-footer-row">
                         <td colSpan={4} style={{ textAlign: 'right', fontWeight: 700 }}>
-                          {discount > 0 ? 'SUBTOTAL:' : 'TOTAL:'}
+                          SUBTOTAL:
                         </td>
                         <td style={{ textAlign: 'center', fontWeight: 800 }}>{totalQty}</td>
                         <td></td>
-                        <td style={{ textAlign: 'right', fontWeight: 700 }}>₹{tableTaxable.toFixed(2)}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 700 }}>₹{tableGst.toFixed(2)}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 900, fontSize: '0.95rem' }} className="a4-final-cell">₹{tableAmount.toFixed(2)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700 }}>₹{grossGoodsTaxable.toFixed(2)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700 }}>₹{grossGoodsGst.toFixed(2)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 900, fontSize: '0.95rem' }} className="a4-final-cell">₹{subtotal.toFixed(2)}</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -761,8 +805,8 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                         </div>
                       )}
                       <div className="a4-fin-row">
-                        <span>Shipping & Handling:</span>
-                        <span>{shippingFee === 0 ? 'FREE' : `+₹${shippingFee.toFixed(2)}`}</span>
+                        <span>Courier & Packaging:</span>
+                        <span>{shippingFee === 0 ? 'FREE DELIVERY' : `+₹${shippingFee.toFixed(2)}`}</span>
                       </div>
                       <div className="a4-grand-total-row">
                         <span>GRAND TOTAL:</span>

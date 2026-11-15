@@ -1,5 +1,42 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.30: A4 Paper Label Table Clean-Up & Print/PDF Zero-Blank-Page Layout Engine Overhaul)
+
+### 1. Item List Table Clean-Up (`src/components/PrintableThermalBill.jsx`)
+- **Removed Express Courier & Packaging from Itemized Table**:
+  * Removed `a4-shipping-row` (`Express Courier Shipping & Packaging`) from `<tbody>`.
+  * The items table now exclusively lists physical order products (masalas/spice blends).
+- **Subtotal & Mathematical Consistency**:
+  * Updated table footer (`<tfoot>`) to display `SUBTOTAL:` matching the exact column sum of the product items:
+    - Qty: `totalQty`
+    - Taxable Value: `grossGoodsTaxable` (₹XX.XX)
+    - GST (5%): `grossGoodsGst` (₹XX.XX)
+    - Amount: `subtotal` (₹XX.XX)
+- **Courier Fee in Financial Summary**:
+  * Kept `Courier & Packaging:` exclusively in the bottom-right Financial Summary card (`Items Subtotal`, `Special Discount`, `Taxable Value`, `CGST / SGST / IGST`, `Courier & Packaging`, `GRAND TOTAL`).
+  * Displays `FREE DELIVERY` if shipping is 0, or `+₹XX.XX` when applicable.
+
+### 2. Print / "Save as PDF" Engine Overhaul (`PrintableThermalBill.css` & `PrintableThermalBill.jsx`)
+- **Root Cause of Spilling to Page 3 or 4**:
+  * Previously, `@media print` relied on `body * { visibility: hidden; }` to hide the admin dashboard.
+  * In browser rendering engines, `visibility: hidden` hides elements visually but leaves their layout boxes in the document flow.
+  * With 50+ order rows and drawer panels (~3500px in height), `.thermal-modal-backdrop` flowed AFTER all those hidden boxes (at Y ≈ 3500px), causing the invoice to begin on page 3 or 4 with blank pages preceding it.
+- **Permanent Zero-Blank-Page Solution**:
+  * Enforced `display: none !important; height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important;` on all background admin elements (`.admin-navbar, .admin-main-container, .admin-drawer-backdrop, .admin-drawer-panel, header, nav, main, footer, .no-print`).
+  * Added `document.body.classList.add('thermal-print-active')` on modal mount to strictly hide all sibling nodes of `#root`.
+  * Set `.thermal-modal-backdrop` to `position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 999999 !important;`.
+  * Overrode `min-height: 0 !important;` on `#printable-thermal-bill.mode-invoice-a4` to eliminate artificial page boundary expansions.
+  * Configured `.a4-invoice-table tfoot` with `display: table-row-group !important;` to prevent duplicate footers across print breaks.
+  * The invoice now consistently starts immediately on Page 1 at the top of the print/PDF preview with zero blank pages.
+
+### 3. Verification & Testing
+- Executed `npm run build`: Clean production build with 0 errors in 2.60s.
+- Ran `security-tests/test-16-xss.mjs`: PASS (0 unescaped sinks).
+- Ran `security-tests/test-local-remediations.mjs`: PASS (44/44 checks passed).
+- Ran `security-tests/test-byb-email-confirmation.mjs`: PASS (100% passed).
+- Created interactive preview artifact `invoice_print_preview.html`.
+- Strict local Git adherence: NO `git push` performed (kept locally on branch `v1-release`).
+
 ## 2026-11-15 (Part 6.29: A4 Paper Label Table Item List De-Cluttering — Discount Moved Exclusively to Subtotal & Financial Breakdown)
 
 ### 1. A4 Tax Invoice / Paper Label Table Polish (`src/components/PrintableThermalBill.jsx`)

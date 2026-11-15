@@ -1288,6 +1288,31 @@
     print-color-adjust: exact !important;
   }
 
+  /* Completely remove background dashboard elements from print layout flow */
+  .admin-navbar,
+  .admin-main-container,
+  .admin-drawer-backdrop,
+  .admin-drawer-panel,
+  header,
+  nav,
+  main,
+  footer,
+  .no-print {
+    display: none !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body.thermal-print-active > #root > div > *:not(.thermal-modal-backdrop) {
+    display: none !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+  }
+
   body * {
     visibility: hidden;
   }
@@ -1300,20 +1325,18 @@
     visibility: visible !important;
   }
 
-  .no-print {
-    display: none !important;
-  }
-
   .thermal-modal-backdrop {
-    position: static !important;
-    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: auto !important;
     background: transparent !important;
     padding: 0 !important;
     margin: 0 !important;
     overflow: visible !important;
-    z-index: auto !important;
+    z-index: 999999 !important;
+    display: block !important;
   }
 
   .thermal-modal-panel {
@@ -1357,6 +1380,7 @@
   #printable-thermal-bill.mode-invoice-a4 {
     width: 100% !important;
     max-width: 210mm !important;
+    min-height: 0 !important;
     padding: 0 !important;
     margin: 0 auto !important;
     page-break-after: auto !important;
@@ -1398,7 +1422,7 @@
   }
 
   .a4-invoice-table tfoot {
-    display: table-footer-group !important;
+    display: table-row-group !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }

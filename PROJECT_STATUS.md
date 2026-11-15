@@ -12,6 +12,7 @@ Current Branch: v1-release (Local commits, NO PUSH per instructions)
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.30 | A4 Paper Label Table Clean-Up (Courier in Subtotal Only) & Zero-Blank-Page Print Engine | ✅ COMPLETE & LOCALLY COMMITTED |
 | Part 6.29 | A4 Paper Label Table Item List De-Cluttering (Discount Exclusively in Subtotal Summary) | ✅ COMPLETE & VERIFIED |
 | Part 6.28 | Admin Order Details Drawer Modal Enterprise UI/UX Redesign | ✅ COMPLETE & VERIFIED |
 | Part 6.27 | Build Your Box (BYB) Confirmation Email Package Manifest & Perks Integration | ✅ COMPLETE & VERIFIED |
