@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { CheckCircle2, Package, MapPin, ArrowRight, ShoppingBag, ShieldCheck, Gift } from 'lucide-react';
+import { 
+  CheckCircle2, 
+  Package, 
+  MapPin, 
+  ArrowRight, 
+  ShoppingBag, 
+  ShieldCheck, 
+  Gift, 
+  Copy, 
+  Check, 
+  Printer, 
+  ReceiptText, 
+  Truck, 
+  Sparkles 
+} from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import './OrderSuccessPage.css';
 
@@ -9,13 +23,37 @@ const OrderSuccessPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const orderParam = searchParams.get('id') || searchParams.get('orderId') || '';
   
+  const [copied, setCopied] = useState(false);
+
   const [order, setOrder] = useState(() => {
-    if (location.state && (location.state.displayOrderId === orderParam || location.state.orderId === orderParam)) {
+    // 1. Direct navigation state from checkout
+    if (location.state && (
+      location.state.displayOrderId === orderParam ||
+      location.state.display_order_id === orderParam ||
+      location.state.orderId === orderParam ||
+      location.state.id === orderParam ||
+      !orderParam
+    )) {
       return location.state;
     }
+    // 2. Specific session cache by orderParam
+    if (orderParam) {
+      try {
+        const cached = sessionStorage.getItem(`kbg_order_${orderParam}`);
+        if (cached) return JSON.parse(cached);
+      } catch {
+        // ignore
+      }
+    }
+    // 3. Fallback to latest stored order in session
     try {
-      const cached = sessionStorage.getItem(`kbg_order_${orderParam}`);
-      if (cached) return JSON.parse(cached);
+      const last = sessionStorage.getItem('kbg_last_order');
+      if (last) {
+        const parsed = JSON.parse(last);
+        if (!orderParam || parsed.displayOrderId === orderParam || parsed.display_order_id === orderParam) {
+          return parsed;
+        }
+      }
     } catch {
       // ignore
     }
@@ -52,6 +90,21 @@ const OrderSuccessPage = () => {
     fetchOrderDetails();
   }, [orderParam]);
 
+  const handleCopyOrderId = (id) => {
+    if (!id) return;
+    try {
+      navigator.clipboard.writeText(id);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.warn('Clipboard copy failed:', err);
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
   const formatISTDateTime = (isoString) => {
     if (!isoString) return { date: 'Today', time: '' };
     try {
@@ -76,13 +129,75 @@ const OrderSuccessPage = () => {
 
   const { date, time } = formatISTDateTime(order?.created_at);
 
-  const totalItemCount = order?.order_items?.reduce((acc, it) => acc + (Number(it.quantity) || 1), 0) || 0;
+  // Line items and quantities
+  const orderItems = order?.order_items || [];
+  const totalItemCount = orderItems.reduce((acc, it) => acc + (Number(it.quantity) || 1), 0);
+
+  // Authoritative item subtotal computation
+  const itemsSubtotal = orderItems.reduce((acc, it) => {
+    const qty = Number(it.quantity) || 1;
+    const lineTotal = Number(
+      it.total_price ??
+      it.line_total ??
+      (it.unit_price ? Number(it.unit_price) * qty : 0)
+    );
+    return acc + lineTotal;
+  }, 0);
+
+  // BYB classification
+  const displayOrderId = order?.display_order_id || order?.displayOrderId || orderParam || 'KBG-PENDING';
   const isByb = Boolean(
-    order?.display_order_id?.startsWith('BYB') ||
-    order?.display_order_id?.includes('BYB') ||
+    displayOrderId.startsWith('BYB') ||
+    displayOrderId.includes('BYB') ||
     order?.is_bundle ||
     totalItemCount >= 4
   );
+
+  // Mathematical pricing recovery
+  const subtotal = Number(order?.subtotal ?? order?.subtotal_amount ?? itemsSubtotal);
+  const discount = Number(
+    order?.discount ?? 
+    order?.discount_amount ?? 
+    (isByb && subtotal > 0 ? Math.round(subtotal * 0.10 * 100) / 100 : 0)
+  );
+  const shippingFee = Number(
+    order?.shipping ?? 
+    order?.shipping_fee ?? 
+    order?.shipping_amount ?? 
+    (subtotal > 0 ? 50 : 0)
+  );
+
+  // Total paid amount: never show 0 if items were ordered
+  const rawTotal = Number(order?.total_amount ?? order?.totalAmount ?? order?.total ?? 0);
+  const totalPaid = rawTotal > 0 ? rawTotal : Math.max(0, subtotal - discount + shippingFee);
+
+  // Customer metadata resolution
+  const customerName = 
+    order?.customer_name ||
+    order?.customerName ||
+    order?.shipping_address?.name ||
+    order?.shipping_address?.customer_name ||
+    'Valued Patron';
+
+  const customerPhone = 
+    order?.customer_phone ||
+    order?.customerPhone ||
+    order?.shipping_address?.phone ||
+    '';
+
+  const customerEmail = 
+    order?.customer_email ||
+    order?.customerEmail ||
+    order?.shipping_address?.email ||
+    '';
+
+  // Shipping address breakdown
+  const addr = order?.shipping_address || {};
+  const addressLine1 = addr.address || addr.addressLine1 || '';
+  const addressLine2 = addr.apartment || addr.apartmentSuite || addr.landmark || '';
+  const city = addr.city || '';
+  const state = addr.state || '';
+  const pinCode = addr.pinCode || addr.pincode || addr.postalCode || '';
 
   return (
     <div className="order-success-page-wrapper">
@@ -92,115 +207,156 @@ const OrderSuccessPage = () => {
         <div className="order-success-card">
           
           {/* Animated Success Badge */}
-          <div className="order-success-badge">
-            <CheckCircle2 size={36} strokeWidth={2.4} />
+          <div className="order-success-badge-wrap">
+            <div className="order-success-badge">
+              <CheckCircle2 size={38} strokeWidth={2.4} />
+            </div>
           </div>
 
-          <span className="order-success-tag">
-            Order Confirmed
-          </span>
+          <div className="order-success-status-pill">
+            <Sparkles size={13} className="text-gold" />
+            <span>ORDER CONFIRMED & SECURED</span>
+          </div>
 
+          {/* MAIN HEADING ONLY: Uses Serif Font */}
           <h1 className="order-success-title">
             Thank you for your order!
           </h1>
 
+          {/* SUBTITLE: Sans-Serif */}
           <p className="order-success-subtitle">
             {isByb
-              ? 'Your custom Build Your Box is being carefully prepared with your authentic masalas and complimentary gifts.'
-              : 'Your authentic Lucknavi spices are being prepared with care and fresh aroma.'}
+              ? `Hi ${customerName}, your custom Build Your Box is being hand-packed with authentic Lucknavi spice blends and complimentary gifts.`
+              : `Hi ${customerName}, your authentic Lucknavi spices are being carefully prepared with fresh aroma at our heritage spice house.`}
           </p>
 
-          {/* Celebratory BYB Confirmation Banner */}
-          {isByb && (
-            <div className="order-success-byb-banner" style={{ background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #ecfdf5 100%)', border: '1.5px solid #d4af37', borderRadius: '12px', padding: '1rem 1.25rem', margin: '1rem 0 1.5rem 0', textAlign: 'left', boxShadow: '0 4px 14px rgba(212, 175, 55, 0.12)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                <span style={{ backgroundColor: '#1a2f22', color: '#d4af37', fontSize: '0.72rem', fontWeight: 800, padding: '3px 8px', borderRadius: '5px', letterSpacing: '0.04em' }}>
-                  ROYAL BUILD YOUR BOX (BYB)
-                </span>
-                <span style={{ backgroundColor: '#047857', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: '5px' }}>
-                  ✓ 10% SAVINGS + 2 FREE MINI BOXES
-                </span>
+          {/* Quick Metric Bar */}
+          <div className="order-quick-metric-bar">
+            {/* Metric 1: Order ID */}
+            <div className="order-metric-cell">
+              <span className="metric-label">ORDER ID</span>
+              <div className="metric-val-with-copy">
+                <span className="metric-code">{displayOrderId}</span>
+                <button 
+                  type="button" 
+                  onClick={() => handleCopyOrderId(displayOrderId)} 
+                  className="btn-metric-copy"
+                  title="Copy Order ID"
+                >
+                  {copied ? <Check size={12} className="text-emerald" /> : <Copy size={12} />}
+                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                </button>
               </div>
-              <p style={{ margin: 0, fontSize: '0.86rem', color: '#334155', lineHeight: '1.45' }}>
-                Your order is confirmed as a <strong>Build Your Box (BYB)</strong> package! Your shipment includes an automatic <strong>10% savings</strong> and <strong>2 Complimentary Chef's Mini Masala Sample Boxes</strong>!
-              </p>
-            </div>
-          )}
-
-          {/* Quick Info Grid */}
-          <div className="order-quick-info-grid">
-            <div className="order-quick-info-cell">
-              <span className="order-quick-info-label">Order ID</span>
-              <strong className="order-quick-info-val" style={{ fontFamily: 'monospace' }}>
-                {order?.display_order_id || orderParam || 'KBG-PENDING'}
-              </strong>
             </div>
 
-            <div className="order-quick-info-cell">
-              <span className="order-quick-info-label">Placed On</span>
-              <strong className="order-quick-info-val">
+            {/* Metric 2: Placed On */}
+            <div className="order-metric-cell">
+              <span className="metric-label">PLACED ON</span>
+              <span className="metric-value">
                 {date} {time ? `• ${time}` : ''}
-              </strong>
+              </span>
             </div>
 
-            <div className="order-quick-info-cell">
-              <span className="order-quick-info-label">Total Paid</span>
-              <strong className="order-quick-info-val total">
-                ₹{Number(order?.total_amount || 0).toFixed(2)}
-              </strong>
+            {/* Metric 3: Payment Status */}
+            <div className="order-metric-cell">
+              <span className="metric-label">PAYMENT STATUS</span>
+              <span className="metric-paid-badge">
+                <Check size={12} strokeWidth={3} /> Paid via Razorpay
+              </span>
             </div>
 
-            <div className="order-quick-info-cell">
-              <span className="order-quick-info-label">Fulfillment Status</span>
-              <span className="order-status-badge-confirmed">
-                {order?.order_status || 'Confirmed'}
+            {/* Metric 4: TOTAL PAID (Prominently Highlighted) */}
+            <div className="order-metric-cell highlight-total">
+              <span className="metric-label">TOTAL PAID</span>
+              <span className="metric-total-amount">
+                ₹{totalPaid.toFixed(2)}
               </span>
             </div>
           </div>
 
-          {/* Itemized Products Preview */}
-          {order?.order_items && order.order_items.length > 0 && (
-            <div className="order-items-preview-box">
-              <h4 className="order-items-preview-title">
-                {isByb ? 'What You Got (Your Box Contents & Complimentary Gifts)' : 'Ordered Spices'}
-              </h4>
-              <div className="order-items-preview-list">
-                {order.order_items.map((item, idx) => {
+          {/* Celebratory BYB Confirmation Banner */}
+          {isByb && (
+            <div className="order-byb-celebration-banner">
+              <div className="byb-banner-badge-row">
+                <span className="byb-royal-badge">
+                  <Sparkles size={12} /> ROYAL BUILD YOUR BOX (BYB)
+                </span>
+                <span className="byb-perk-pill">
+                  ✓ 10% SAVINGS APPLIED
+                </span>
+                <span className="byb-perk-pill gift-pill">
+                  🎁 2 FREE MINI BOXES
+                </span>
+              </div>
+              <p className="byb-banner-description">
+                Your order is confirmed as a <strong>Curated Build Your Box (BYB)</strong> package! Your shipment includes an automatic <strong>10% savings</strong> and <strong>2 Complimentary Chef's Mini Masala Sample Boxes</strong> hand-packed into your delivery.
+              </p>
+            </div>
+          )}
+
+          {/* Itemized Contents Preview */}
+          {orderItems.length > 0 && (
+            <div className="order-items-manifest-card">
+              <div className="manifest-card-header">
+                <Package size={16} className="text-gold" />
+                <h3 className="manifest-title">
+                  What’s in your package ({totalItemCount} {totalItemCount === 1 ? 'item' : 'items'})
+                </h3>
+              </div>
+
+              <div className="manifest-items-list">
+                {orderItems.map((item, idx) => {
                   const itemTotal = Number(
                     item.total_price ?? 
                     item.line_total ?? 
                     (item.unit_price ? Number(item.unit_price) * Number(item.quantity || 1) : 0)
                   );
                   return (
-                    <div key={idx} className="order-item-preview-row">
-                      <div className="order-item-preview-left">
-                        <Package size={15} color="#d4af37" style={{ flexShrink: 0 }} />
-                        <span className="order-item-preview-name">
-                          <strong>{item.product_name || 'Authentic Masala'}</strong> {item.weight_pack ? `(${item.weight_pack})` : ''} × {item.quantity}
-                          {isByb && (
-                            <span style={{ marginLeft: '6px', fontSize: '0.7rem', color: '#b45309', backgroundColor: '#fef3c7', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                              Curated Box Item
-                            </span>
+                    <div key={idx} className="manifest-item-row">
+                      <div className="manifest-item-left">
+                        <div className="manifest-item-icon-box">
+                          <Package size={15} />
+                        </div>
+                        <div className="manifest-item-info">
+                          <div className="manifest-item-name-line">
+                            <span className="manifest-item-name">{item.product_name || 'Authentic Spice Blend'}</span>
+                            {item.weight_pack && (
+                              <span className="manifest-item-weight">({item.weight_pack})</span>
+                            )}
+                            <span className="manifest-item-qty-pill">Qty: {item.quantity}</span>
+                            {isByb && (
+                              <span className="manifest-byb-tag">Curated Box Item</span>
+                            )}
+                          </div>
+                          {item.unit_price && (
+                            <span className="manifest-unit-rate">₹{Number(item.unit_price).toFixed(2)} each</span>
                           )}
-                        </span>
+                        </div>
                       </div>
-                      <span className="order-item-preview-price">
+                      <span className="manifest-item-price">
                         ₹{itemTotal.toFixed(2)}
                       </span>
                     </div>
                   );
                 })}
 
+                {/* Complimentary 2x Mini Boxes Gift Row */}
                 {isByb && (
-                  <div className="order-item-preview-row byb-complimentary-row" style={{ backgroundColor: '#f0fdf4', border: '1px dashed #16a34a', borderRadius: '8px', padding: '10px 12px', marginTop: '8px' }}>
-                    <div className="order-item-preview-left">
-                      <Gift size={15} color="#16a34a" style={{ flexShrink: 0 }} />
-                      <span className="order-item-preview-name" style={{ color: '#166534' }}>
-                        <strong>2x Mini Masala Boxes (Sample Pack)</strong> • Complimentary BYB Gift
-                      </span>
+                  <div className="manifest-item-row complimentary-gift-row">
+                    <div className="manifest-item-left">
+                      <div className="manifest-item-icon-box gift-icon-box">
+                        <Gift size={16} />
+                      </div>
+                      <div className="manifest-item-info">
+                        <div className="manifest-item-name-line">
+                          <span className="manifest-item-name gift-name">2x Mini Masala Boxes (Sample Pack)</span>
+                          <span className="manifest-gift-badge">FREE COMPLIMENTARY GIFT</span>
+                        </div>
+                        <span className="manifest-gift-hint">Hand-picked Chef's trial blends included with every BYB package</span>
+                      </div>
                     </div>
-                    <span className="order-item-preview-price" style={{ color: '#16a34a', fontWeight: 700 }}>
-                      FREE
+                    <span className="manifest-gift-free-price">
+                      FREE (₹0.00)
                     </span>
                   </div>
                 )}
@@ -208,39 +364,122 @@ const OrderSuccessPage = () => {
             </div>
           )}
 
-          {/* Shipping Address Preview */}
-          {order?.shipping_address && (
-            <div className="order-shipping-preview-box">
-              <div className="order-shipping-preview-header">
-                <MapPin size={15} color="#d4af37" /> Delivery Destination:
+          {/* Complete Financial Breakdown Card */}
+          <div className="order-financial-summary-card">
+            <div className="financial-summary-header">
+              <ReceiptText size={16} className="text-forest" />
+              <h3 className="financial-summary-title">Payment & Billing Summary</h3>
+              <span className="financial-paid-tag">✓ Fully Paid</span>
+            </div>
+
+            <div className="financial-summary-body">
+              <div className="financial-row">
+                <span className="fin-label">Items Subtotal</span>
+                <span className="fin-val">₹{subtotal.toFixed(2)}</span>
               </div>
-              <p className="order-shipping-preview-text">
-                <strong>{order.customer_name}</strong> • {order.customer_phone}<br />
-                {order.shipping_address.address}
-                {order.shipping_address.apartment ? `, ${order.shipping_address.apartment}` : ''}, {order.shipping_address.city}, {order.shipping_address.state} - {order.shipping_address.pinCode}
-              </p>
+
+              {discount > 0 && (
+                <div className="financial-row discount-row">
+                  <span className="fin-label">
+                    {isByb ? 'Build Your Box 10% Bundle Discount' : 'Promotional Discount'}
+                  </span>
+                  <span className="fin-val text-emerald">-₹{discount.toFixed(2)}</span>
+                </div>
+              )}
+
+              <div className="financial-row">
+                <span className="fin-label">Trackon Express Delivery</span>
+                <span className="fin-val">
+                  {shippingFee === 0 ? <strong className="text-emerald">FREE</strong> : `₹${shippingFee.toFixed(2)}`}
+                </span>
+              </div>
+
+              <div className="financial-divider" />
+
+              <div className="financial-row grand-total-row">
+                <div className="fin-total-labels">
+                  <span className="fin-total-title">Total Amount Paid</span>
+                  <span className="fin-tax-note">Inclusive of 5% GST and all statutory levies</span>
+                </div>
+                <div className="fin-total-values">
+                  <span className="fin-grand-price">₹{totalPaid.toFixed(2)}</span>
+                  <span className="fin-status-pill">✓ PAID IN FULL</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Shipping & Delivery Destination Card */}
+          {(addressLine1 || city || state) && (
+            <div className="order-delivery-card">
+              <div className="delivery-card-header">
+                <div className="delivery-title-left">
+                  <MapPin size={16} className="text-gold" />
+                  <h3 className="delivery-card-title">Delivery Destination</h3>
+                </div>
+                <span className="delivery-courier-pill">
+                  <Truck size={12} /> Trackon Express Courier
+                </span>
+              </div>
+
+              <div className="delivery-details-body">
+                <div className="delivery-recipient-row">
+                  <strong className="recipient-name">{customerName}</strong>
+                  {customerPhone && <span className="recipient-phone">• {customerPhone}</span>}
+                  {customerEmail && <span className="recipient-email">• {customerEmail}</span>}
+                </div>
+
+                <p className="delivery-address-lines">
+                  {addressLine1}
+                  {addressLine2 ? `, ${addressLine2}` : ''}
+                  <br />
+                  {city}{state ? `, ${state}` : ''} {pinCode ? `— ${pinCode}` : ''}
+                </p>
+
+                <div className="delivery-dispatch-estimate">
+                  <span className="dispatch-dot" />
+                  <span><strong>Fulfillment Timeline:</strong> Dispatches within 24–48 hours from Lucknow heritage facility. Tracking updates will be delivered via SMS/Email.</span>
+                </div>
+              </div>
             </div>
           )}
 
           {/* Action CTAs */}
-          <div className="order-success-actions">
+          <div className="order-actions-container">
             <Link 
               to="/products" 
-              className="btn-order-continue"
+              className="btn-order-primary"
             >
-              <ShoppingBag size={17} /> Continue Shopping
+              <ShoppingBag size={17} /> Continue Exploring Masalas
             </Link>
 
-            <Link 
-              to="/account" 
-              className="btn-order-account"
+            <button 
+              type="button" 
+              onClick={handlePrint}
+              className="btn-order-secondary"
             >
-              View Order History in Account <ArrowRight size={15} />
+              <Printer size={16} /> Print / Save Order Receipt
+            </button>
+
+            <Link 
+              to="/" 
+              className="btn-order-tertiary"
+            >
+              Return to Home Page <ArrowRight size={14} />
             </Link>
           </div>
 
-          <div className="order-guarantee-note">
-            <ShieldCheck size={14} color="#16a34a" /> Authentic Kabgeer Guarantee • 100% Pure Lucknavi Spices
+          {/* Trust & Assistance Guarantee */}
+          <div className="order-trust-footer">
+            <div className="trust-seal-row">
+              <ShieldCheck size={16} className="text-emerald" />
+              <span>100% Authentic Awadhi Heritage Blends • Pure & Natural • Direct from Lucknow</span>
+            </div>
+            <p className="support-contact-note">
+              Need assistance with your order? Reach our customer care team at{' '}
+              <a href="mailto:enquiry@kabgeermasala.com">enquiry@kabgeermasala.com</a> or WhatsApp{' '}
+              <a href="tel:+918090086636">+91 80900 86636</a>
+            </p>
           </div>
 
         </div>

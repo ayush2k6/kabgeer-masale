@@ -459,12 +459,34 @@ const CheckoutPage = () => {
       }
 
       const finalPaidAmount = Number(pendingServerOrder?.totalAmount ?? finalTotal);
+      const computedSubtotal = Number(pendingServerOrder?.subtotal ?? subtotal);
+      const computedDiscount = Number(pendingServerOrder?.discount ?? discount);
+      const computedShipping = Number(pendingServerOrder?.shipping ?? shippingFee);
+
       const successData = {
         orderId: verifyPayload.orderId,
+        id: verifyPayload.orderId,
         displayOrderId: verifyPayload.displayOrderId,
+        display_order_id: verifyPayload.displayOrderId,
         totalAmount: finalPaidAmount,
+        total_amount: finalPaidAmount,
+        subtotal: computedSubtotal,
+        subtotal_amount: computedSubtotal,
+        discount: computedDiscount,
+        discount_amount: computedDiscount,
+        shipping: computedShipping,
+        shipping_fee: computedShipping,
+        shipping_amount: computedShipping,
+        customer_name: formData.name,
+        customerName: formData.name,
+        customer_phone: formData.phone,
+        customerPhone: formData.phone,
+        customer_email: formData.email,
+        customerEmail: formData.email,
         order_status: 'Confirmed',
         payment_status: 'Paid',
+        is_bundle: isBundle,
+        created_at: new Date().toISOString(),
         order_items: cartItems.map(item => ({
           product_name: item.name,
           weight_pack: item.weight || (item.weightInGrams ? `${item.weightInGrams}g` : '50g'),
@@ -478,6 +500,8 @@ const CheckoutPage = () => {
 
       try {
         sessionStorage.setItem(`kbg_order_${verifyPayload.displayOrderId}`, JSON.stringify(successData));
+        sessionStorage.setItem(`kbg_order_${verifyPayload.orderId}`, JSON.stringify(successData));
+        sessionStorage.setItem('kbg_last_order', JSON.stringify(successData));
       } catch {
         // ignore
       }

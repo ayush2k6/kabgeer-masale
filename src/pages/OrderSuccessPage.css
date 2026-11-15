@@ -1,312 +1,894 @@
 /* OrderSuccessPage.css — Customer Order Confirmation & Success Page */
 
+/* ==========================================================================
+   1. GLOBAL WRAPPER & TYPOGRAPHY SYSTEM
+   Rule: Mix of Sans-Serif everywhere; Serif EXCLUSIVELY on main hero heading.
+   ========================================================================== */
+
 .order-success-page-wrapper {
-  background-color: var(--color-bg, #FAF6F0);
-  min-height: 85vh;
-  padding: 3rem 1rem 6rem;
-  font-family: var(--font-body);
+  background: linear-gradient(180deg, #FAF6F0 0%, #F5EFE6 100%);
+  min-height: 90vh;
+  padding: 3rem 1.25rem 6rem;
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Force Sans-Serif on everything inside wrapper EXCEPT .order-success-title */
+.order-success-page-wrapper,
+.order-success-page-wrapper *:not(.order-success-title) {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif) !important;
 }
 
 .order-success-container {
-  max-width: 680px;
+  max-width: 720px;
   width: 100%;
   margin: 0 auto;
 }
 
+/* Main Card */
 .order-success-card {
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 2.5rem 2rem;
-  box-shadow: 0 12px 40px rgba(26, 47, 34, 0.07);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 20px;
+  padding: 2.75rem 2.25rem;
+  box-shadow: 0 16px 48px rgba(26, 47, 34, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.28);
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Success Check Badge */
+/* Top Subtle Gold Accent Line */
+.order-success-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1A2F22 0%, #D4AF37 50%, #1A2F22 100%);
+}
+
+/* ==========================================================================
+   2. HERO SUCCESS ICON & TITLES
+   ========================================================================== */
+
+.order-success-badge-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
 .order-success-badge {
-  width: 68px;
-  height: 68px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  background-color: #f0fdf4;
-  color: #16a34a;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  color: #059669;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.25rem;
-  border: 2px solid #bbf7d0;
-  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.15);
+  border: 2px solid #a7f3d0;
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.18);
+  animation: successBadgePop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.order-success-tag {
-  display: inline-block;
-  font-size: 0.76rem;
+@keyframes successBadgePop {
+  0% { transform: scale(0.7); opacity: 0; }
+  70% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.order-success-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #d4af37;
-  margin-bottom: 0.4rem;
+  color: #854d0e;
+  background: #fefce8;
+  border: 1px solid #fde047;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 0.75rem;
 }
 
+/* MAIN HERO HEADING ONLY: Elegant Heritage Serif */
 .order-success-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 2rem;
-  font-weight: 600;
+  font-family: var(--font-heading, 'Playfair Display', Georgia, serif) !important;
+  font-size: 2.35rem;
+  font-weight: 700;
   color: var(--color-primary, #1A2F22);
   margin: 0 0 0.5rem;
   line-height: 1.2;
+  letter-spacing: -0.015em;
 }
 
+/* SUBTITLE: Crisp Sans-Serif */
 .order-success-subtitle {
-  color: var(--color-text-light, #6E6E6E);
-  font-size: 0.92rem;
-  margin: 0 0 1.75rem;
-  line-height: 1.5;
+  color: #475569;
+  font-size: 0.96rem;
+  margin: 0 auto 2rem;
+  line-height: 1.55;
+  max-width: 580px;
 }
 
-/* Quick Info Grid */
-.order-quick-info-grid {
+/* ==========================================================================
+   3. QUICK METRIC BAR (4 METRICS IN A SLEEK SEGMENTED TRACK)
+   ========================================================================== */
+
+.order-quick-metric-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
-  background-color: var(--color-bg, #FAF6F0);
-  padding: 1.1rem 1rem;
-  border-radius: 12px;
+  background-color: #f8fafc;
+  padding: 1rem 1.15rem;
+  border-radius: 14px;
   margin-bottom: 1.75rem;
   text-align: left;
-  border: 1px solid rgba(26, 47, 34, 0.08);
+  border: 1px solid #e2e8f0;
 }
 
-.order-quick-info-cell {
+.order-metric-cell {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
-
-.order-quick-info-label {
-  font-size: 0.7rem;
-  color: #888888;
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.order-quick-info-val {
-  font-size: 0.88rem;
-  color: var(--color-primary, #1A2F22);
-}
-
-.order-quick-info-val.total {
-  font-size: 0.95rem;
-  color: #16a34a;
-  font-weight: 700;
-  font-family: var(--font-sans) !important;
-}
-
-.order-status-badge-confirmed {
-  display: inline-block;
-  font-size: 0.72rem;
-  padding: 2px 8px;
-  border-radius: 12px;
-  background-color: #dcfce7;
-  color: #16a34a;
-  font-weight: 700;
-  margin-top: 2px;
-  width: fit-content;
-}
-
-/* Itemized Products Box */
-.order-items-preview-box {
-  text-align: left;
-  margin-bottom: 1.75rem;
-  border-top: 1px solid rgba(26, 47, 34, 0.08);
-  padding-top: 1.25rem;
-}
-
-.order-items-preview-title {
-  font-size: 0.85rem;
-  color: var(--color-primary, #1A2F22);
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.order-items-preview-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.order-item-preview-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.88rem;
-  padding: 0.45rem 0;
-  border-bottom: 1px dashed rgba(26, 47, 34, 0.08);
-}
-
-.order-item-preview-left {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  gap: 3px;
   min-width: 0;
-  flex: 1;
 }
 
-.order-item-preview-name {
+.metric-label {
+  font-size: 0.67rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.metric-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.order-item-preview-price {
-  color: var(--color-primary, #1A2F22);
-  font-weight: 700;
-  flex-shrink: 0;
-  margin-left: 0.5rem;
-}
-
-/* Shipping Address Box */
-.order-shipping-preview-box {
-  text-align: left;
-  margin-bottom: 1.75rem;
-  background-color: #fdfbf7;
-  padding: 1.1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(212, 175, 55, 0.25);
-}
-
-.order-shipping-preview-header {
+.metric-val-with-copy {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  margin-bottom: 0.4rem;
-  color: var(--color-primary, #1A2F22);
-  font-weight: 700;
-  font-size: 0.85rem;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.order-shipping-preview-text {
+.metric-code {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.02em;
+}
+
+.btn-metric-copy {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s ease;
+}
+
+.btn-metric-copy:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.metric-paid-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background-color: #dcfce7;
+  color: #15803d;
+  font-weight: 700;
+  width: fit-content;
+}
+
+/* TOTAL PAID HIGHLIGHT CELL */
+.order-metric-cell.highlight-total {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.06);
+}
+
+.order-metric-cell.highlight-total .metric-label {
+  color: #166534;
+}
+
+.metric-total-amount {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #15803d;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   4. CELEBRATORY BYB BANNER
+   ========================================================================== */
+
+.order-byb-celebration-banner {
+  background: linear-gradient(135deg, #fefce8 0%, #ecfdf5 100%);
+  border: 1.5px solid #d4af37;
+  border-radius: 14px;
+  padding: 1.1rem 1.35rem;
+  margin-bottom: 1.75rem;
+  text-align: left;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.14);
+}
+
+.byb-banner-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.byb-royal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #1a2f22;
+  color: #d4af37;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+}
+
+.byb-perk-pill {
+  background-color: #047857;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+
+.byb-perk-pill.gift-pill {
+  background-color: #b45309;
+}
+
+.byb-banner-description {
   margin: 0;
-  font-size: 0.84rem;
-  color: #4a5c51;
+  font-size: 0.88rem;
+  color: #334155;
   line-height: 1.5;
 }
 
-/* CTAs */
-.order-success-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-direction: column;
+/* ==========================================================================
+   5. ITEMIZED MANIFEST CARD (WHAT'S IN YOUR SHIPMENT)
+   ========================================================================== */
+
+.order-items-manifest-card {
+  text-align: left;
+  margin-bottom: 1.75rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem 1.35rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
-.btn-order-continue {
-  width: 100%;
-  padding: 0.9rem;
+.manifest-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 0.85rem;
+}
+
+.manifest-title {
+  font-size: 0.92rem;
+  color: var(--color-primary, #1A2F22);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.manifest-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.manifest-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.manifest-item-row:last-child {
+  border-bottom: none;
+}
+
+.manifest-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.manifest-item-icon-box {
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
+  background-color: #f8fafc;
+  color: #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.manifest-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.manifest-item-name-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.manifest-item-name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.manifest-item-weight {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.manifest-item-qty-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: #f1f5f9;
+  color: #334155;
+  padding: 1px 7px;
+  border-radius: 4px;
+}
+
+.manifest-byb-tag {
+  font-size: 0.68rem;
+  color: #b45309;
+  background-color: #fef3c7;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.manifest-unit-rate {
+  font-size: 0.76rem;
+  color: #94a3b8;
+}
+
+.manifest-item-price {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.92rem;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+
+/* COMPLIMENTARY GIFT ROW */
+.manifest-item-row.complimentary-gift-row {
+  background-color: #f0fdf4;
+  border: 1.5px dashed #22c55e;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.gift-icon-box {
+  background-color: #dcfce7 !important;
+  color: #16a34a !important;
+  border-color: #bbf7d0 !important;
+}
+
+.gift-name {
+  color: #166534 !important;
+}
+
+.manifest-gift-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background-color: #16a34a;
+  color: #ffffff;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+}
+
+.manifest-gift-hint {
+  font-size: 0.76rem;
+  color: #15803d;
+}
+
+.manifest-gift-free-price {
+  color: #16a34a;
+  font-weight: 800;
   font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+
+/* ==========================================================================
+   6. FINANCIAL SUMMARY CARD (PAYMENT & BILLING SUMMARY)
+   ========================================================================== */
+
+.order-financial-summary-card {
+  text-align: left;
+  margin-bottom: 1.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem 1.35rem;
+}
+
+.financial-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1rem;
+}
+
+.financial-summary-title {
+  font-size: 0.92rem;
+  color: var(--color-primary, #1A2F22);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+  flex: 1;
+  margin-left: 8px;
+}
+
+.financial-paid-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid #bbf7d0;
+}
+
+.financial-summary-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.financial-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  color: #334155;
+}
+
+.financial-row.discount-row {
+  color: #059669;
+}
+
+.fin-label {
+  font-weight: 500;
+}
+
+.fin-val {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.financial-row.discount-row .fin-val {
+  color: #059669;
+  font-weight: 700;
+}
+
+.financial-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 0.4rem 0;
+}
+
+/* GRAND TOTAL ROW HIGHLIGHT */
+.financial-row.grand-total-row {
+  align-items: flex-start;
+  padding-top: 0.4rem;
+}
+
+.fin-total-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fin-total-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.fin-tax-note {
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+.fin-total-values {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.fin-grand-price {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #15803d;
+  letter-spacing: -0.02em;
+}
+
+.fin-status-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background-color: #15803d;
+  color: #ffffff;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+   7. DELIVERY DESTINATION CARD
+   ========================================================================== */
+
+.order-delivery-card {
+  text-align: left;
+  margin-bottom: 2rem;
+  background-color: #fdfbf7;
+  padding: 1.25rem 1.35rem;
+  border-radius: 14px;
+  border: 1px solid rgba(212, 175, 55, 0.32);
+}
+
+.delivery-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.delivery-title-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.delivery-card-title {
+  color: var(--color-primary, #1A2F22);
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.delivery-courier-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0369a1;
+  background-color: #e0f2fe;
+  padding: 3px 9px;
+  border-radius: 6px;
+  border: 1px solid #bae6fd;
+}
+
+.delivery-recipient-row {
+  font-size: 0.9rem;
+  color: #1e293b;
+  margin-bottom: 0.4rem;
+}
+
+.recipient-name {
+  font-weight: 700;
+  color: var(--color-primary, #1A2F22);
+}
+
+.recipient-phone,
+.recipient-email {
+  color: #475569;
+}
+
+.delivery-address-lines {
+  margin: 0 0 0.85rem;
+  font-size: 0.88rem;
+  color: #334155;
+  line-height: 1.55;
+}
+
+.delivery-dispatch-estimate {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background-color: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.dispatch-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #16a34a;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   8. ACTION BUTTONS & CTAs
+   ========================================================================== */
+
+.order-actions-container {
+  display: flex;
+  gap: 0.85rem;
+  flex-direction: column;
+  margin-bottom: 1.75rem;
+}
+
+.btn-order-primary {
+  width: 100%;
+  padding: 0.95rem;
+  border-radius: 10px;
+  font-size: 0.96rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   text-decoration: none;
   background-color: var(--color-primary, #1A2F22);
   color: #d4af37;
   border: 1px solid #d4af37;
+  box-shadow: 0 4px 14px rgba(26, 47, 34, 0.16);
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-.btn-order-continue:hover {
-  background-color: #243d2e;
+.btn-order-primary:hover {
+  background-color: #264230;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(26, 47, 34, 0.22);
 }
 
-.btn-order-account {
+.btn-order-secondary {
   width: 100%;
-  padding: 0.85rem;
-  border-radius: 8px;
-  font-size: 0.88rem;
+  padding: 0.88rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  text-decoration: none;
-  color: var(--color-primary, #1A2F22);
-  background-color: transparent;
-  border: 1px solid rgba(26, 47, 34, 0.18);
+  gap: 0.6rem;
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-.btn-order-account:hover {
-  background-color: rgba(26, 47, 34, 0.05);
+.btn-order-secondary:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
 }
 
-.order-guarantee-note {
-  display: flex;
+.btn-order-tertiary {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-top: 1.5rem;
-  font-size: 0.76rem;
-  color: #888888;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #64748b;
+  text-decoration: none;
+  padding: 0.4rem;
+  transition: color 0.15s ease;
 }
 
+.btn-order-tertiary:hover {
+  color: var(--color-primary, #1A2F22);
+  text-decoration: underline;
+}
 
-/* ================================================
-   MOBILE VIEWPORT (< 768px)
-   ================================================ */
+/* ==========================================================================
+   9. TRUST SEAL & CUSTOMER SUPPORT FOOTER
+   ========================================================================== */
+
+.order-trust-footer {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.trust-seal-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.support-contact-note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.support-contact-note a {
+  color: var(--color-primary, #1A2F22);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Utility Helpers */
+.text-gold { color: #d4af37 !important; }
+.text-emerald { color: #059669 !important; }
+.text-forest { color: #1a2f22 !important; }
+
+/* ==========================================================================
+   10. MOBILE RESPONSIVE ADAPTATIONS (< 768px)
+   ========================================================================== */
+
 @media (max-width: 768px) {
   .order-success-page-wrapper {
-    padding: 1.5rem 0.85rem 6rem;
+    padding: 1.5rem 0.85rem 5rem;
   }
 
   .order-success-card {
-    padding: 1.75rem 1.15rem;
+    padding: 2rem 1.15rem;
     border-radius: 16px;
   }
 
   .order-success-badge {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 1rem;
+    width: 60px;
+    height: 60px;
   }
 
   .order-success-title {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   .order-success-subtitle {
-    font-size: 0.85rem;
-    margin-bottom: 1.25rem;
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
   }
 
-  .order-quick-info-grid {
+  .order-quick-metric-bar {
     grid-template-columns: 1fr 1fr;
-    gap: 0.65rem;
+    gap: 0.75rem;
     padding: 0.85rem;
-    margin-bottom: 1.25rem;
   }
 
-  .order-quick-info-val {
+  .metric-value {
     font-size: 0.82rem;
   }
 
-  .order-shipping-preview-box {
-    padding: 0.85rem;
+  .metric-total-amount {
+    font-size: 1.05rem;
   }
 
-  .btn-order-continue {
-    padding: 0.8rem;
-    font-size: 0.9rem;
+  .manifest-item-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 
-  .btn-order-account {
-    padding: 0.75rem;
-    font-size: 0.84rem;
+  .manifest-item-price,
+  .manifest-gift-free-price {
+    margin-left: 2.75rem;
+  }
+
+  .financial-summary-header {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .financial-paid-tag {
+    margin-left: auto;
+  }
+}
+
+/* ==========================================================================
+   11. PRINT RECEIPT MEDIA STYLES
+   ========================================================================== */
+
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  /* Hide navigation, footers, buttons */
+  header,
+  footer,
+  .navbar,
+  .order-actions-container,
+  .btn-metric-copy,
+  .order-trust-footer {
+    display: none !important;
+  }
+
+  .order-success-page-wrapper {
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .order-success-card {
+    box-shadow: none !important;
+    border: 1px solid #cccccc !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+  }
+
+  .order-success-title {
+    font-size: 2rem !important;
   }
 }

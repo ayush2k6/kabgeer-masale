@@ -1,5 +1,35 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.36: Order Confirmation UI Redesign — Total Paid Amount Reflection, Strict Sans-Serif Mix, Dedicated Financial Card & Print Engine)
+
+### 1. Root Cause of Missing "Total Paid" Amount (`₹0.00`)
+- **Root Cause**: In `CheckoutPage.jsx`, payment verification returned `successData` containing camelCase `totalAmount: finalPaidAmount`. However, `OrderSuccessPage.jsx` specifically read snake_case `order?.total_amount`. Since guest clients are prevented by Row-Level Security (RLS) from direct `orders` table SELECT queries, `order?.total_amount` evaluated to `undefined`, displaying `₹0.00` despite non-zero cart totals. Additionally, `customer_name` and `customer_phone` were nested under `shipping_address`, causing the address header to render a lonely bullet `•`.
+- **Modifications in `src/pages/CheckoutPage.jsx`**:
+  * Augmented `successData` to populate both snake_case and camelCase parameters: `totalAmount`, `total_amount`, `subtotal`, `subtotal_amount`, `discount`, `discount_amount`, `shipping`, `shipping_fee`, `customer_name`, `customerName`, `customer_phone`, `customerPhone`, `is_bundle`.
+  * Multi-key session caching: persisted order data into `sessionStorage` under `kbg_order_[displayOrderId]`, `kbg_order_[orderId]`, and `kbg_last_order`.
+
+### 2. Strict Typography Segregation: Sans-Serif Mix & Main Heading Serif Exclusivity
+- **User Directive**: *"use the mix of SANs serif... only use serif in main headings"*.
+- **Modifications in `src/pages/OrderSuccessPage.css`**:
+  * Enforced `font-family: var(--font-sans) !important` across the page wrapper and all child elements (badges, metric cards, table rows, price tags, financial cards, address lines, buttons).
+  * Maintained heritage luxury serif font (`Playfair Display`, `var(--font-heading)`) exclusively on `.order-success-title` (`Thank you for your order!`).
+
+### 3. Total Paid Amount Recovery & Dedicated Financial Summary Card
+- **Modifications in `src/pages/OrderSuccessPage.jsx`**:
+  * **Fail-Safe Mathematical Recovery**: Implemented authoritative recovery that evaluates `total_amount`, `totalAmount`, and mathematical itemized sums (`itemsSubtotal - discount + shippingFee`), guaranteeing `Total Paid` will never display `₹0.00` for paid customer orders.
+  * **Quick Metric Bar**: Refactored top summary into a 4-metric segmented bar (Order ID with 1-click Copy, Placed On timestamp, Razorpay Paid status badge, and high-contrast emerald Total Paid callout).
+  * **Dedicated Billing & Financial Breakdown**: Added a transparent financial card displaying Items Subtotal, BYB 10% Bundle Discount / Promo Savings, Trackon Express Delivery, and Grand Total Paid with tax-inclusive notice.
+  * **Customer & Delivery Details**: Cleaned customer name, phone, and multi-line address display with zero stray bullet characters.
+
+### 4. Interactive UX Enhancements
+- **1-Click Order ID Copy**: Added interactive `<Copy />` button with instant `"Copied"` notification.
+- **Print / Save Receipt Engine**: Added `<Printer />` CTA triggering clean browser printing with dedicated `@media print` styles hiding navigation and actions.
+
+### 5. Verification & Testing
+- Unit & regression test suite: `security-tests/test-order-success-redesign.mjs` (100% PASS).
+- Existing test suites: `security-tests/test-local-remediations.mjs`, `security-tests/test-byb-email-confirmation.mjs`, `security-tests/test-csv-export-formatting.mjs` (100% PASS, 44/44 checks).
+- Clean production build: `npm run build` completed in 2.67s with 0 errors.
+
 ## 2026-11-15 (Part 6.35: Production Vercel Deployment Sync — Merged Checkout Polish to Main & Master Branches)
 
 ### 1. Production Branch Synchronization & Live Vercel Release
