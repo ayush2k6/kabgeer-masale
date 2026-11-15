@@ -12,6 +12,7 @@ Current Branch: v1-release (Local commits, NO PUSH per instructions)
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.31 | Unpaid Orders Dashboard Isolation, Fulfillment Guards & 1-Click Clean-Up | ✅ COMPLETE & LOCALLY COMMITTED |
 | Part 6.30 | A4 Paper Label Table Clean-Up (Courier in Subtotal Only) & Zero-Blank-Page Print Engine | ✅ COMPLETE & LOCALLY COMMITTED |
 | Part 6.29 | A4 Paper Label Table Item List De-Cluttering (Discount Exclusively in Subtotal Summary) | ✅ COMPLETE & VERIFIED |
 | Part 6.28 | Admin Order Details Drawer Modal Enterprise UI/UX Redesign | ✅ COMPLETE & VERIFIED |

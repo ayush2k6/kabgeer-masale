@@ -341,6 +341,7 @@
 .icon-green { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
 .icon-teal { background-color: #f0fdfa; color: #0f766e; border: 1px solid #ccfbf1; }
 .icon-gold { background-color: #fdfbf7; color: #92400e; border: 1px solid #fef3c7; }
+.icon-rose { background-color: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }
 
 .exec-kpi-label {
   font-size: 0.72rem;
@@ -2843,4 +2844,276 @@
   border-radius: 6px;
   margin-top: 0.25rem;
   text-align: center;
+}
+
+/* ==========================================================================
+   VIEW TABS BAR & UNPAID ORDERS DASHBOARD SAFEGUARDS
+   ========================================================================== */
+
+.admin-view-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem 1.25rem 0 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.admin-view-tabs-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.view-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.05rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #64748b;
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.view-tab-btn:hover {
+  color: #1a2f22;
+  background-color: #f1f5f9;
+}
+
+.view-tab-btn.active {
+  color: #1a2f22;
+  border-bottom-color: #1a2f22;
+  font-weight: 700;
+  background-color: #ffffff;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.view-tab-btn.tab-unpaid-active {
+  color: #b91c1c !important;
+  border-bottom-color: #dc2626 !important;
+}
+
+.tab-count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.tab-count-pill.pill-paid {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.tab-count-pill.pill-amber {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.tab-count-pill.pill-red {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Unpaid Orders Notice Banner */
+.unpaid-orders-notice-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  background: linear-gradient(135deg, #fff1f2 0%, #fee2e2 100%);
+  border: 1px solid #fecaca;
+  border-left: 4px solid #dc2626;
+  margin: 1rem 1.25rem 0.5rem 1.25rem;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.unpaid-notice-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.unpaid-notice-left h4 {
+  font-size: 0.92rem;
+  color: #991b1b;
+  margin: 0;
+  font-weight: 700;
+}
+
+.unpaid-notice-left p {
+  font-size: 0.78rem;
+  color: #b91c1c;
+  margin: 2px 0 0 0;
+}
+
+.btn-cleanup-unpaid {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(220, 38, 38, 0.25);
+  white-space: nowrap;
+}
+
+.btn-cleanup-unpaid:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.btn-cleanup-unpaid:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Unpaid Tag Badge in Table */
+.badge-unpaid-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.admin-order-row.row-unpaid-warning {
+  background-color: #fffafb;
+}
+
+.admin-order-row.row-unpaid-warning:hover {
+  background-color: #fef2f2;
+}
+
+.status-payment-unpaid {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+  border-color: #fca5a5 !important;
+}
+
+.status-payment-unpaid .status-dot {
+  background-color: #dc2626 !important;
+}
+
+.btn-action-delete-prominent {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fca5a5 !important;
+  font-weight: 700;
+}
+
+.btn-action-delete-prominent:hover {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+.chip-paid {
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #bbf7d0 !important;
+}
+
+.chip-amber {
+  background-color: #fef3c7 !important;
+  color: #b45309 !important;
+  border-color: #fde68a !important;
+}
+
+.chip-red {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+  border-color: #fca5a5 !important;
+}
+
+/* Drawer Unpaid Security Alert */
+.drawer-unpaid-security-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: linear-gradient(135deg, #fff1f2 0%, #fee2e2 100%);
+  border: 1.5px solid #f87171;
+  border-radius: 8px;
+  padding: 0.85rem 1.15rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.08);
+}
+
+.drawer-alert-icon-col {
+  flex-shrink: 0;
+}
+
+.drawer-alert-content-col {
+  flex: 1;
+}
+
+.drawer-alert-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background-color: #dc2626;
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-bottom: 3px;
+}
+
+.drawer-alert-content-col h4 {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #991b1b;
+  font-weight: 800;
+}
+
+.drawer-alert-content-col p {
+  margin: 2px 0 0 0;
+  font-size: 0.78rem;
+  color: #b91c1c;
+}
+
+.btn-drawer-delete-unpaid {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.5rem 0.95rem;
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.3);
+}
+
+.btn-drawer-delete-unpaid:hover:not(:disabled) {
+  background-color: #b91c1c;
 }

@@ -1,5 +1,36 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.31: Unpaid / Abandoned Checkouts Isolation, Fulfillment Safety Guards & 1-Click Dashboard Clean-Up)
+
+### 1. Root Cause Analysis of Unpaid Orders Cluttering Dashboard
+- **Mechanism**: When customers enter their address on `/checkout` and initiate payment, `create-razorpay-order` generates an order row in Supabase with `payment_status: 'Pending'`. If the customer closes the Razorpay modal, changes their mind, or abandons checkout without paying, the order remains in the database with `payment_status: 'Pending'`.
+- **Dashboard Disruption**: Previously, the Admin Dashboard defaulted to showing `ALL` records, displaying these unpaid/abandoned attempts at the top of the table. Furthermore, the KPI card for "To Fulfill" counted all orders with `order_status === 'Pending'`, falsely inflating fulfillment counts with unpaid orders that were never paid for.
+
+### 2. Solutions Implemented in `src/pages/AdminDashboardPage.jsx` & `.css`
+- **Segmented View Tabs Bar**:
+  * Added luxury segmented tabs at the top of the orders card:
+    - **`Paid Orders` (Default View)**: Automatically filters to show strictly legitimate, paid customer orders (`payment_status === 'Paid'`). Unpaid abandoned checkouts no longer mess up the main operations view.
+    - **`To Pack & Ship`**: Shows only paid orders requiring fulfillment (`payment_status === 'Paid'` and status in Pending/Confirmed/Processing).
+    - **`Unpaid / Incomplete`**: Directly isolates abandoned checkout attempts (`payment_status !== 'Paid'`) with a red count pill (`⚠️ Unpaid (X)`).
+    - **`All Records`**: Shows all order records including abandoned checkouts.
+- **KPI Metrics Integrity**:
+  * Fixed **"To Fulfill"** KPI calculation: Now strictly checks `payment_status === 'Paid'` so unpaid checkouts never inflate the fulfillment queue.
+  * Added dedicated **"Unpaid Checkouts"** KPI card with red alert styling: Displays the count of clients who never completed payment, with 1-click navigation to inspect or clean them up.
+- **Unpaid Orders Notice Banner & 1-Click Clean-Up**:
+  * When viewing the `Unpaid / Incomplete` tab, an alert banner explains: *"These customers initiated checkout but did not complete payment on Razorpay. Do not pack or ship these parcels."*
+  * Added **"Clean Up All Unpaid ({count})"** button: Invokes `admin-manage-orders` (`action: 'delete_order'`) to safely delete all unpaid abandoned checkouts in one operation, completely refreshing the dashboard.
+- **Visual Warnings & Fulfillment Guards**:
+  * In the desktop table and mobile cards, unpaid orders have a bold red `⚠️ UNPAID` badge and warning background tint.
+  * In the Order Details Drawer, if `payment_status !== 'Paid'`, a prominent top alert banner warns: `⚠️ CLIENT NEVER PAID — Payment Not Received: Do not pack or dispatch this parcel`, equipped with an inline `Delete Unpaid Order` button.
+  * Guarded fulfillment status changes: Shows an explicit warning confirmation if an admin attempts to change status to Shipped or Delivered on an unpaid order.
+
+### 3. Verification & Testing
+- Executed `npm run build`: Production build completed in 1.39s with 0 errors.
+- Ran `security-tests/test-16-xss.mjs`: PASS (0 unescaped sinks).
+- Ran `security-tests/test-local-remediations.mjs`: PASS (44/44 checks passed).
+- Ran `security-tests/test-byb-email-confirmation.mjs`: PASS (100% passed).
+- Verified strict local Git hygiene: All commits kept locally on branch `v1-release` (NO `git push`).
+
 ## 2026-11-15 (Part 6.30: A4 Paper Label Table Clean-Up & Print/PDF Zero-Blank-Page Layout Engine Overhaul)
 
 ### 1. Item List Table Clean-Up (`src/components/PrintableThermalBill.jsx`)

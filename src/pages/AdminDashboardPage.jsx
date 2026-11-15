@@ -17,6 +17,7 @@ import {
   MapPin, 
   CreditCard,
   AlertCircle,
+  AlertTriangle,
   Copy,
   Check,
   Phone,
@@ -52,11 +53,12 @@ const AdminDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Search, Filters & Sorting
+  // Search, Filters & Sorting (defaults to 'paid' so unpaid checkout attempts do not clutter the dashboard)
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [paymentFilter, setPaymentFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState('newest');
+  const [activeViewTab, setActiveViewTab] = useState('paid'); // 'paid' | 'to_fulfill' | 'unpaid' | 'all'
 
   // Selected Order for Drawer Modal
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -107,8 +109,13 @@ const AdminDashboardPage = () => {
   // Permanently delete single order by ID
   const handleDeleteOrder = async (orderToDelete) => {
     if (!orderToDelete) return;
+    const isUnpaid = String(orderToDelete.payment_status || '').toLowerCase() !== 'paid';
     const confirmDelete = window.confirm(
-      `Permanently delete Order #${orderToDelete.display_order_id}?\n\nCustomer: ${orderToDelete.customer_name || 'Customer'}\nAmount: ₹${Number(orderToDelete.total_amount).toFixed(2)}\n\nThis will remove the order and all related items from the database.`
+      `Permanently delete Order #${orderToDelete.display_order_id}?\n\n` +
+      `Customer: ${orderToDelete.customer_name || 'Customer'}\n` +
+      `Amount: ₹${Number(orderToDelete.total_amount).toFixed(2)}\n` +
+      `Payment Status: ${orderToDelete.payment_status || 'Pending'}${isUnpaid ? ' (CLIENT NEVER PAID)' : ''}\n\n` +
+      `This will remove the order and all related items from your database.`
     );
     if (!confirmDelete) return;
 
@@ -134,6 +141,54 @@ const AdminDashboardPage = () => {
       alert(`Could not delete order: ${err.message}`);
     } finally {
       setIsDeletingOrder(false);
+    }
+  };
+
+  // Permanently delete all unpaid/abandoned checkout orders in 1 click
+  const handleDeleteAllUnpaid = async () => {
+    const unpaidList = orders.filter(o => String(o.payment_status || '').toLowerCase() !== 'paid');
+    if (unpaidList.length === 0) {
+      alert("No unpaid checkout attempts found in your dashboard.");
+      return;
+    }
+
+    const confirmPurge = window.confirm(
+      `Permanently delete all ${unpaidList.length} unpaid / abandoned checkout attempt(s)?\n\n` +
+      `These are orders where customers initiated checkout but never completed payment on Razorpay.\n\n` +
+      `This will clean up your dashboard completely so only verified orders remain.`
+    );
+    if (!confirmPurge) return;
+
+    setIsDeletingOrder(true);
+    let deletedCount = 0;
+    try {
+      for (const ord of unpaidList) {
+        try {
+          const { data, error: delErr } = await supabase.functions.invoke('admin-manage-orders', {
+            body: {
+              action: 'delete_order',
+              orderId: ord.id
+            }
+          });
+          if (!delErr && data?.success) {
+            deletedCount++;
+          }
+        } catch (singleErr) {
+          console.warn(`Could not delete order ${ord.id}:`, singleErr);
+        }
+      }
+
+      setOrders(prev => prev.filter(o => String(o.payment_status || '').toLowerCase() === 'paid'));
+      if (selectedOrder && String(selectedOrder.payment_status || '').toLowerCase() !== 'paid') {
+        setSelectedOrder(null);
+      }
+      alert(`Successfully cleaned up ${deletedCount} unpaid checkout attempt(s). Your dashboard is now refreshed!`);
+    } catch (err) {
+      console.error('Error cleaning up unpaid orders:', err);
+      alert(`Error cleaning up unpaid orders: ${err.message}`);
+    } finally {
+      setIsDeletingOrder(false);
+      fetchAllOrders();
     }
   };
 
@@ -222,17 +277,23 @@ const AdminDashboardPage = () => {
   // KPI Calculations
   const metrics = useMemo(() => {
     const totalOrders = orders.length;
-    const pendingOrders = orders.filter(o => o.order_status === 'Pending' || o.order_status === 'Processing').length;
-    const paidOrders = orders.filter(o => o.payment_status === 'Paid').length;
+    const paidOrders = orders.filter(o => String(o.payment_status || '').toLowerCase() === 'paid').length;
+    const unpaidOrders = orders.filter(o => String(o.payment_status || '').toLowerCase() !== 'paid').length;
+    // To Fulfill: MUST be Paid and not yet Delivered or Cancelled!
+    const toFulfillOrders = orders.filter(o => 
+      String(o.payment_status || '').toLowerCase() === 'paid' && 
+      (o.order_status === 'Pending' || o.order_status === 'Confirmed' || o.order_status === 'Processing')
+    ).length;
     const deliveredOrders = orders.filter(o => o.order_status === 'Delivered').length;
     const totalSales = orders
-      .filter(o => o.payment_status === 'Paid')
+      .filter(o => String(o.payment_status || '').toLowerCase() === 'paid')
       .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
 
     return {
       totalOrders,
-      pendingOrders,
       paidOrders,
+      unpaidOrders,
+      toFulfillOrders,
       deliveredOrders,
       totalSales
     };
@@ -241,23 +302,42 @@ const AdminDashboardPage = () => {
   // Interactive KPI card click handler
   const handleKpiClick = (type) => {
     if (type === 'all') {
+      setActiveViewTab('all');
       setStatusFilter('ALL');
-      setPaymentFilter('ALL');
-    } else if (type === 'pending') {
-      setStatusFilter('Pending');
       setPaymentFilter('ALL');
     } else if (type === 'paid') {
-      setPaymentFilter('Paid');
+      setActiveViewTab('paid');
       setStatusFilter('ALL');
+      setPaymentFilter('Paid');
+    } else if (type === 'to_fulfill') {
+      setActiveViewTab('to_fulfill');
+      setStatusFilter('ALL');
+      setPaymentFilter('Paid');
+    } else if (type === 'unpaid') {
+      setActiveViewTab('unpaid');
+      setStatusFilter('ALL');
+      setPaymentFilter('Pending');
     } else if (type === 'delivered') {
+      setActiveViewTab('paid');
       setStatusFilter('Delivered');
-      setPaymentFilter('ALL');
+      setPaymentFilter('Paid');
     }
   };
 
-  // Filtered & Sorted Orders List
+  // Filtered & Sorted Orders List (incorporating activeViewTab)
   const processedOrders = useMemo(() => {
     let result = orders.filter(order => {
+      const isPaid = String(order.payment_status || '').toLowerCase() === 'paid';
+
+      // 1. View Tab filtering
+      if (activeViewTab === 'paid' && !isPaid) return false;
+      if (activeViewTab === 'to_fulfill') {
+        if (!isPaid) return false;
+        if (order.order_status === 'Delivered' || order.order_status === 'Cancelled') return false;
+      }
+      if (activeViewTab === 'unpaid' && isPaid) return false;
+
+      // 2. Search query filtering
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch = !q || 
         (order.display_order_id && order.display_order_id.toLowerCase().includes(q)) ||
@@ -267,8 +347,14 @@ const AdminDashboardPage = () => {
         (order.shipping_address?.city && order.shipping_address.city.toLowerCase().includes(q)) ||
         (order.shipping_address?.state && order.shipping_address.state.toLowerCase().includes(q));
 
+      // 3. Dropdown filters
       const matchesStatus = statusFilter === 'ALL' || order.order_status === statusFilter;
-      const matchesPayment = paymentFilter === 'ALL' || order.payment_status === paymentFilter;
+      let matchesPayment = true;
+      if (paymentFilter !== 'ALL') {
+        if (paymentFilter === 'Paid') matchesPayment = isPaid;
+        else if (paymentFilter === 'Pending' || paymentFilter === 'Unpaid') matchesPayment = !isPaid;
+        else matchesPayment = order.payment_status === paymentFilter;
+      }
 
       return matchesSearch && matchesStatus && matchesPayment;
     });
@@ -291,13 +377,20 @@ const AdminDashboardPage = () => {
     });
 
     return result;
-  }, [orders, searchQuery, statusFilter, paymentFilter, sortBy]);
+  }, [orders, searchQuery, statusFilter, paymentFilter, sortBy, activeViewTab]);
 
   // Update Order Fulfillment Status & Dispatch Automated Customer Notification
   const handleUpdateStatus = async (e, directStatus = null) => {
     if (e) e.preventDefault();
     const targetStatus = directStatus || newOrderStatus;
     if (!selectedOrder || !targetStatus) return;
+
+    if (String(selectedOrder.payment_status || '').toLowerCase() !== 'paid' && targetStatus !== 'Cancelled') {
+      const proceed = window.confirm(
+        `⚠️ CAUTION: This order is UNPAID!\n\nThe customer never completed payment on Razorpay.\n\nAre you sure you want to update fulfillment status to '${targetStatus}'?`
+      );
+      if (!proceed) return;
+    }
 
     setUpdatingStatus(true);
     setStatusUpdateMessage(null);
@@ -532,6 +625,7 @@ const AdminDashboardPage = () => {
     setStatusFilter('ALL');
     setPaymentFilter('ALL');
     setSortBy('newest');
+    setActiveViewTab('paid');
   };
 
   const getStatusClass = (status) => {
@@ -617,53 +711,16 @@ const AdminDashboardPage = () => {
         {/* 3. Executive KPI Metric Cards */}
         <section className="executive-kpi-grid" aria-label="Executive Metrics">
           <div 
-            className={`exec-kpi-card ${statusFilter === 'ALL' && paymentFilter === 'ALL' ? 'exec-kpi-active' : ''}`}
-            onClick={() => handleKpiClick('all')}
-          >
-            <div className="exec-kpi-header">
-              <div className="exec-kpi-icon-box icon-emerald">
-                <Package size={18} />
-              </div>
-              <span className="exec-kpi-label">Total Orders</span>
-              {statusFilter === 'ALL' && paymentFilter === 'ALL' && (
-                <span className="exec-active-indicator">Active</span>
-              )}
-            </div>
-            <div className="exec-kpi-value">{metrics.totalOrders}</div>
-            <div className="exec-kpi-footer">
-              <span className="exec-kpi-context">All registered & guest orders</span>
-            </div>
-          </div>
-
-          <div 
-            className={`exec-kpi-card ${statusFilter === 'Pending' ? 'exec-kpi-active' : ''}`}
-            onClick={() => handleKpiClick('pending')}
-          >
-            <div className="exec-kpi-header">
-              <div className="exec-kpi-icon-box icon-amber">
-                <Clock size={18} />
-              </div>
-              <span className="exec-kpi-label">To Fulfill</span>
-              {statusFilter === 'Pending' && (
-                <span className="exec-active-indicator">Active</span>
-              )}
-            </div>
-            <div className="exec-kpi-value">{metrics.pendingOrders}</div>
-            <div className="exec-kpi-footer">
-              <span className="exec-kpi-context">Requires packing & dispatch</span>
-            </div>
-          </div>
-
-          <div 
-            className={`exec-kpi-card ${paymentFilter === 'Paid' ? 'exec-kpi-active' : ''}`}
+            className={`exec-kpi-card ${activeViewTab === 'paid' && statusFilter === 'ALL' ? 'exec-kpi-active' : ''}`}
             onClick={() => handleKpiClick('paid')}
+            title="View verified paid orders only"
           >
             <div className="exec-kpi-header">
               <div className="exec-kpi-icon-box icon-green">
                 <CheckCircle2 size={18} />
               </div>
               <span className="exec-kpi-label">Paid Orders</span>
-              {paymentFilter === 'Paid' && (
+              {activeViewTab === 'paid' && statusFilter === 'ALL' && (
                 <span className="exec-active-indicator">Active</span>
               )}
             </div>
@@ -674,8 +731,51 @@ const AdminDashboardPage = () => {
           </div>
 
           <div 
+            className={`exec-kpi-card ${activeViewTab === 'to_fulfill' ? 'exec-kpi-active' : ''}`}
+            onClick={() => handleKpiClick('to_fulfill')}
+            title="View paid orders needing packing or dispatch"
+          >
+            <div className="exec-kpi-header">
+              <div className="exec-kpi-icon-box icon-amber">
+                <Clock size={18} />
+              </div>
+              <span className="exec-kpi-label">To Fulfill</span>
+              {activeViewTab === 'to_fulfill' && (
+                <span className="exec-active-indicator">Active</span>
+              )}
+            </div>
+            <div className="exec-kpi-value">{metrics.toFulfillOrders}</div>
+            <div className="exec-kpi-footer">
+              <span className="exec-kpi-context">Paid & pending dispatch</span>
+            </div>
+          </div>
+
+          <div 
+            className={`exec-kpi-card ${activeViewTab === 'unpaid' ? 'exec-kpi-active' : ''}`}
+            onClick={() => handleKpiClick('unpaid')}
+            title="View abandoned or unpaid checkout attempts"
+          >
+            <div className="exec-kpi-header">
+              <div className="exec-kpi-icon-box icon-rose">
+                <AlertTriangle size={18} />
+              </div>
+              <span className="exec-kpi-label">Unpaid Checkouts</span>
+              {activeViewTab === 'unpaid' && (
+                <span className="exec-active-indicator">Active</span>
+              )}
+            </div>
+            <div className="exec-kpi-value" style={{ color: metrics.unpaidOrders > 0 ? '#dc2626' : 'inherit' }}>
+              {metrics.unpaidOrders}
+            </div>
+            <div className="exec-kpi-footer">
+              <span className="exec-kpi-context">Client never completed payment</span>
+            </div>
+          </div>
+
+          <div 
             className={`exec-kpi-card ${statusFilter === 'Delivered' ? 'exec-kpi-active' : ''}`}
             onClick={() => handleKpiClick('delivered')}
+            title="View delivered orders"
           >
             <div className="exec-kpi-header">
               <div className="exec-kpi-icon-box icon-teal">
@@ -701,7 +801,7 @@ const AdminDashboardPage = () => {
             </div>
             <div className="exec-kpi-value">₹{metrics.totalSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             <div className="exec-kpi-footer">
-              <span className="exec-kpi-context">Gross paid revenue</span>
+              <span className="exec-kpi-context">Gross verified paid sales</span>
             </div>
           </div>
         </section>
@@ -709,6 +809,83 @@ const AdminDashboardPage = () => {
         {/* 4. Orders List Table Card */}
         <section className="admin-orders-card">
           
+          {/* Segmented View Tabs Bar */}
+          <div className="admin-view-tabs-bar">
+            <button 
+              type="button" 
+              className={`view-tab-btn ${activeViewTab === 'paid' ? 'active' : ''}`}
+              onClick={() => { setActiveViewTab('paid'); setPaymentFilter('Paid'); setStatusFilter('ALL'); }}
+              title="Show only legitimate paid customer orders"
+            >
+              <CheckCircle2 size={15} color={activeViewTab === 'paid' ? '#15803d' : '#16a34a'} />
+              <span>Paid Orders</span>
+              <span className="tab-count-pill pill-paid">{metrics.paidOrders}</span>
+            </button>
+
+            <button 
+              type="button" 
+              className={`view-tab-btn ${activeViewTab === 'to_fulfill' ? 'active' : ''}`}
+              onClick={() => { setActiveViewTab('to_fulfill'); setPaymentFilter('Paid'); setStatusFilter('ALL'); }}
+              title="Show paid orders awaiting packing or shipping"
+            >
+              <Clock size={15} color={activeViewTab === 'to_fulfill' ? '#b45309' : '#d97706'} />
+              <span>To Pack & Ship</span>
+              <span className="tab-count-pill pill-amber">{metrics.toFulfillOrders}</span>
+            </button>
+
+            <button 
+              type="button" 
+              className={`view-tab-btn ${activeViewTab === 'unpaid' ? 'active tab-unpaid-active' : ''}`}
+              onClick={() => { setActiveViewTab('unpaid'); setPaymentFilter('Pending'); setStatusFilter('ALL'); }}
+              title="View checkout attempts where client never completed payment"
+            >
+              <AlertTriangle size={15} color={activeViewTab === 'unpaid' ? '#dc2626' : '#ef4444'} />
+              <span>Unpaid / Incomplete</span>
+              {metrics.unpaidOrders > 0 && (
+                <span className="tab-count-pill pill-red">{metrics.unpaidOrders}</span>
+              )}
+            </button>
+
+            <button 
+              type="button" 
+              className={`view-tab-btn ${activeViewTab === 'all' ? 'active' : ''}`}
+              onClick={() => { setActiveViewTab('all'); setPaymentFilter('ALL'); setStatusFilter('ALL'); }}
+              title="Show all order records including abandoned checkouts"
+            >
+              <Package size={15} />
+              <span>All Records</span>
+              <span className="tab-count-pill">{orders.length}</span>
+            </button>
+          </div>
+
+          {/* Unpaid / Abandoned Checkouts Notice Banner */}
+          {activeViewTab === 'unpaid' && (
+            <div className="unpaid-orders-notice-banner">
+              <div className="unpaid-notice-left">
+                <AlertTriangle size={22} color="#dc2626" />
+                <div>
+                  <h4>Unpaid / Abandoned Checkouts ({metrics.unpaidOrders})</h4>
+                  <p>
+                    These customers initiated checkout but did not complete payment on Razorpay. 
+                    <strong> Do not pack or ship these parcels.</strong>
+                  </p>
+                </div>
+              </div>
+              {metrics.unpaidOrders > 0 && (
+                <button 
+                  type="button" 
+                  className="btn-cleanup-unpaid"
+                  onClick={handleDeleteAllUnpaid}
+                  disabled={isDeletingOrder}
+                  title="Permanently remove all unpaid checkout attempts from your dashboard"
+                >
+                  <Trash2 size={14} />
+                  <span>{isDeletingOrder ? 'Cleaning...' : `Clean Up All Unpaid (${metrics.unpaidOrders})`}</span>
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Search & Filter Header Bar */}
           <div className="admin-orders-header-bar">
             <div className="admin-search-wrapper">
@@ -779,8 +956,8 @@ const AdminDashboardPage = () => {
                 </select>
               </div>
 
-              {(searchQuery || statusFilter !== 'ALL' || paymentFilter !== 'ALL' || sortBy !== 'newest') && (
-                <button type="button" onClick={resetFilters} className="btn-reset-filters" title="Reset all search & filter settings">
+              {(searchQuery || statusFilter !== 'ALL' || paymentFilter !== 'ALL' || sortBy !== 'newest' || activeViewTab !== 'paid') && (
+                <button type="button" onClick={resetFilters} className="btn-reset-filters" title="Reset all search & filter settings to default">
                   <RotateCw size={12} />
                   <span>Reset</span>
                 </button>
@@ -794,6 +971,29 @@ const AdminDashboardPage = () => {
               <span className="admin-results-count-text">
                 Showing <strong>{processedOrders.length}</strong> of <strong>{orders.length}</strong> orders
               </span>
+              {activeViewTab === 'paid' && (
+                <span className="admin-filter-chip chip-paid">
+                  ✓ Paid Orders Only
+                </span>
+              )}
+              {activeViewTab === 'to_fulfill' && (
+                <span className="admin-filter-chip chip-amber">
+                  📦 To Pack & Ship (Paid Only)
+                  <button type="button" onClick={() => setActiveViewTab('paid')} title="Switch to all paid orders"><X size={11} /></button>
+                </span>
+              )}
+              {activeViewTab === 'unpaid' && (
+                <span className="admin-filter-chip chip-red">
+                  ⚠️ Unpaid Checkouts Only
+                  <button type="button" onClick={() => setActiveViewTab('paid')} title="Switch back to paid orders"><X size={11} /></button>
+                </span>
+              )}
+              {activeViewTab === 'all' && (
+                <span className="admin-filter-chip">
+                  All Records (Paid + Unpaid)
+                  <button type="button" onClick={() => setActiveViewTab('paid')} title="Switch back to paid orders"><X size={11} /></button>
+                </span>
+              )}
               {searchQuery && (
                 <span className="admin-filter-chip">
                   Search: "{searchQuery}"
@@ -879,22 +1079,29 @@ const AdminDashboardPage = () => {
 
                     const isGuest = order.customer_type === 'guest' || !order.customer_id;
                     const customerInitial = (order.customer_name || 'C').trim().charAt(0).toUpperCase();
+                    const isOrderPaid = String(order.payment_status || '').toLowerCase() === 'paid';
 
                     return (
                       <tr 
                         key={order.id} 
-                        className="admin-order-row"
+                        className={`admin-order-row ${!isOrderPaid ? 'row-unpaid-warning' : ''}`}
                         onClick={() => setSelectedOrder(order)}
                       >
                         <td className="order-id-cell">
                           <div className="order-id-container">
                             <span className="order-id-code">#{order.display_order_id || order.id.slice(0, 8).toUpperCase()}</span>
-                        {getOrderCoupon(order) && (
-                          <span className="order-coupon-pill" title={`Coupon: ${getOrderCoupon(order)}`}>
-                            <Tag size={10} />
-                            <span>{getOrderCoupon(order)}</span>
-                          </span>
-                        )}
+                            {!isOrderPaid && (
+                              <span className="badge-unpaid-tag" title="Customer never completed payment on Razorpay">
+                                <AlertTriangle size={10} />
+                                <span>UNPAID</span>
+                              </span>
+                            )}
+                            {getOrderCoupon(order) && (
+                              <span className="order-coupon-pill" title={`Coupon: ${getOrderCoupon(order)}`}>
+                                <Tag size={10} />
+                                <span>{getOrderCoupon(order)}</span>
+                              </span>
+                            )}
                             {checkIsBybOrder(order) && (
                               <span className="badge-byb">BYB</span>
                             )}
@@ -932,9 +1139,9 @@ const AdminDashboardPage = () => {
                           </div>
                         </td>
                         <td>
-                          <span className={`status-pill status-pill-with-dot ${getStatusClass(order.payment_status)}`}>
-                            <span className="status-dot"></span>
-                            <span>{order.payment_status || 'Pending'}</span>
+                          <span className={`status-pill status-pill-with-dot ${isOrderPaid ? 'status-shipped' : 'status-payment-unpaid'}`}>
+                            <span className={`status-dot ${isOrderPaid ? 'dot-green' : 'dot-red'}`}></span>
+                            <span>{isOrderPaid ? 'Paid' : 'Unpaid (Pending)'}</span>
                           </span>
                         </td>
                         <td>
@@ -968,12 +1175,13 @@ const AdminDashboardPage = () => {
                             </button>
                             <button
                               type="button"
-                              className="btn-action-delete"
+                              className={`btn-action-delete ${!isOrderPaid ? 'btn-action-delete-prominent' : ''}`}
                               onClick={() => handleDeleteOrder(order)}
-                              title="Permanently delete this order"
+                              title={!isOrderPaid ? "Permanently delete this unpaid checkout attempt" : "Permanently delete this order"}
                               disabled={isDeletingOrder}
                             >
                               <Trash2 size={12} />
+                              {!isOrderPaid && <span>Delete</span>}
                             </button>
                             {order.order_status === 'Delivered' && (
                               <button
@@ -1016,17 +1224,24 @@ const AdminDashboardPage = () => {
 
                 const isGuest = order.customer_type === 'guest' || !order.customer_id;
                 const customerInitial = (order.customer_name || 'C').trim().charAt(0).toUpperCase();
+                const isOrderPaid = String(order.payment_status || '').toLowerCase() === 'paid';
 
                 return (
                   <div
                     key={order.id}
-                    className="admin-order-mobile-card"
+                    className={`admin-order-mobile-card ${!isOrderPaid ? 'row-unpaid-warning' : ''}`}
                     onClick={() => setSelectedOrder(order)}
                   >
                     {/* Top Row: Order ID + Status */}
                     <div className="mobile-card-top-row">
                       <div className="mobile-card-id-group">
                         <span className="order-id-code">#{order.display_order_id || order.id.slice(0, 8).toUpperCase()}</span>
+                        {!isOrderPaid && (
+                          <span className="badge-unpaid-tag" title="Client never completed payment on Razorpay">
+                            <AlertTriangle size={10} />
+                            <span>UNPAID</span>
+                          </span>
+                        )}
                         {checkIsBybOrder(order) && (
                           <span className="badge-byb">BYB</span>
                         )}
@@ -1063,9 +1278,9 @@ const AdminDashboardPage = () => {
                         <span className="mobile-card-amount">
                           ₹{(Number(order.total_amount) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
-                        <span className={`status-pill status-pill-compact ${getStatusClass(order.payment_status)}`}>
-                          <span className="status-dot"></span>
-                          <span>{order.payment_status || 'Pending'}</span>
+                        <span className={`status-pill status-pill-compact ${isOrderPaid ? 'status-shipped' : 'status-payment-unpaid'}`}>
+                          <span className={`status-dot ${isOrderPaid ? 'dot-green' : 'dot-red'}`}></span>
+                          <span>{isOrderPaid ? 'Paid' : 'Unpaid'}</span>
                         </span>
                       </div>
                     </div>
@@ -1240,6 +1455,35 @@ const AdminDashboardPage = () => {
             {/* Drawer Body */}
             <div className="admin-drawer-body">
               
+              {/* Unpaid Order Security Alert Banner */}
+              {String(selectedOrder.payment_status || '').toLowerCase() !== 'paid' && (
+                <div className="drawer-unpaid-security-alert">
+                  <div className="drawer-alert-icon-col">
+                    <AlertTriangle size={24} color="#dc2626" />
+                  </div>
+                  <div className="drawer-alert-content-col">
+                    <div className="drawer-alert-badge">⚠️ CLIENT NEVER PAID</div>
+                    <h4>Payment Not Received</h4>
+                    <p>
+                      This customer initiated checkout but never completed payment on Razorpay. 
+                      <strong> Do not pack or dispatch this parcel.</strong>
+                    </p>
+                  </div>
+                  <div className="drawer-alert-action-col">
+                    <button
+                      type="button"
+                      className="btn-drawer-delete-unpaid"
+                      onClick={() => handleDeleteOrder(selectedOrder)}
+                      disabled={isDeletingOrder}
+                      title="Permanently remove this unpaid checkout attempt"
+                    >
+                      <Trash2 size={13} />
+                      <span>{isDeletingOrder ? 'Deleting...' : 'Delete Unpaid Order'}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* 1. Fulfillment Status Workflow Card */}
               <div className="drawer-section drawer-fulfillment-card">
                 <div className="drawer-card-header">
