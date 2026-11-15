@@ -30,7 +30,8 @@ import {
   Printer,
   Eye,
   Trash2,
-  Tag
+  Tag,
+  ShieldCheck
 } from 'lucide-react';
 import logo from '../assets/logo.png';
 import PrintableThermalBill from '../components/PrintableThermalBill';
@@ -91,6 +92,16 @@ const AdminDashboardPage = () => {
     const isBundleFlag = Boolean(order.is_bundle);
     const totalItemsCount = order.order_items?.reduce((acc, it) => acc + (Number(it.quantity) || 1), 0) || 0;
     return Boolean(isPrefix || isBundleFlag || totalItemsCount >= 4);
+  };
+
+  // Helper to extract customer initials for drawer avatar
+  const getCustomerInitials = (name) => {
+    if (!name || typeof name !== 'string') return 'CU';
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
   };
 
   // Permanently delete single order by ID
@@ -1128,87 +1139,117 @@ const AdminDashboardPage = () => {
             
             {/* Drawer Header */}
             <div className="admin-drawer-header">
-              <div className="drawer-header-left">
-                <h3>
-                  Order #{selectedOrder.display_order_id || selectedOrder.id}
-                  {getOrderCoupon(selectedOrder) && (
-                    <span className="order-coupon-pill" style={{ marginLeft: '8px', verticalAlign: 'middle' }} title="Applied Coupon">
-                      <Tag size={11} />
-                      <span>{getOrderCoupon(selectedOrder)}</span>
+              {/* Top Row: Identity & Actions */}
+              <div className="drawer-header-main-row">
+                <div className="drawer-header-identity">
+                  <div className="drawer-header-tags-bar">
+                    <span className="drawer-tag-kicker">ORDER DETAILS</span>
+                    {checkIsBybOrder(selectedOrder) && (
+                      <span className="drawer-tag-byb" title="Build Your Bundle Order">
+                        👑 BYB BUNDLE
+                      </span>
+                    )}
+                    {getOrderCoupon(selectedOrder) && (
+                      <span className="drawer-tag-coupon" title={`Applied Promo Code: ${getOrderCoupon(selectedOrder)}`}>
+                        <Tag size={10} />
+                        <span>{getOrderCoupon(selectedOrder)}</span>
+                      </span>
+                    )}
+                    <span className={`status-pill status-pill-compact ${getStatusClass(selectedOrder.order_status)}`}>
+                      <span className="status-dot"></span>
+                      <span>{selectedOrder.order_status}</span>
                     </span>
-                  )}
-                  {checkIsBybOrder(selectedOrder) && (
-                    <span style={{
-                      marginLeft: '8px',
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      backgroundColor: '#fef3c7',
-                      color: '#92400e',
-                      border: '1px solid #fde68a',
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      verticalAlign: 'middle',
-                      letterSpacing: '0.5px'
-                    }}>
-                      BYB
-                    </span>
-                  )}
-                  <button 
-                    type="button" 
-                    className="btn-copy-small"
-                    onClick={() => handleCopy(selectedOrder.display_order_id || selectedOrder.id, 'orderId')}
-                    title="Copy Order ID"
+                  </div>
+
+                  <div className="drawer-title-and-copy">
+                    <h3 className="drawer-order-heading" title={`Order #${selectedOrder.display_order_id || selectedOrder.id}`}>
+                      #{selectedOrder.display_order_id || selectedOrder.id}
+                    </h3>
+                    <button 
+                      type="button" 
+                      className={`btn-drawer-copy-code ${copiedKey === 'orderId' ? 'copied' : ''}`}
+                      onClick={() => handleCopy(selectedOrder.display_order_id || selectedOrder.id, 'orderId')}
+                      title="Copy Order ID"
+                      aria-label="Copy Order ID"
+                    >
+                      {copiedKey === 'orderId' ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                      <span>{copiedKey === 'orderId' ? 'Copied' : 'Copy'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="drawer-header-actions-group">
+                  <button
+                    type="button"
+                    className="btn-drawer-header-print"
+                    onClick={() => setPrintingOrder(selectedOrder)}
+                    title="Print Thermal Shipping Label / Tax Invoice"
                   >
-                    {copiedKey === 'orderId' ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
-                    {copiedKey === 'orderId' ? 'Copied' : 'Copy'}
+                    <Printer size={14} />
+                    <span className="btn-text-responsive">Print Bill / Label</span>
                   </button>
-                </h3>
-                <span className="drawer-header-date">
-                  Placed on {new Date(selectedOrder.created_at).toLocaleString('en-IN')}
-                </span>
+                  <button
+                    type="button"
+                    className="btn-drawer-header-delete"
+                    onClick={() => handleDeleteOrder(selectedOrder)}
+                    disabled={isDeletingOrder}
+                    title="Permanently delete this order"
+                  >
+                    <Trash2 size={13} />
+                    <span className="btn-text-responsive">{isDeletingOrder ? 'Deleting...' : 'Delete'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-drawer-header-close"
+                    onClick={() => setSelectedOrder(null)}
+                    aria-label="Close details drawer"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
-              <div className="drawer-header-actions">
-                <button
-                  type="button"
-                  className="btn-drawer-print-bill"
-                  onClick={() => setPrintingOrder(selectedOrder)}
-                  title="Print Thermal Shipping Label / Tax Invoice"
-                >
-                  <Printer size={14} />
-                  <span>Print Bill / Label</span>
-                </button>
-                <button
-                  type="button"
-                  className="btn-drawer-delete"
-                  onClick={() => handleDeleteOrder(selectedOrder)}
-                  disabled={isDeletingOrder}
-                  title="Permanently delete this order"
-                >
-                  <Trash2 size={13} />
-                  <span>{isDeletingOrder ? 'Deleting...' : 'Delete'}</span>
-                </button>
-                <button
-                  type="button"
-                  className="btn-drawer-close"
-                  onClick={() => setSelectedOrder(null)}
-                  aria-label="Close details"
-                >
-                  <X size={20} />
-                </button>
+
+              {/* Bottom Row: Metadata Substrip */}
+              <div className="drawer-header-substrip">
+                <div className="substrip-item">
+                  <Clock size={12} className="substrip-icon" />
+                  <span>Placed on {new Date(selectedOrder.created_at).toLocaleString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  })}</span>
+                </div>
+                <span className="substrip-separator">•</span>
+                <div className="substrip-item">
+                  <CreditCard size={12} className="substrip-icon" />
+                  <span>{selectedOrder.razorpay_order_id ? 'Prepaid Online' : 'Cash on Delivery'}</span>
+                  <span className={`substrip-payment-pill ${String(selectedOrder.payment_status).toLowerCase() === 'paid' ? 'paid' : 'pending'}`}>
+                    {selectedOrder.payment_status || 'Pending'}
+                  </span>
+                </div>
+                <span className="substrip-separator">•</span>
+                <div className="substrip-item substrip-amount">
+                  <span>Total: <strong>₹{(Number(selectedOrder.total_amount) || 0).toFixed(2)}</strong></span>
+                </div>
               </div>
             </div>
 
             {/* Drawer Body */}
             <div className="admin-drawer-body">
               
-              {/* Fulfillment Status Update Section */}
+              {/* 1. Fulfillment Status Workflow Card */}
               <div className="drawer-section drawer-fulfillment-card">
-                <div className="drawer-section-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: 700, letterSpacing: '0.5px', color: '#1a2f22' }}>
-                    UPDATE FULFILLMENT STATUS
-                  </span>
-                  <span className={`status-pill ${getStatusClass(selectedOrder.order_status)}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.65rem', fontWeight: 700 }}>
-                    Active: {selectedOrder.order_status}
+                <div className="drawer-card-header">
+                  <div className="drawer-card-header-left">
+                    <Package size={16} className="drawer-section-icon" />
+                    <span className="drawer-card-title-text">FULFILLMENT WORKFLOW</span>
+                  </div>
+                  <span className={`status-pill status-pill-compact ${getStatusClass(selectedOrder.order_status)}`}>
+                    <span className="status-dot"></span>
+                    <span>Active: {selectedOrder.order_status}</span>
                   </span>
                 </div>
                 
@@ -1253,9 +1294,9 @@ const AdminDashboardPage = () => {
                   </div>
                 )}
 
-                {/* 1. Fulfillment Pipeline Stages (Clean Horizontal Pills) */}
+                {/* Fulfillment Pipeline Stepper Control */}
                 <div className="fulfillment-pipeline-wrapper">
-                  <div className="fulfillment-pipeline-chips">
+                  <div className="fulfillment-segmented-pipeline">
                     {['Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(st => {
                       const isSelected = newOrderStatus === st;
                       const isCurrentActive = selectedOrder.order_status === st;
@@ -1263,7 +1304,7 @@ const AdminDashboardPage = () => {
                         <button
                           key={st}
                           type="button"
-                          className={`pipeline-chip-btn ${isSelected ? 'selected' : ''} ${isCurrentActive ? 'current-active' : ''} ${st === 'Cancelled' ? 'chip-cancelled' : ''}`}
+                          className={`pipeline-tab-btn ${isSelected ? 'selected' : ''} ${isCurrentActive ? 'current-active' : ''} ${st === 'Cancelled' ? 'tab-cancelled' : ''}`}
                           onClick={() => setNewOrderStatus(st)}
                           disabled={updatingStatus}
                         >
@@ -1275,7 +1316,7 @@ const AdminDashboardPage = () => {
                   </div>
                 </div>
 
-                {/* 2. Contextual Shipping / Cancellation Inputs & Submit Button */}
+                {/* Contextual Shipping / Cancellation Inputs & Submit Button */}
                 <form onSubmit={handleUpdateStatus} className="status-update-control-box">
 
                   {/* Shipping & AWB Details Box (When Shipped or Processing) */}
@@ -1370,58 +1411,115 @@ const AdminDashboardPage = () => {
                   </button>
                 </form>
 
-                <p className="drawer-payment-footnote">
-                  Payment status (<strong>{selectedOrder.payment_status}</strong>) is read-only and managed authoritatively by the Razorpay payment gateway.
-                </p>
+                <div className="drawer-payment-gateway-note">
+                  <ShieldCheck size={13} className="note-shield-icon" />
+                  <span>
+                    Payment status (<strong>{selectedOrder.payment_status}</strong>) is authoritatively verified by Razorpay payment gateway.
+                  </span>
+                </div>
               </div>
 
-              {/* Customer Info & Email Dispatch Status */}
-              <div className="drawer-section">
-                <div className="drawer-section-title">
-                  <span>Customer & Notification Info</span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.88rem' }}>
-                  <div><strong>Name:</strong> {selectedOrder.customer_name || 'Customer'}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <Mail size={13} color="#64748b" />
-                    <strong>Email:</strong>{' '}
-                    <a href={`mailto:${selectedOrder.customer_email}`} style={{ color: '#0369a1', textDecoration: 'none' }}>
-                      {selectedOrder.customer_email}
-                    </a>
+              {/* 2. Customer Profile Card */}
+              <div className="drawer-section drawer-customer-card">
+                <div className="drawer-card-header">
+                  <div className="drawer-card-header-left">
+                    <User size={16} className="drawer-section-icon" />
+                    <span className="drawer-card-title-text">CUSTOMER PROFILE</span>
                   </div>
-                  {selectedOrder.customer_phone && (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <Phone size={13} color="#64748b" />
-                        <strong>Phone:</strong>{' '}
-                        <a href={`tel:${selectedOrder.customer_phone}`} style={{ color: '#0369a1', textDecoration: 'none' }}>
-                          {selectedOrder.customer_phone}
-                        </a>
-                      </div>
-                      <a
-                        href={`https://wa.me/91${selectedOrder.customer_phone.replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(`Hi ${selectedOrder.customer_name || 'Customer'}, regarding your Kabgeer Masale Order #${selectedOrder.display_order_id || selectedOrder.id}: `)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-whatsapp-inline"
-                        title="Chat with customer on WhatsApp"
-                      >
-                        <span>💬 WhatsApp</span>
-                        <ExternalLink size={11} />
-                      </a>
+                  <span className={`badge-customer-type ${selectedOrder.customer_type === 'guest' ? 'badge-guest' : 'badge-registered'}`}>
+                    {selectedOrder.customer_type === 'guest' ? 'Guest Checkout' : 'Registered Customer'}
+                  </span>
+                </div>
+
+                <div className="drawer-customer-profile-body">
+                  <div className="drawer-customer-hero-row">
+                    <div className="drawer-avatar-circle" title={selectedOrder.customer_name || 'Customer'}>
+                      {getCustomerInitials(selectedOrder.customer_name)}
                     </div>
-                  )}
-                  <div>
-                    <strong>Account:</strong>{' '}
-                    <span className={`badge-customer-type ${selectedOrder.customer_type === 'guest' ? 'badge-guest' : 'badge-registered'}`}>
-                      {selectedOrder.customer_type === 'guest' ? 'Guest Checkout' : 'Registered Customer'}
-                    </span>
+                    <div className="drawer-customer-name-col">
+                      <h4 className="drawer-customer-fullname">
+                        {selectedOrder.customer_name || 'Customer'}
+                      </h4>
+                      <span className="drawer-customer-id-sub">
+                        Account: {selectedOrder.customer_type === 'guest' ? 'Guest Session' : 'Registered Customer'}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Customer Email Dispatch Card */}
+                  <div className="drawer-contact-cards-grid">
+                    {/* Email Contact Bubble */}
+                    <div className="drawer-contact-bubble">
+                      <div className="contact-bubble-icon">
+                        <Mail size={13} />
+                      </div>
+                      <div className="contact-bubble-info">
+                        <span className="contact-bubble-label">Email Address</span>
+                        <a href={`mailto:${selectedOrder.customer_email}`} className="contact-bubble-link" title="Click to compose email">
+                          {selectedOrder.customer_email || 'No email provided'}
+                        </a>
+                      </div>
+                      {selectedOrder.customer_email && (
+                        <button
+                          type="button"
+                          className="btn-bubble-copy"
+                          onClick={() => handleCopy(selectedOrder.customer_email, 'email')}
+                          title="Copy email address"
+                        >
+                          {copiedKey === 'email' ? <Check size={11} color="#16a34a" /> : <Copy size={11} />}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Phone Contact Bubble with WhatsApp action */}
+                    <div className="drawer-contact-bubble">
+                      <div className="contact-bubble-icon">
+                        <Phone size={13} />
+                      </div>
+                      <div className="contact-bubble-info">
+                        <span className="contact-bubble-label">Phone Number</span>
+                        {selectedOrder.customer_phone ? (
+                          <div className="contact-phone-with-actions">
+                            <a href={`tel:${selectedOrder.customer_phone}`} className="contact-bubble-link" title="Call customer">
+                              {selectedOrder.customer_phone}
+                            </a>
+                            <a
+                              href={`https://wa.me/91${selectedOrder.customer_phone.replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(`Hi ${selectedOrder.customer_name || 'Customer'}, regarding your Kabgeer Masale Order #${selectedOrder.display_order_id || selectedOrder.id}: `)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn-whatsapp-compact"
+                              title="Chat with customer on WhatsApp"
+                            >
+                              <MessageSquare size={11} />
+                              <span>WhatsApp</span>
+                              <ExternalLink size={10} />
+                            </a>
+                          </div>
+                        ) : (
+                          <span className="contact-bubble-empty">No phone number</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Customer Communications & Notifications Hub */}
+              <div className="drawer-section drawer-communications-card">
+                <div className="drawer-card-header">
+                  <div className="drawer-card-header-left">
+                    <Mail size={16} className="drawer-section-icon" />
+                    <span className="drawer-card-title-text">COMMUNICATIONS & ENGAGEMENT</span>
+                  </div>
+                </div>
+
+                <div className="drawer-communications-body">
+                  {/* Fulfillment Status Alert Banner */}
                   <div className="drawer-fulfillment-alert-banner">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#166534' }}>
-                      <CheckCircle2 size={16} color="#16a34a" />
-                      <span><strong>Fulfillment Alert:</strong> {selectedOrder.order_status} notification</span>
+                    <div className="alert-banner-left">
+                      <CheckCircle2 size={16} className="alert-check-icon" />
+                      <div className="alert-banner-text">
+                        <strong>Fulfillment Alert:</strong> {selectedOrder.order_status} notification email
+                      </div>
                     </div>
                     <button
                       type="button"
@@ -1470,7 +1568,7 @@ const AdminDashboardPage = () => {
                         )}
                       </div>
 
-                      <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '0 0 0.65rem 0', lineHeight: '1.4' }}>
+                      <p className="email-tool-desc">
                         Sends royal 1-week review check-in email with star ratings, Google Reviews link, and 10% refill coupon.
                       </p>
 
@@ -1635,54 +1733,82 @@ const AdminDashboardPage = () => {
                 </div>
               </div>
 
-              {/* Delivery Address */}
-              <div className="drawer-section">
-                <div className="drawer-section-title">
-                  <span><MapPin size={14} style={{ display: 'inline', marginRight: '4px' }} /> Delivery Address</span>
+              {/* 4. Delivery & Shipping Address */}
+              <div className="drawer-section drawer-address-card">
+                <div className="drawer-card-header">
+                  <div className="drawer-card-header-left">
+                    <MapPin size={16} className="drawer-section-icon" />
+                    <span className="drawer-card-title-text">SHIPPING & DELIVERY ADDRESS</span>
+                  </div>
                   {selectedOrder.shipping_address && (
                     <button 
                       type="button" 
-                      className="btn-copy-small"
+                      className="btn-copy-address-pill"
                       onClick={() => {
                         const addr = `${selectedOrder.shipping_address.firstName || ''} ${selectedOrder.shipping_address.lastName || ''}\n${selectedOrder.shipping_address.address || ''} ${selectedOrder.shipping_address.apartment || ''}\n${selectedOrder.shipping_address.city || ''}, ${selectedOrder.shipping_address.state || ''} - ${selectedOrder.shipping_address.pinCode || ''}\nPhone: ${selectedOrder.shipping_address.phone || selectedOrder.customer_phone || ''}`;
                         handleCopy(addr, 'address');
                       }}
-                      title="Copy full shipping address for courier slip"
+                      title="Copy full shipping address for courier label"
                     >
                       {copiedKey === 'address' ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
-                      {copiedKey === 'address' ? 'Copied' : 'Copy Address'}
+                      <span>{copiedKey === 'address' ? 'Copied' : 'Copy Courier Slip'}</span>
                     </button>
                   )}
                 </div>
                 {selectedOrder.shipping_address ? (
-                  <div style={{ fontSize: '0.88rem', color: '#334155', lineHeight: '1.5' }}>
-                    <div style={{ fontWeight: 600 }}>{selectedOrder.shipping_address.firstName} {selectedOrder.shipping_address.lastName}</div>
-                    <div>{selectedOrder.shipping_address.address}{selectedOrder.shipping_address.apartment ? `, ${selectedOrder.shipping_address.apartment}` : ''}</div>
-                    <div>{selectedOrder.shipping_address.city}, {selectedOrder.shipping_address.state} - <strong>{selectedOrder.shipping_address.pinCode}</strong></div>
-                    <div>{selectedOrder.shipping_address.country || 'India'}</div>
-                    {selectedOrder.shipping_address.phone && <div>Phone: {selectedOrder.shipping_address.phone}</div>}
+                  <div className="drawer-address-content">
+                    <div className="address-recipient-name">
+                      {selectedOrder.shipping_address.firstName} {selectedOrder.shipping_address.lastName}
+                    </div>
+                    <div className="address-line">
+                      {selectedOrder.shipping_address.address}
+                      {selectedOrder.shipping_address.apartment ? `, ${selectedOrder.shipping_address.apartment}` : ''}
+                    </div>
+                    <div className="address-line city-state-pin">
+                      <span>{selectedOrder.shipping_address.city}, {selectedOrder.shipping_address.state}</span>
+                      <span className="pincode-badge">PIN: {selectedOrder.shipping_address.pinCode}</span>
+                    </div>
+                    <div className="address-line country-line">
+                      {selectedOrder.shipping_address.country || 'India'}
+                    </div>
+                    {(selectedOrder.shipping_address.phone || selectedOrder.customer_phone) && (
+                      <div className="address-phone-line">
+                        <Phone size={12} />
+                        <span>Contact: <strong>{selectedOrder.shipping_address.phone || selectedOrder.customer_phone}</strong></span>
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No structured delivery address found.</p>
+                  <p className="drawer-empty-notice">No structured delivery address found for this order.</p>
                 )}
               </div>
 
-              {/* Order Items */}
-              <div className="drawer-section">
-                <div className="drawer-section-title">
-                  Ordered Products ({selectedOrder.order_items?.length || 0})
+              {/* 5. Ordered Products */}
+              <div className="drawer-section drawer-products-card">
+                <div className="drawer-card-header">
+                  <div className="drawer-card-header-left">
+                    <Package size={16} className="drawer-section-icon" />
+                    <span className="drawer-card-title-text">ORDERED PRODUCTS</span>
+                  </div>
+                  <span className="drawer-count-badge">
+                    {selectedOrder.order_items?.length || 0} {(selectedOrder.order_items?.length === 1) ? 'item' : 'items'}
+                  </span>
                 </div>
                 
                 <div className="drawer-items-list">
                   {(selectedOrder.order_items || []).map((item, idx) => (
                     <div key={item.id || idx} className="drawer-item-row">
-                      {item.product_image && (
+                      {item.product_image ? (
                         <img src={item.product_image} alt={item.product_name} className="drawer-item-img" />
+                      ) : (
+                        <div className="drawer-item-img-placeholder">
+                          <Package size={18} color="#94a3b8" />
+                        </div>
                       )}
                       <div className="drawer-item-meta">
                         <span className="drawer-item-name">{item.product_name}</span>
                         <span className="drawer-item-qty">
-                          Qty: {item.quantity} × ₹{(Number(item.unit_price) || 0).toFixed(2)}
+                          Qty: <strong>{item.quantity}</strong> × ₹{(Number(item.unit_price) || 0).toFixed(2)}
                         </span>
                       </div>
                       <span className="drawer-item-total">
@@ -1690,17 +1816,23 @@ const AdminDashboardPage = () => {
                       </span>
                     </div>
                   ))}
+
+                  {/* BYB Complimentary Gift Pack Row */}
                   {(selectedOrder.display_order_id?.startsWith('BYB') || selectedOrder.display_order_id?.includes('BYB')) && (
-                    <div className="drawer-item-row byb-gift-drawer-row" style={{ backgroundColor: '#f0fdf4', border: '1px dashed #16a34a', padding: '8px 10px', borderRadius: '8px', marginTop: '6px' }}>
+                    <div className="drawer-item-row byb-gift-drawer-row">
+                      <div className="byb-gift-icon-bubble">
+                        🎁
+                      </div>
                       <div className="drawer-item-meta">
-                        <span className="drawer-item-name" style={{ color: '#047857', fontWeight: 600 }}>
-                          🎁 2x Mini Masala Boxes (Assorted Sample Pack)
-                        </span>
-                        <span className="drawer-item-qty" style={{ color: '#15803d' }}>
-                          Qty: 2 • Complimentary BYB Offer Gift
+                        <div className="byb-gift-title-row">
+                          <span className="byb-gift-name">2x Mini Masala Boxes (Assorted Sample Pack)</span>
+                          <span className="byb-gift-tag">ROYAL GIFT</span>
+                        </div>
+                        <span className="byb-gift-subtitle">
+                          Qty: 2 • Complimentary Build Your Bundle (BYB) Offer Gift
                         </span>
                       </div>
-                      <span className="drawer-item-total" style={{ color: '#047857', fontWeight: 700 }}>
+                      <span className="byb-gift-free-badge">
                         FREE
                       </span>
                     </div>
@@ -1708,10 +1840,17 @@ const AdminDashboardPage = () => {
                 </div>
               </div>
 
-              {/* Payment & Financial Summary */}
-              <div className="drawer-section">
-                <div className="drawer-section-title">
-                  <CreditCard size={14} style={{ display: 'inline', marginRight: '4px' }} /> Payment & Financial Breakdown
+              {/* 6. Payment & Financial Breakdown */}
+              <div className="drawer-section drawer-financials-card">
+                <div className="drawer-card-header">
+                  <div className="drawer-card-header-left">
+                    <CreditCard size={16} className="drawer-section-icon" />
+                    <span className="drawer-card-title-text">PAYMENT & FINANCIAL BREAKDOWN</span>
+                  </div>
+                  <span className={`status-pill status-pill-compact ${getStatusClass(selectedOrder.payment_status)}`}>
+                    <span className="status-dot"></span>
+                    <span>{selectedOrder.payment_status || 'Pending'}</span>
+                  </span>
                 </div>
 
                 {/* Prominent Coupon / Promotion Banner */}
@@ -1763,12 +1902,12 @@ const AdminDashboardPage = () => {
                 
                 <div className="drawer-summary-totals">
                   <div className="summary-flex-row">
-                    <span>Subtotal</span>
-                    <span>₹{(Number(selectedOrder.subtotal) || 0).toFixed(2)}</span>
+                    <span className="summary-label">Subtotal</span>
+                    <span className="summary-value">₹{(Number(selectedOrder.subtotal) || 0).toFixed(2)}</span>
                   </div>
                   {Number(selectedOrder.discount) > 0 && (
-                    <div className="summary-flex-row" style={{ color: '#047857', fontWeight: 600 }}>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <div className="summary-flex-row summary-discount-row">
+                      <span className="summary-label discount-label">
                         {getOrderCoupon(selectedOrder) ? <Tag size={12} /> : <Sparkles size={12} />}
                         Special Discount {
                           checkIsBybOrder(selectedOrder)
@@ -1776,24 +1915,24 @@ const AdminDashboardPage = () => {
                             : (getOrderCoupon(selectedOrder) ? `(${getOrderCoupon(selectedOrder)})` : '')
                         }
                       </span>
-                      <span>-₹{Number(selectedOrder.discount).toFixed(2)}</span>
+                      <span className="summary-value discount-value">-₹{Number(selectedOrder.discount).toFixed(2)}</span>
                     </div>
                   )}
                   {Number(selectedOrder.tax) > 0 && (
                     <div className="summary-flex-row">
-                      <span>Tax</span>
-                      <span>+₹{Number(selectedOrder.tax).toFixed(2)}</span>
+                      <span className="summary-label">Tax</span>
+                      <span className="summary-value">+₹{Number(selectedOrder.tax).toFixed(2)}</span>
                     </div>
                   )}
                   <div className="summary-flex-row">
-                    <span>Shipping Fee</span>
-                    <span style={{ color: Number(selectedOrder.shipping_fee) === 0 ? '#047857' : 'inherit', fontWeight: 600 }}>
+                    <span className="summary-label">Shipping Fee</span>
+                    <span className={`summary-value ${Number(selectedOrder.shipping_fee) === 0 ? 'free-shipping' : ''}`}>
                       {Number(selectedOrder.shipping_fee) === 0 ? 'FREE DELIVERY' : `+₹${Number(selectedOrder.shipping_fee).toFixed(2)}`}
                     </span>
                   </div>
                   <div className="summary-flex-row summary-final-total">
-                    <span>Total Amount Paid</span>
-                    <span>₹{(Number(selectedOrder.total_amount) || 0).toFixed(2)}</span>
+                    <span className="total-label">Total Amount Paid</span>
+                    <span className="total-value">₹{(Number(selectedOrder.total_amount) || 0).toFixed(2)}</span>
                   </div>
                 </div>
 

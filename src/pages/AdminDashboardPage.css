@@ -1092,21 +1092,42 @@
   z-index: 99999;
   display: flex;
   justify-content: flex-end;
+  animation: adminBackdropFadeIn 0.2s ease-out;
+}
+
+@keyframes adminBackdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .admin-drawer-panel {
   width: 100%;
-  max-width: 620px;
-  background-color: #ffffff;
+  max-width: 680px;
+  background-color: #f8fafc;
   height: 100vh;
   max-height: 100vh;
   overflow-y: auto;
-  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.22);
+  box-shadow: -12px 0 45px rgba(15, 23, 42, 0.2);
   display: flex;
   flex-direction: column;
   position: relative;
   z-index: 100000;
-  animation: adminDrawerSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: adminDrawerSlideIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+.admin-drawer-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-drawer-panel::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.admin-drawer-panel::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
 }
 
 @keyframes adminDrawerSlideIn {
@@ -1114,131 +1135,327 @@
   to { transform: translateX(0); }
 }
 
+/* --------------------------------------------------------------------------
+   Drawer Header
+   -------------------------------------------------------------------------- */
 .admin-drawer-header {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   background-color: #ffffff;
   position: sticky;
   top: 0;
-  z-index: 30;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  z-index: 40;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
-.drawer-header-left h3 {
-  color: #0f172a;
-  font-size: 1.15rem;
-  margin: 0;
-  font-weight: 800;
+.drawer-header-main-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.drawer-header-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.drawer-header-tags-bar {
   display: flex;
   align-items: center;
   gap: 0.45rem;
+  flex-wrap: wrap;
 }
 
-.drawer-header-date {
-  font-size: 0.78rem;
+.drawer-tag-kicker {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
   color: #64748b;
-  margin-top: 0.2rem;
-  display: block;
+  text-transform: uppercase;
 }
 
-.drawer-header-actions {
+.drawer-tag-byb {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #78350f;
+  border: 1px solid #fcd34d;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 1px 2px rgba(120, 53, 15, 0.08);
+}
+
+.drawer-tag-coupon {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.drawer-title-and-copy {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
+  margin-top: 0.1rem;
 }
 
-.btn-drawer-print-bill {
+.drawer-order-heading {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-drawer-copy-code {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.85rem;
+  gap: 4px;
+  padding: 0.22rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-drawer-copy-code:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.btn-drawer-copy-code.copied {
+  background-color: #f0fdf4;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.drawer-header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.btn-drawer-header-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 36px;
+  padding: 0 0.9rem;
   background-color: #1a2f22;
   color: #d4af37;
-  border: 1px solid #1a2f22;
-  border-radius: 7px;
-  font-size: 0.8rem;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(26, 47, 34, 0.15);
+}
+
+.btn-drawer-header-print:hover {
+  background-color: #264230;
+  color: #fef08a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(26, 47, 34, 0.25);
+}
+
+.btn-drawer-header-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 36px;
+  padding: 0 0.75rem;
+  background-color: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  font-size: 0.76rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.btn-drawer-print-bill:hover {
-  background-color: #264230;
-  color: #fef08a;
+.btn-drawer-header-delete:hover:not(:disabled) {
+  background-color: #ffe4e6;
+  border-color: #fda4af;
+  color: #be123c;
+  transform: translateY(-1px);
 }
 
-.btn-drawer-close {
-  background: none;
-  border: none;
-  color: #64748b;
-  cursor: pointer;
-  padding: 0.4rem;
-  border-radius: 6px;
-  display: flex;
+.btn-drawer-header-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-drawer-header-close {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 36px;
+  width: 36px;
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.btn-drawer-close:hover {
-  background-color: #f1f5f9;
-  color: #0f172a;
+.btn-drawer-header-close:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
 }
 
+.drawer-header-substrip {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.78rem;
+  color: #64748b;
+  flex-wrap: wrap;
+}
+
+.substrip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.substrip-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.substrip-separator {
+  color: #cbd5e1;
+}
+
+.substrip-payment-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.substrip-payment-pill.paid {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.substrip-payment-pill.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.substrip-amount {
+  margin-left: auto;
+  color: #1a2f22;
+  font-size: 0.82rem;
+}
+
+/* --------------------------------------------------------------------------
+   Drawer Body & Generic Card Containers
+   -------------------------------------------------------------------------- */
 .admin-drawer-body {
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.15rem;
 }
 
 .drawer-section {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 1.25rem;
+  padding: 1.15rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.drawer-section-title {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.85rem;
+.drawer-section:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+}
+
+.drawer-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.95rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.btn-copy-small {
-  background: none;
-  border: 1px solid #cbd5e1;
-  padding: 0.2rem 0.5rem;
-  border-radius: 5px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #475569;
-  cursor: pointer;
-  display: inline-flex;
+.drawer-card-header-left {
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
 
-.btn-copy-small:hover {
+.drawer-section-icon {
+  color: #1a2f22;
+  flex-shrink: 0;
+}
+
+.drawer-card-title-text {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.drawer-count-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
   background-color: #f1f5f9;
-  border-color: #94a3b8;
-  color: #0f172a;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }
 
-/* Fulfillment Section */
+/* --------------------------------------------------------------------------
+   1. Fulfillment Workflow Card & Stepper
+   -------------------------------------------------------------------------- */
 .drawer-fulfillment-card {
-  background-color: #fafbf9;
+  background-color: #ffffff;
   border: 1px solid rgba(26, 47, 34, 0.18) !important;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(26, 47, 34, 0.05);
+  box-shadow: 0 2px 8px rgba(26, 47, 34, 0.04);
 }
 
 .drawer-task-alert {
@@ -1303,48 +1520,54 @@
   margin-bottom: 0.95rem;
 }
 
-.fulfillment-pipeline-chips {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
+.fulfillment-segmented-pipeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background-color: #f1f5f9;
+  padding: 4px;
+  border-radius: 9px;
+  gap: 4px;
 }
 
-.pipeline-chip-btn {
-  padding: 0.42rem 0.8rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  border-radius: 7px;
-  border: 1px solid #cbd5e1;
-  background-color: #ffffff;
-  color: #334155;
-  cursor: pointer;
+.pipeline-tab-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  transition: all 0.15s ease;
+  justify-content: center;
+  gap: 4px;
+  padding: 0.5rem 0.3rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #475569;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
 }
 
-.pipeline-chip-btn:hover {
-  background-color: #f8fafc;
-  border-color: #94a3b8;
+.pipeline-tab-btn:hover {
+  background-color: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.pipeline-chip-btn.selected {
-  background-color: #1a2f22;
-  color: #ffffff;
-  border-color: #1a2f22;
+.pipeline-tab-btn.selected {
+  background-color: #1a2f22 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(26, 47, 34, 0.22);
+  font-weight: 800;
 }
 
-.pipeline-chip-btn.current-active:not(.selected) {
-  border-color: #1a2f22;
-  color: #1a2f22;
-  background-color: #f0fdf4;
+.pipeline-tab-btn.tab-cancelled.selected {
+  background-color: #b91c1c !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(185, 28, 28, 0.22);
 }
 
-.pipeline-chip-btn.chip-cancelled.selected {
-  background-color: #b91c1c;
-  border-color: #b91c1c;
-  color: #ffffff;
+.pipeline-active-tick {
+  color: #d4af37;
+  flex-shrink: 0;
 }
 
 .status-update-control-box {
@@ -1354,7 +1577,7 @@
 }
 
 .drawer-shipping-fields-card {
-  background-color: #ffffff;
+  background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 0.95rem;
@@ -1402,6 +1625,13 @@
   box-shadow: 0 0 0 3px rgba(26, 47, 34, 0.08);
 }
 
+.drawer-cancellation-card {
+  background-color: #fef2f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  padding: 0.85rem;
+}
+
 .drawer-email-checkbox-row {
   display: flex;
   align-items: center;
@@ -1411,12 +1641,28 @@
   margin: 0.25rem 0;
 }
 
+.custom-checkbox-input {
+  accent-color: #1a2f22;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.custom-checkbox-label {
+  cursor: pointer;
+}
+
+.highlight-email {
+  color: #0369a1;
+  font-weight: 600;
+}
+
 .btn-save-status-full {
   width: 100%;
   padding: 0.75rem 1.25rem;
   font-size: 0.88rem;
   font-weight: 700;
-  background-color: #1a2f22;
+  background: linear-gradient(135deg, #1a2f22 0%, #264230 100%);
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -1426,43 +1672,225 @@
   justify-content: center;
   gap: 0.5rem;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 3px rgba(26, 47, 34, 0.15);
+  box-shadow: 0 2px 6px rgba(26, 47, 34, 0.18);
 }
 
 .btn-save-status-full:hover:not(:disabled) {
-  background-color: #264230;
+  background: linear-gradient(135deg, #223c2c 0%, #2e4f3a 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(26, 47, 34, 0.2);
+  box-shadow: 0 4px 14px rgba(26, 47, 34, 0.25);
 }
 
 .btn-save-status-full:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+  transform: none;
 }
 
-.drawer-payment-footnote {
+.drawer-payment-gateway-note {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  color: #64748b;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.55rem 0.85rem;
+  border-radius: 7px;
+  margin-top: 0.85rem;
+}
+
+.note-shield-icon {
+  color: #059669;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   2. Customer Profile Card
+   -------------------------------------------------------------------------- */
+.drawer-customer-card {
+  background-color: #ffffff;
+}
+
+.drawer-customer-profile-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-customer-hero-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.95rem;
+}
+
+.drawer-avatar-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1a2f22 0%, #2e4a36 100%);
+  color: #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 2px 6px rgba(26, 47, 34, 0.12);
+  flex-shrink: 0;
+}
+
+.drawer-customer-name-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.drawer-customer-fullname {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drawer-customer-id-sub {
   font-size: 0.72rem;
   color: #64748b;
-  margin: 0.65rem 0 0 0;
-  text-align: center;
+  margin-top: 2px;
 }
 
-/* WhatsApp inline button */
-.btn-whatsapp-inline {
+.drawer-contact-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.drawer-contact-bubble {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  min-width: 0;
+  position: relative;
+}
+
+.contact-bubble-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.contact-bubble-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.contact-bubble-label {
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contact-bubble-link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0284c7;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.contact-bubble-link:hover {
+  text-decoration: underline;
+  color: #0369a1;
+}
+
+.contact-bubble-empty {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.btn-bubble-copy {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  padding: 3px 5px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-bubble-copy:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.contact-phone-with-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.btn-whatsapp-compact {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  font-size: 0.74rem;
+  gap: 4px;
+  font-size: 0.7rem;
   font-weight: 700;
   color: #166534;
   background-color: #dcfce7;
-  padding: 0.25rem 0.6rem;
+  border: 1px solid #86efac;
+  padding: 2px 7px;
   border-radius: 5px;
   text-decoration: none;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
-.btn-whatsapp-inline:hover {
+.btn-whatsapp-compact:hover {
   background-color: #bbf7d0;
+  border-color: #4ade80;
+}
+
+/* --------------------------------------------------------------------------
+   3. Communications & Notifications Hub
+   -------------------------------------------------------------------------- */
+.drawer-communications-card {
+  background-color: #ffffff;
+}
+
+.drawer-communications-body {
+  display: flex;
+  flex-direction: column;
 }
 
 .drawer-fulfillment-alert-banner {
@@ -1472,109 +1900,52 @@
   padding: 0.75rem 1rem;
   background-color: #f0fdf4;
   border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  margin-top: 0.5rem;
+  border-radius: 9px;
+  margin-bottom: 0.85rem;
+}
+
+.alert-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.alert-check-icon {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.alert-banner-text {
+  font-size: 0.82rem;
+  color: #166534;
 }
 
 .btn-resend-alert {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
   font-size: 0.74rem;
   font-weight: 700;
   color: #166534;
   background-color: #ffffff;
   border: 1px solid #86efac;
-  padding: 0.3rem 0.65rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(22, 101, 52, 0.05);
 }
 
-/* Items list */
-.drawer-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.btn-resend-alert:hover:not(:disabled) {
+  background-color: #dcfce7;
+  border-color: #4ade80;
+  transform: translateY(-1px);
 }
 
-.drawer-item-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.drawer-item-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.drawer-item-img {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  border-radius: 7px;
-  background-color: #faf6f0;
-  border: 1px solid #e2e8f0;
-  padding: 2px;
-}
-
-.drawer-item-meta {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.drawer-item-name {
-  font-weight: 600;
-  font-size: 0.88rem;
-  color: #0f172a;
-}
-
-.drawer-item-qty {
-  font-size: 0.76rem;
-  color: #64748b;
-  margin-top: 0.1rem;
-}
-
-.drawer-item-total {
-  font-weight: 700;
-  font-size: 0.92rem;
-  color: #0f172a;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Financials */
-.drawer-summary-totals {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  font-size: 0.88rem;
-}
-
-.summary-flex-row {
-  display: flex;
-  justify-content: space-between;
-  color: #475569;
-}
-
-.summary-final-total {
-  border-top: 1px solid #e2e8f0;
-  padding-top: 0.65rem;
-  margin-top: 0.35rem;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #1a2f22;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Communication Cards */
 .admin-email-tools-container {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-top: 0.75rem;
 }
 
 .email-tool-card {
@@ -1593,7 +1964,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.45rem;
 }
 
 .email-tool-title {
@@ -1625,6 +1996,13 @@
   border: 1px solid #fde68a;
 }
 
+.email-tool-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0 0 0.65rem 0;
+  line-height: 1.45;
+}
+
 .btn-send-review-email {
   width: 100%;
   display: inline-flex;
@@ -1646,6 +2024,7 @@
 .btn-send-review-email:hover:not(:disabled) {
   background-color: #14241a;
   color: #fde047;
+  transform: translateY(-1px);
 }
 
 .btn-toggle-composer {
@@ -1722,6 +2101,370 @@
   border: none;
   border-radius: 7px;
   cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   4. Delivery & Shipping Address Card
+   -------------------------------------------------------------------------- */
+.drawer-address-card {
+  background-color: #ffffff;
+}
+
+.drawer-address-content {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.95rem 1.15rem;
+}
+
+.address-recipient-name {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+}
+
+.address-line {
+  font-size: 0.86rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.city-state-pin {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+.pincode-badge {
+  background-color: #e2e8f0;
+  color: #1e293b;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  letter-spacing: 0.3px;
+}
+
+.country-line {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-top: 0.15rem;
+}
+
+.address-phone-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #475569;
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.btn-copy-address-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-copy-address-pill:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.drawer-empty-notice {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   5. Ordered Products Card & Manifest
+   -------------------------------------------------------------------------- */
+.drawer-products-card {
+  background-color: #ffffff;
+}
+
+.drawer-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.drawer-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0.95rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.15s ease;
+}
+
+.drawer-item-row:hover {
+  border-color: #cbd5e1;
+  background-color: #ffffff;
+}
+
+.drawer-item-img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.drawer-item-img-placeholder {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.drawer-item-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.drawer-item-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.drawer-item-qty {
+  font-size: 0.76rem;
+  color: #64748b;
+  margin-top: 0.15rem;
+}
+
+.drawer-item-total {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* BYB Complimentary Gift Box Row */
+.byb-gift-drawer-row {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%) !important;
+  border: 1.5px dashed #22c55e !important;
+}
+
+.byb-gift-icon-bubble {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background-color: #ffffff;
+  border: 1px solid #86efac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.byb-gift-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.byb-gift-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.byb-gift-tag {
+  background-color: #dcfce7;
+  color: #166534;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid #86efac;
+  letter-spacing: 0.4px;
+}
+
+.byb-gift-subtitle {
+  font-size: 0.74rem;
+  color: #166534;
+  margin-top: 0.15rem;
+}
+
+.byb-gift-free-badge {
+  background-color: #16a34a;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. Financials & Payment Breakdown
+   -------------------------------------------------------------------------- */
+.drawer-financials-card {
+  background-color: #ffffff;
+}
+
+.drawer-summary-totals {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.95rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summary-flex-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.86rem;
+  color: #475569;
+}
+
+.summary-discount-row {
+  color: #059669 !important;
+  font-weight: 700;
+}
+
+.discount-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.free-shipping {
+  color: #059669;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.summary-final-total {
+  border-top: 1.5px solid #cbd5e1;
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.total-label {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1a2f22;
+}
+
+.total-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1a2f22;
+  font-variant-numeric: tabular-nums;
+}
+
+.drawer-payment-metadata-box {
+  margin-top: 0.85rem;
+}
+
+/* Backwards compatibility wrappers */
+.btn-drawer-print-bill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  background-color: #1a2f22;
+  color: #d4af37;
+  border: 1px solid #1a2f22;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-drawer-close {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-copy-small {
+  background: none;
+  border: 1px solid #cbd5e1;
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pipeline-chip-btn {
+  padding: 0.42rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 7px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-whatsapp-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #166534;
+  background-color: #dcfce7;
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  text-decoration: none;
 }
 
 /* ==========================================================================
@@ -1819,8 +2562,25 @@
   .admin-drawer-header {
     padding: 1rem;
   }
+  .drawer-header-main-row {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .drawer-order-heading {
+    font-size: 1.1rem;
+  }
+  .drawer-header-substrip {
+    font-size: 0.74rem;
+    gap: 0.45rem;
+  }
   .admin-drawer-body {
     padding: 1rem 0.85rem;
+  }
+  .drawer-contact-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .fulfillment-segmented-pipeline {
+    grid-template-columns: repeat(3, 1fr);
   }
   .drawer-shipping-grid {
     grid-template-columns: 1fr;

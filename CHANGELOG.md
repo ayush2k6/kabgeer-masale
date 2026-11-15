@@ -1,5 +1,45 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.28: Enterprise UI/UX Redesign of Admin Order Details Drawer Modal)
+
+### 1. Root-Cause Problem Identification & UI Fixes
+- **Addressed Header Clutter & Line Wrapping**:
+  - Previously, `Order #BYB-20261114-9386` snapped into two broken text fragments (`Order #BYB-` on line 1, `20261114-9386` on line 2) because it was squeezed against inline badges and three bulky, unaligned action buttons (`Print Bill / Label`, `Delete`, `Close`).
+  - Redesigned the header with a clean, responsive 2-tier architecture:
+    * **Tier 1 (Main Row)**: Left-aligned identity column with a dedicated tags bar (`ORDER DETAILS`, `👑 BYB BUNDLE`, `COUPON`, `● Processing`), followed by a bold monospace Order ID with an attached one-click copy button (`white-space: nowrap; overflow: hidden; text-overflow: ellipsis;`). Right-aligned unified action button toolbar with matching 36px height, rounded corners, and crisp hover states (`Print Bill / Label`, `Delete`, `Close`).
+    * **Tier 2 (Metadata Substrip)**: Clean horizontal strip displaying placed timestamp with Clock icon, payment mode & status with CreditCard icon, and grand total in bold figures.
+
+### 2. Executive Fulfillment Workflow & Segmented Pipeline Control
+- Replaced blocky button chips with an enterprise segmented control (`fulfillment-segmented-pipeline`):
+  * 5 discrete stages (`Confirmed`, `Processing`, `Shipped`, `Delivered`, `Cancelled`) in a sleek container with smooth sliding active state and gold checkmark.
+  * Contextual courier & AWB inputs when `Shipped` or `Processing` with clean monospace styling.
+  * Modernized action button (`Update Status to '...' & Notify`) with emerald gradient, responsive lift, and spinner.
+  * Added authoritative Razorpay verification footnote with `ShieldCheck` icon.
+
+### 3. Customer Profile & Inline Communication Architecture
+- **Dedicated Customer Profile Card**:
+  - Replaced raw text key-values with a luxury profile card featuring avatar circle with customer initials (`TY`), customer name, and customer tier badge (`Registered Customer` or `Guest Checkout`).
+  - Clean 2-column contact grid:
+    * Email card with mailto link and mini copy button.
+    * Phone card with direct call link AND inline WhatsApp button (`💬 WhatsApp ↗`) directly beside the phone number, eliminating awkward floating buttons.
+- **Unified Communications & Alerts Hub**:
+  - Status email dispatch banner with quick `Resend Alert` button.
+  - Royal Gold Customer Review Request card with star ratings note and `Send Review Request Email` button.
+  - Expandable direct custom email composer with quick presets (`Review Request`, `Address Check`, `Shipping Update`, `VIP Offer`, `Blank Custom`).
+
+### 4. Shipping Address & Manifest Craftsmanship
+- Courier delivery address styled with recipient name, address lines, and monospace PIN code badge (`PIN: 226001`) with a `Copy Courier Slip` button.
+- Ordered products manifest upgraded with 46x46px clean thumbnails, item meta, and tabular figures.
+- Complimentary BYB gift pack prominently rendered as an emerald-tinted royal gift row (`🎁 2x Mini Masala Boxes • FREE`).
+- Financial summary breakdown formatted with crisp borders, green discount callouts, free delivery highlight, and total amount.
+
+### 5. Verification & Testing
+- Executed `npm run build`: Zero errors, clean Vite compilation.
+- Ran `security-tests/test-16-xss.mjs`: PASS (0 unescaped sinks, strict HTML escaping intact).
+- Ran `security-tests/test-local-remediations.mjs`: PASS (44/44 checks passed).
+- Ran `security-tests/test-byb-email-confirmation.mjs`: PASS (all BYB checks passed).
+- Verified NO `git push` performed (strictly local).
+
 ## 2026-11-15 (Part 6.27: Build Your Box (BYB) Confirmation Email Package Manifest & Perks Integration)
 
 ### 1. BYB Package Breakdown in Transactional Confirmation Emails (`supabase/functions/send-order-email/index.ts`)
