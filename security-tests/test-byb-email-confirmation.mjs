@@ -198,6 +198,14 @@ const bybPackingAlertHtml = `
 assert(bybPackingAlertHtml.includes('BUILD YOUR BOX (BYB) ORDER DETECTED'), 'Admin alert must flag BYB for warehouse packing');
 console.log('✔ PASS: Admin alert successfully generated for fulfillment team.\n');
 
+// 7. Test Processing Status Email Handler
+console.log('6. Testing Processing Status Email implementation...');
+const emailSrc = fs.readFileSync(emailFnPath, 'utf8');
+assert(emailSrc.includes('function renderProcessingEmailHtml'), 'renderProcessingEmailHtml must be defined');
+assert(emailSrc.includes("statusToProcess === 'Processing'"), 'Processing status handler must be present');
+assert(emailSrc.includes("['Processing', 'Shipped', 'Delivered', 'Cancelled']"), 'Processing must be included in status update array');
+console.log('✔ PASS: Processing email template and handler confirmed in send-order-email/index.ts.\n');
+
 console.log('========================================================================');
-console.log('ALL BYB CONFIRMATION EMAIL LOGIC AND RENDERING TESTS PASSED!');
+console.log('ALL BYB CONFIRMATION & STATUS EMAIL LOGIC TESTS PASSED!');
 console.log('========================================================================');

@@ -445,7 +445,7 @@ const AdminDashboardPage = () => {
       setNewOrderStatus(targetStatus);
 
       const currentTimeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
-      const emailSentDetails = notifyEmail && ['Shipped', 'Delivered', 'Cancelled'].includes(targetStatus)
+      const emailSentDetails = notifyEmail && ['Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(targetStatus)
         ? `Branded '${targetStatus}' email successfully dispatched to ${selectedOrder.customer_email} at ${currentTimeStr} IST`
         : null;
 
@@ -474,7 +474,7 @@ const AdminDashboardPage = () => {
     if (!order) return;
     setResendingEmail(true);
     try {
-      const isStatusUpdate = ['Shipped', 'Delivered', 'Cancelled'].includes(order.order_status);
+      const isStatusUpdate = ['Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(order.order_status);
       const { data: res, error: err } = await supabase.functions.invoke('send-order-email', {
         body: {
           orderId: order.id,

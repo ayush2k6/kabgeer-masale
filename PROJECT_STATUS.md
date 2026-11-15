@@ -12,6 +12,7 @@ Current Branch: v1-release (Synced & Pushed across main, master & v1-release to 
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.37 | Transactional Email Infrastructure (Processing Status Notification, Custom BYB Dispatch & Cloud Deployment) | ✅ COMPLETE, DEPLOYED & VERIFIED |
 | Part 6.36 | Order Confirmation UI Redesign (Total Paid Amount Reflection, Sans-Serif Mix, Dedicated Financial Card & Print Engine) | ✅ COMPLETE & VERIFIED |
 | Part 6.35 | Production Vercel Deployment Sync (Synchronized & Pushed main & master to GitHub) | ✅ LIVE & VERIFIED |
 | Part 6.34 | Checkout & Cart Negative Spacing Polish (Overlap Elimination & Crown Eradication) | ✅ COMPLETE & VERIFIED |
@@ -75,14 +76,22 @@ Current Branch: v1-release (Synced & Pushed across main, master & v1-release to 
 
 ## 2. Current Active Part
 
-* **Part Number**: Part 6.27
-* **Part Name**: Build Your Box (BYB) Confirmation Email Package Manifest & Perks Integration
-* **Current Status**: ✅ 100% COMPLETE & VERIFIED
+* **Part Number**: Part 6.37
+* **Part Name**: Transactional Email Infrastructure (Processing Status Notification, Custom BYB Dispatch & Cloud Deployment)
+* **Current Status**: ✅ 100% COMPLETE, DEPLOYED & VERIFIED
 * **Completed Components**:
   - `supabase/functions/send-order-email/index.ts`:
-    * Added centralized `isBybOrder` helper supporting `BYB-` ID prefix, `is_bundle` flag, and 4+ masala threshold.
-    * Injected royal celebratory banner in customer confirmation email highlighting 10% savings, 2 complimentary sample boxes, and total curated masalas.
-    * Labeled items with `👑 Curated Box Item` and added `🎁 2x Mini Masala Boxes (Sample Pack) — FREE (₹0.00)` into the items manifest.
+    * Added `renderProcessingEmailHtml()` with hand-blending message, 24–48h timeline, and BYB benefits banner.
+    * Added `Processing` handling to status update routing.
+    * Integrated custom BYB manifest with 10% discount and 2 free sample gifts.
+    * Corrected support email to `enquiry@kabgeermasala.com`.
+  - `supabase/functions/admin-manage-orders/index.ts`:
+    * Included `Processing` in the automated email status trigger list.
+  - `src/pages/AdminDashboardPage.jsx`:
+    * Added UI feedback for `Processing` email dispatches and resends.
+  - Supabase Cloud Deployment:
+    * Deployed `send-order-email` (v25) to Supabase Cloud (`cfvopnzcqbtqcupdomto`).
+    * Deployed `admin-manage-orders` (v15) to Supabase Cloud (`cfvopnzcqbtqcupdomto`).
     * Added BYB packing alert and free gift injection into admin fulfillment email to prevent missed sample boxes.
     * Updated customer and admin email subject lines for instant clarity.
   - `src/pages/OrderSuccessPage.jsx`:

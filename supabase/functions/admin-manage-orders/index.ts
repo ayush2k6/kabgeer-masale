@@ -210,7 +210,7 @@ serve(async (req) => {
 
       let emailResult = null;
       // Trigger status update email if requested or default ON for key statuses
-      if (sendEmail !== false && ['Shipped', 'Delivered', 'Cancelled'].includes(orderStatus)) {
+      if (sendEmail !== false && ['Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(orderStatus)) {
         try {
           const { data: emailData, error: emailErr } = await supabase.functions.invoke('send-order-email', {
             body: {

@@ -1,5 +1,38 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.37: Transactional Email Infrastructure — Processing Status Notification, Custom BYB Dispatch & Cloud Edge Function Deployment)
+
+### 1. Root Cause Analysis
+- **Missing BYB Custom Emails in Production**: Although custom Build Your Box (BYB) email templating (10% savings callout, 2 complimentary sample gifts, and curated box manifest) was developed locally in Part 6.27, the Edge Function `send-order-email` on Supabase Cloud (`cfvopnzcqbtqcupdomto`) was still running the pre-deployment v24 release from October 29. Consequently, customer orders placed on production (including `BYB-20261115-6352`) fell back to basic confirmation or simulation behavior.
+- **Missing `Processing` Status Notification**: The application had no email template for the `Processing` order state. Furthermore, both `admin-manage-orders/index.ts` and `send-order-email/index.ts` strictly whitelisted only `['Shipped', 'Delivered', 'Cancelled']`, filtering out any attempt to notify customers when their order entered preparation.
+- **Admin Dashboard UI Omission**: `AdminDashboardPage.jsx` only displayed dispatch feedback and enabled status update resends for `Shipped`, `Delivered`, and `Cancelled`, ignoring `Processing`.
+
+### 2. Implementations & Structural Hardening
+- **`renderProcessingEmailHtml()` in `supabase/functions/send-order-email/index.ts`**:
+  * Designed an authentic Lucknowi preparation template highlighting hand-blending in small batches and the 24–48 hour dispatch window.
+  * Embedded dynamic BYB banner (`Royal Build Your Box (BYB)`), 10% bundle discount highlight, and 2 complimentary mini masala sample boxes notice.
+  * Rendered the complete itemized spice manifest with weights, quantities, unit prices, and delivery address.
+  * Corrected support contact email from outdated `kabgeermasale@gmail.com` to verified `enquiry@kabgeermasala.com`.
+- **Status Router Modernization in `send-order-email/index.ts`**:
+  * Added `Processing` handling with custom subject line:
+    - BYB: `🍲 Being Hand-Blended: Your Royal Build Your Box #${order.display_order_id} is in Preparation`
+    - Standard: `🍲 Being Prepared with Care: Your Kabgeer Masale Order #${order.display_order_id}`
+- **Fulfillment Pipeline Updates in `supabase/functions/admin-manage-orders/index.ts`**:
+  * Changed line 213 trigger condition to `['Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(orderStatus)` so status transitions to `Processing` automatically dispatch transactional emails to the customer.
+- **Admin Dashboard Integration in `src/pages/AdminDashboardPage.jsx`**:
+  * Updated status alert feedback (line 448) to confirm dispatched emails for `Processing`.
+  * Updated manual email resend trigger (line 477) to seamlessly handle `Processing` status resends.
+
+### 3. Production Deployment & Cloud Synchronization
+- Deployed `send-order-email` (v25) to Supabase Cloud via `supabase functions deploy send-order-email --no-verify-jwt --yes`.
+- Deployed `admin-manage-orders` (v15) to Supabase Cloud via `supabase functions deploy admin-manage-orders --no-verify-jwt --yes`.
+- Verified deployment timestamps and active status on Supabase Cloud (`cfvopnzcqbtqcupdomto`).
+
+### 4. Verification & Testing
+- Unit & regression test suite: `security-tests/test-byb-email-confirmation.mjs` (6/6 checks PASSED).
+- Core security regression test suite: `security-tests/test-local-remediations.mjs` (44/44 checks PASSED).
+- Production build: `npm run build` completed in 2.65s with 0 errors.
+
 ## 2026-11-15 (Part 6.36: Order Confirmation UI Redesign — Total Paid Amount Reflection, Strict Sans-Serif Mix, Dedicated Financial Card & Print Engine)
 
 ### 1. Root Cause of Missing "Total Paid" Amount (`₹0.00`)

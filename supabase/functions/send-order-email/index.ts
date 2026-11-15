@@ -295,7 +295,107 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
   `;
 }
 
-// 2. Customer Email HTML: Order Shipped / In Transit
+// 2. Customer Email HTML: Order Processing (Hand-Blending & Preparation)
+function renderProcessingEmailHtml(order: any, items: any[]): string {
+  const safe = getSafeOrder(order);
+  const byb = isBybOrder(order, items);
+  const itemsRows = renderItemsRows(items, byb);
+
+  const bybBannerHtml = byb ? `
+    <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #ecfdf5 100%); border: 1.5px solid #d4af37; border-radius: 10px; padding: 18px 20px; margin: 20px 0; text-align: left; box-shadow: 0 4px 14px rgba(212, 175, 55, 0.12);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+        <span style="display: inline-block; background-color: #1a2f22; color: #d4af37; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase;">
+          👑 Royal Build Your Box (BYB)
+        </span>
+        <span style="display: inline-block; background-color: #047857; color: #ffffff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px;">
+          ✓ 10% Savings + 2 Free Mini Boxes Included
+        </span>
+      </div>
+      <p style="margin: 0; font-size: 13px; color: #334155; line-height: 1.5;">
+        Your custom curated box is being hand-packed. Our spice artisans are carefully preparing each blend and enclosing your <strong>2 Complimentary Chef's Mini Sample Boxes</strong>.
+      </p>
+    </div>
+  ` : '';
+
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Order Processing #${safe.displayOrderId}</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #faf6f0; margin: 0; padding: 24px 12px;">
+      <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26, 47, 34, 0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+        
+        <div style="background-color: #1a2f22; padding: 28px 24px; text-align: center; color: #ffffff;">
+          <h1 style="margin: 0; font-size: 22px; letter-spacing: 2px; font-weight: 700; color: #d4af37;">KABGEER MASALE</h1>
+          <p style="margin: 6px 0 0 0; font-size: 13px; color: #e2e8f0; letter-spacing: 0.5px;">Authentic Lucknowi Spices & Traditional Blends</p>
+        </div>
+        
+        <div style="padding: 28px 24px;">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <span style="display: inline-block; background-color: #fef3c7; color: #b45309; font-weight: 700; font-size: 13px; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
+              🍲 Being Hand-Blended & Prepared
+            </span>
+            <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">We're Preparing Your Spices, ${safe.customerName}!</h2>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">${byb ? 'Your custom Build Your Box is currently being weighed, stone-ground, and packed at our Lucknow facility.' : 'Your authentic Lucknavi spices are currently being stone-ground, weighed, and sealed for freshness.'}</p>
+          </div>
+
+          ${bybBannerHtml}
+
+          <!-- Process Highlights Card -->
+          <div style="background: #faf6f0; border: 1px solid rgba(26, 47, 34, 0.08); border-radius: 10px; padding: 18px 20px; margin: 20px 0; font-size: 13px; line-height: 1.6;">
+            <div style="font-weight: 700; color: #1a2f22; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">
+              🌿 The Kabgeer Freshness Promise
+            </div>
+            <p style="margin: 0 0 8px 0; color: #475569;">
+              Unlike mass-manufactured masalas, your blends are prepared in small batches using whole premium spices to lock in natural volatile oils and authentic Lucknowi aroma.
+            </p>
+            <div style="color: #166534; font-weight: 600; font-size: 12px;">
+              ⏱ Estimated Dispatch: Within 24–48 hours via Trackon Express Courier.
+            </div>
+          </div>
+
+          <h3 style="color: #1a2f22; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px 0; border-bottom: 2px solid #1a2f22; padding-bottom: 6px;">
+            ${byb ? 'What We’re Packing (Box Contents & Complimentary Gifts)' : 'Items in Preparation'}
+          </h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+              <tr style="background: #f8fafc; text-align: left; font-size: 12px; color: #64748b; text-transform: uppercase;">
+                <th style="padding: 8px 12px;">Masala</th>
+                <th style="padding: 8px 12px; text-align: center;">Qty</th>
+                <th style="padding: 8px 12px; text-align: right;">Unit Price</th>
+                <th style="padding: 8px 12px; text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsRows}
+            </tbody>
+          </table>
+
+          <h3 style="color: #1a2f22; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px 0; border-bottom: 2px solid #1a2f22; padding-bottom: 6px;">
+            Delivery Address
+          </h3>
+          <div style="background: #f8fafc; border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.6; color: #334155; border: 1px solid #e2e8f0;">
+            <strong>${safe.customerName}</strong><br/>
+            ${safe.shippingAddress}${safe.shippingApartment ? ', ' + safe.shippingApartment : ''}<br/>
+            ${safe.shippingCity}, ${safe.shippingState} - ${safe.shippingPinCode}<br/>
+            <strong>Mobile:</strong> ${safe.customerPhone || ''}
+          </div>
+
+          <div style="margin-top: 32px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            <p style="margin: 0 0 6px 0;">Have a question about your order? Reply directly to this email or write to <a href="mailto:enquiry@kabgeermasala.com" style="color: #1a2f22; font-weight: 600; text-decoration: underline;">enquiry@kabgeermasala.com</a></p>
+            <p style="margin: 0;">&copy; ${new Date().getFullYear()} Kabgeer Masale. 100% Pure Lucknavi Heritage.</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// 3. Customer Email HTML: Order Shipped / In Transit
 function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?: string): string {
   const safe = getSafeOrder(order);
   const byb = isBybOrder(order, items);
@@ -381,7 +481,7 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
           </div>
 
           <div style="margin-top: 32px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
-            <p style="margin: 0 0 6px 0;">Need any assistance with your delivery? Contact us at <a href="mailto:kabgeermasale@gmail.com" style="color: #1a2f22; font-weight: 600; text-decoration: underline;">kabgeermasale@gmail.com</a></p>
+            <p style="margin: 0 0 6px 0;">Need any assistance with your delivery? Contact us at <a href="mailto:enquiry@kabgeermasala.com" style="color: #1a2f22; font-weight: 600; text-decoration: underline;">enquiry@kabgeermasala.com</a></p>
             <p style="margin: 0;">&copy; ${new Date().getFullYear()} Kabgeer Masale. 100% Pure Lucknavi Heritage.</p>
           </div>
         </div>
@@ -391,7 +491,7 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
   `;
 }
 
-// 3. Customer Email HTML: Order Delivered
+// 4. Customer Email HTML: Order Delivered
 function renderDeliveredEmailHtml(order: any, items: any[]): string {
   const safe = getSafeOrder(order);
   const byb = isBybOrder(order, items);
@@ -907,15 +1007,20 @@ serve(async (req) => {
       : (rawSenderEmail.includes('<') ? rawSenderEmail : `Kabgeer Masale <${rawSenderEmail}>`);
 
     // =========================================================================
-    // CASE A: Status Update Notification (Shipped, Delivered, Cancelled)
+    // CASE A: Status Update Notification (Processing, Shipped, Delivered, Cancelled)
     // =========================================================================
-    if (emailType === 'status_update' || (newStatus && ['Shipped', 'Delivered', 'Cancelled'].includes(newStatus))) {
+    if (emailType === 'status_update' || (newStatus && ['Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(newStatus))) {
       const statusToProcess = newStatus || order.order_status;
       const isByb = isBybOrder(order, items);
       let subject = `Order Update #${order.display_order_id} — Kabgeer Masale`;
       let emailHtml = '';
 
-      if (statusToProcess === 'Shipped') {
+      if (statusToProcess === 'Processing') {
+        subject = isByb
+          ? `🍲 Being Hand-Blended: Your Royal Build Your Box #${order.display_order_id} is in Preparation`
+          : `🍲 Being Prepared with Care: Your Kabgeer Masale Order #${order.display_order_id}`;
+        emailHtml = renderProcessingEmailHtml(order, items || []);
+      } else if (statusToProcess === 'Shipped') {
         subject = isByb
           ? `🚚 Shipped! Your Royal Build Your Box #${order.display_order_id} is On The Way`
           : `🚚 Shipped! Your Kabgeer Order #${order.display_order_id} is On The Way`;
