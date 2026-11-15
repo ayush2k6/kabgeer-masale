@@ -12,6 +12,7 @@ Current Branch: v1-release (Local commits, NO PUSH per instructions)
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.27 | Build Your Box (BYB) Confirmation Email Package Manifest & Perks Integration | ✅ COMPLETE & VERIFIED |
 | Part 6.26 | A4 Tax Invoice Compact Redesign, Order ID Filename & 25-Masala Print Resilience | ✅ COMPLETE & VERIFIED |
 | Part 6.25 | Two-Step Minimal Mobile Checkout Architecture (Recap Card & Step Navigation) | ✅ COMPLETE & VERIFIED |
 | Part 6.24 | Professional Mobile Checkout Redesign (Negative Spacing & De-cluttering) | ✅ COMPLETE & LOCALLY COMMITTED |
@@ -65,23 +66,23 @@ Current Branch: v1-release (Local commits, NO PUSH per instructions)
 
 ## 2. Current Active Part
 
-* **Part Number**: Part 6.13
-* **Part Name**: Automatic Build Your Bundle (BYB) Upgrade on 4+ Masalas & Tax Invoice Special Discount Tagging
+* **Part Number**: Part 6.27
+* **Part Name**: Build Your Box (BYB) Confirmation Email Package Manifest & Perks Integration
 * **Current Status**: ✅ 100% COMPLETE & VERIFIED
 * **Completed Components**:
-  - `src/components/AdminRoute.jsx`: Stealth redirect to Home (`/`) for any unauthorized visitor attempting to access `/admin`.
-  - `src/pages/NotFoundPage.jsx` & `NotFoundPage.css`: Luxury 404 Page with brand gold and emerald styling.
-  - `src/App.jsx`: Registered catch-all 404 route (`*`).
-  - Production build clean in 5.01s.
-* **Deliverables**:
-  - Database migration prepared to revoke `claim_and_process_order_payment`, `reserve_stock`, and `release_stock` execution from `authenticated` and `anon`.
-  - Added internal caller authentication helper `internalAuth.ts` with timing-safe checks, service role validation, and JWT decoding.
-  - Hardened downstream functions (`create-shipment`, `send-order-email`, `sync-google-sheets`) against unauthenticated external invocations.
-  - Permanently removed unconditional `clear_all_orders` / `reset_all_data` actions from `admin-manage-orders`.
-  - Regression test suite implemented and verified; production build cleanly verified.
-  - Page title row with bold `Orders Management` heading, emerald count pill, descriptive subtitle, and elevated refresh button.
-  - Datatable with zero horizontal scrollbar on desktop, rich customer avatar initial badge, inline customer type tag, prominent tabular amount, and tactile action buttons (`View`, `Label`, `Review`).
-* **Production Build Verified**: YES (Clean Vite production build in 3.90s, 0 errors).
+  - `supabase/functions/send-order-email/index.ts`:
+    * Added centralized `isBybOrder` helper supporting `BYB-` ID prefix, `is_bundle` flag, and 4+ masala threshold.
+    * Injected royal celebratory banner in customer confirmation email highlighting 10% savings, 2 complimentary sample boxes, and total curated masalas.
+    * Labeled items with `👑 Curated Box Item` and added `🎁 2x Mini Masala Boxes (Sample Pack) — FREE (₹0.00)` into the items manifest.
+    * Added BYB packing alert and free gift injection into admin fulfillment email to prevent missed sample boxes.
+    * Updated customer and admin email subject lines for instant clarity.
+  - `src/pages/OrderSuccessPage.jsx`:
+    * Aligned web confirmation screen with BYB badge, package contents title, and complimentary 2x Mini Boxes row.
+  - Production build clean in 3.25s, 0 errors.
+  - Regression test suite `security-tests/test-byb-email-confirmation.mjs` (100% PASS).
+  - All local remediations, XSS tests, and pricing mathematical checks (100% PASS).
+  - Git Push omitted per explicit instructions.
+* **Production Build Verified**: YES (Clean Vite production build in 3.25s, 0 errors).
 
 ---
 

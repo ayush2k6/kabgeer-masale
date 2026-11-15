@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { CheckCircle2, Package, MapPin, ArrowRight, ShoppingBag, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, Package, MapPin, ArrowRight, ShoppingBag, ShieldCheck, Gift } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import './OrderSuccessPage.css';
 
@@ -76,6 +76,14 @@ const OrderSuccessPage = () => {
 
   const { date, time } = formatISTDateTime(order?.created_at);
 
+  const totalItemCount = order?.order_items?.reduce((acc, it) => acc + (Number(it.quantity) || 1), 0) || 0;
+  const isByb = Boolean(
+    order?.display_order_id?.startsWith('BYB') ||
+    order?.display_order_id?.includes('BYB') ||
+    order?.is_bundle ||
+    totalItemCount >= 4
+  );
+
   return (
     <div className="order-success-page-wrapper">
       <div className="order-success-container">
@@ -97,22 +105,24 @@ const OrderSuccessPage = () => {
           </h1>
 
           <p className="order-success-subtitle">
-            Your authentic Lucknavi spices are being prepared with care and fresh aroma.
+            {isByb
+              ? 'Your custom Build Your Box is being carefully prepared with your authentic masalas and complimentary gifts.'
+              : 'Your authentic Lucknavi spices are being prepared with care and fresh aroma.'}
           </p>
 
           {/* Celebratory BYB Confirmation Banner */}
-          {(order?.display_order_id?.startsWith('BYB') || order?.display_order_id?.includes('BYB')) && (
+          {isByb && (
             <div className="order-success-byb-banner" style={{ background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #ecfdf5 100%)', border: '1.5px solid #d4af37', borderRadius: '12px', padding: '1rem 1.25rem', margin: '1rem 0 1.5rem 0', textAlign: 'left', boxShadow: '0 4px 14px rgba(212, 175, 55, 0.12)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
                 <span style={{ backgroundColor: '#1a2f22', color: '#d4af37', fontSize: '0.72rem', fontWeight: 800, padding: '3px 8px', borderRadius: '5px', letterSpacing: '0.04em' }}>
-                  👑 ROYAL BUILD YOUR BUNDLE (BYB)
+                  👑 ROYAL BUILD YOUR BOX (BYB)
                 </span>
                 <span style={{ backgroundColor: '#047857', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: '5px' }}>
                   ✓ 10% SAVINGS + 2 FREE MINI BOXES
                 </span>
               </div>
               <p style={{ margin: 0, fontSize: '0.86rem', color: '#334155', lineHeight: '1.45' }}>
-                Aapka order <strong>Build Your Bundle (BYB)</strong> ke roop me record ho chuka hai! Your shipment includes an instant <strong>10% savings</strong> and <strong>2 Complimentary Chef's Mini Masala Sample Boxes</strong>!
+                Your order is confirmed as a <strong>Build Your Box (BYB)</strong> package! Your shipment includes an automatic <strong>10% savings</strong> and <strong>2 Complimentary Chef's Mini Masala Sample Boxes</strong>!
               </p>
             </div>
           )}
@@ -152,7 +162,7 @@ const OrderSuccessPage = () => {
           {order?.order_items && order.order_items.length > 0 && (
             <div className="order-items-preview-box">
               <h4 className="order-items-preview-title">
-                Ordered Spices
+                {isByb ? 'What You Got (Your Box Contents & Complimentary Gifts)' : 'Ordered Spices'}
               </h4>
               <div className="order-items-preview-list">
                 {order.order_items.map((item, idx) => {
@@ -167,6 +177,11 @@ const OrderSuccessPage = () => {
                         <Package size={15} color="#d4af37" style={{ flexShrink: 0 }} />
                         <span className="order-item-preview-name">
                           <strong>{item.product_name || 'Authentic Masala'}</strong> {item.weight_pack ? `(${item.weight_pack})` : ''} × {item.quantity}
+                          {isByb && (
+                            <span style={{ marginLeft: '6px', fontSize: '0.7rem', color: '#b45309', backgroundColor: '#fef3c7', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                              👑 Curated Box Item
+                            </span>
+                          )}
                         </span>
                       </div>
                       <span className="order-item-preview-price">
@@ -175,6 +190,20 @@ const OrderSuccessPage = () => {
                     </div>
                   );
                 })}
+
+                {isByb && (
+                  <div className="order-item-preview-row byb-complimentary-row" style={{ backgroundColor: '#f0fdf4', border: '1px dashed #16a34a', borderRadius: '8px', padding: '10px 12px', marginTop: '8px' }}>
+                    <div className="order-item-preview-left">
+                      <Gift size={15} color="#16a34a" style={{ flexShrink: 0 }} />
+                      <span className="order-item-preview-name" style={{ color: '#166534' }}>
+                        <strong>2x Mini Masala Boxes (Sample Pack)</strong> • Complimentary BYB Gift
+                      </span>
+                    </div>
+                    <span className="order-item-preview-price" style={{ color: '#16a34a', fontWeight: 700 }}>
+                      FREE
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}

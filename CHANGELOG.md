@@ -1,5 +1,43 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.27: Build Your Box (BYB) Confirmation Email Package Manifest & Perks Integration)
+
+### 1. BYB Package Breakdown in Transactional Confirmation Emails (`supabase/functions/send-order-email/index.ts`)
+- **Full Transparency of What Customers Received in their BYB Order**:
+  - Implemented centralized `isBybOrder(order, items)` helper supporting `BYB-` display order ID prefix, `is_bundle` boolean flag, and 4+ total items qualification threshold.
+  - Added a luxury celebratory banner in customer confirmation email:
+    * `👑 Royal Build Your Box (BYB) Order` badge with emerald savings pill `✓ 10% Savings + 2 Free Mini Boxes`.
+    * Concise bulleted package breakdown: Total curated masalas, 2x Chef's Mini Masala Sample Boxes (FREE), instant 10% bundle discount, and insured express delivery.
+  - Added `Package Type: 👑 Build Your Box (BYB Package)` line in the order metadata table.
+  - Renamed items section header to `What You Got (Your Box Contents & Complimentary Gifts)` for BYB orders.
+  - Labeled each handpicked masala with a `👑 Curated Box Item` tag.
+  - Explicitly injected the complimentary gift into the items table manifest:
+    * `🎁 2x Mini Masala Boxes (Sample Pack)` | Qty: `2` | Unit Price: `FREE` | Total: `FREE (₹0.00)`.
+  - Updated subject lines:
+    * Customer: `👑 Order Confirmed: Your Royal Build Your Box #[OrderID] (10% OFF + 2 Free Mini Boxes)`
+    * Status Shipped: `🚚 Shipped! Your Royal Build Your Box #[OrderID] is On The Way`
+    * Status Delivered: `🎉 Delivered! Your Royal Build Your Box #[OrderID] Has Arrived`
+
+### 2. Fulfillment Staff Alert in Admin Notification Emails (`supabase/functions/send-order-email/index.ts`)
+- **Zero-Error Packing Safeguard for Warehouse Team**:
+  - Admin email subject updated to `🚨 NEW BYB ORDER: #[OrderID] (Pack 2 Free Mini Boxes!) - ₹XXX.XX`.
+  - Added high-contrast BYB alert callout banner: `👑 BUILD YOUR BOX (BYB) ORDER DETECTED — REQUIRED: You MUST pack 2x Free Mini Masala Sample Boxes into this shipment before dispatch!`.
+  - Injected `🎁 2x Mini Masala Sample Boxes (Assorted Sample Pack)` with `MANDATORY BYB FREE GIFT — PACK INTO SHIPMENT` directly into the admin packing list.
+
+### 3. Website Confirmation Page Synchronized (`src/pages/OrderSuccessPage.jsx`)
+- **Complete Visual Consistency Between Email & Web Confirmation**:
+  - Added `isByb` detection on `OrderSuccessPage.jsx`.
+  - Updated section title to `What You Got (Your Box Contents & Complimentary Gifts)`.
+  - Tagged all curated items with `👑 Curated Box Item`.
+  - Appended green dashed complimentary gift card for `2x Mini Masala Boxes (Sample Pack) • Complimentary BYB Gift (FREE)`.
+
+### 4. Verification & Testing
+- Added regression test `security-tests/test-byb-email-confirmation.mjs` verifying static templates, dynamic HTML generation, BYB identification thresholds, and admin packing alerts (100% PASS).
+- Verified `security-tests/test-16-xss.mjs` and `security-tests/test-local-remediations.mjs` (0 unescaped sinks, strict HTML encoding intact).
+- Verified `npm run build`: Clean production build in 3.25s with 0 errors.
+- Verified NO `git push` performed per user constraints.
+
+
 ## 2026-11-15 (Part 6.26: A4 Tax Invoice Compact Redesign, Order ID Filename & 25-Masala Print Resilience)
 
 ### 1. Eliminated Repetitive Descriptions Under Every Masala (`src/components/PrintableThermalBill.jsx`)

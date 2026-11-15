@@ -62,16 +62,27 @@ function getSafeOrder(order: any) {
   };
 }
 
+// Helper to identify BYB (Build Your Box / Build Your Bundle) orders
+function isBybOrder(order: any, items?: any[]): boolean {
+  if (!order) return false;
+  const displayId = String(order.display_order_id || '');
+  const isPrefix = displayId.startsWith('BYB') || displayId.includes('BYB');
+  const isBundleFlag = Boolean(order.is_bundle);
+  const totalCount = (items || []).reduce((acc: number, it: any) => acc + (Number(it.quantity) || 1), 0);
+  return Boolean(isPrefix || isBundleFlag || totalCount >= 4);
+}
+
 // Helper: Common Items Table Generator
-function renderItemsRows(items: any[]): string {
-  return (items || []).map((item) => `
+function renderItemsRows(items: any[], isByb: boolean = false): string {
+  const renderedItems = (items || []).map((item) => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
-        <strong style="color: #1a2f22; font-size: 14px;">${item.product_name || 'Authentic Masala'}</strong>
-        ${item.weight_pack ? `<div style="font-size: 12px; color: #64748b;">Pack: ${item.weight_pack}</div>` : ''}
+        <strong style="color: #1a2f22; font-size: 14px;">${escapeHtml(item.product_name || 'Authentic Masala')}</strong>
+        ${item.weight_pack ? `<div style="font-size: 12px; color: #64748b;">Pack: ${escapeHtml(item.weight_pack)}</div>` : ''}
+        ${isByb ? `<span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;">👑 Curated Box Item</span>` : ''}
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: center; color: #334155; font-size: 14px;">
-        ${item.quantity}
+        ${escapeHtml(item.quantity)}
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: right; color: #334155; font-size: 14px;">
         ₹${Number(item.unit_price || 0).toFixed(2)}
@@ -81,10 +92,40 @@ function renderItemsRows(items: any[]): string {
       </td>
     </tr>
   `).join('');
+
+  if (!isByb) return renderedItems;
+
+  // For BYB orders, explicitly include the 2 Free Mini Masala Sample Boxes in the items manifest
+  const complimentaryGiftRow = `
+    <tr style="background-color: #f0fdf4;">
+      <td style="padding: 12px; border-bottom: 1px solid #bbf7d0; vertical-align: middle;">
+        <strong style="color: #166534; font-size: 14px;">🎁 2x Mini Masala Boxes (Sample Pack)</strong>
+        <div style="font-size: 12px; color: #15803d; margin-top: 2px;">Complimentary Build Your Box Gift • Assorted Flavours</div>
+        <span style="display: inline-block; background-color: #dcfce7; color: #166534; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-top: 4px; text-transform: uppercase;">
+          ★ 100% Free Gift
+        </span>
+      </td>
+      <td style="padding: 12px; border-bottom: 1px solid #bbf7d0; text-align: center; color: #166534; font-weight: 700; font-size: 14px;">
+        2
+      </td>
+      <td style="padding: 12px; border-bottom: 1px solid #bbf7d0; text-align: right; color: #166534; font-size: 14px; font-weight: 600;">
+        FREE
+      </td>
+      <td style="padding: 12px; border-bottom: 1px solid #bbf7d0; text-align: right; font-weight: 800; color: #166534; font-size: 14px;">
+        FREE (₹0.00)
+      </td>
+    </tr>
+  `;
+
+  return renderedItems + complimentaryGiftRow;
 }
 
 // Helper: Common Financial Breakdown Generator
-function renderFinancialTable(order: any): string {
+function renderFinancialTable(order: any, isByb: boolean = false): string {
+  const discountLabel = isByb
+    ? (order.coupon_code ? `Special Discount (Build Your Box • ${escapeHtml(order.coupon_code)})` : 'Special Discount (Build Your Box 10% OFF)')
+    : (order.coupon_code ? `Discount (Coupon: ${escapeHtml(order.coupon_code)})` : 'Discount');
+
   return `
     <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-bottom: 24px; font-size: 14px;">
       <table style="width: 100%; border-collapse: collapse;">
@@ -94,10 +135,10 @@ function renderFinancialTable(order: any): string {
         </tr>
         ${Number(order.discount || 0) > 0 ? `
         <tr>
-          <td style="padding: 4px 0; color: #16a34a;">${(order.display_order_id && order.display_order_id.startsWith('BYB')) ? 'Special Discount (Build Your Bundle 10% OFF)' : 'Discount'}</td>
+          <td style="padding: 4px 0; color: #16a34a;">${discountLabel}</td>
           <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #16a34a;">-₹${Number(order.discount).toFixed(2)}</td>
         </tr>` : ''}
-        ${(order.display_order_id && order.display_order_id.startsWith('BYB')) ? `
+        ${isByb ? `
         <tr>
           <td style="padding: 4px 0; color: #047857; font-weight: 600;">🎁 2x Mini Masala Boxes (Assorted Sample Pack)</td>
           <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #047857;">FREE (Included)</td>
@@ -118,10 +159,52 @@ function renderFinancialTable(order: any): string {
 // 1. Customer Email HTML: Order Confirmation
 function renderCustomerEmailHtml(order: any, items: any[]): string {
   const safe = getSafeOrder(order);
-  const itemsRows = renderItemsRows(items);
-  const financialTable = renderFinancialTable(order);
+  const byb = isBybOrder(order, items);
+  const itemsRows = renderItemsRows(items, byb);
+  const financialTable = renderFinancialTable(order, byb);
   const shipping = order.shipping_address || {};
   const orderTimeStr = formatToIST(order.created_at);
+  const totalItemUnits = (items || []).reduce((acc: number, it: any) => acc + (Number(it.quantity) || 1), 0);
+
+  // Celebratory Build Your Box (BYB) Banner
+  const bybBannerHtml = byb ? `
+    <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #ecfdf5 100%); border: 1.5px solid #d4af37; border-radius: 10px; padding: 18px 20px; margin: 20px 0; text-align: left; box-shadow: 0 4px 14px rgba(212, 175, 55, 0.12);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+        <span style="display: inline-block; background-color: #1a2f22; color: #d4af37; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase;">
+          👑 Royal Build Your Box (BYB) Order
+        </span>
+        <span style="display: inline-block; background-color: #047857; color: #ffffff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px;">
+          ✓ 10% Savings + 2 Free Mini Boxes
+        </span>
+      </div>
+      <p style="margin: 0 0 10px 0; font-size: 14px; color: #1a2f22; font-weight: 600; line-height: 1.5;">
+        Congratulations! You successfully unlocked our <strong>Royal Build Your Box (BYB)</strong> perks!
+      </p>
+      <div style="background: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 12px 14px; border: 1px solid rgba(212, 175, 55, 0.3); font-size: 13px; color: #334155; line-height: 1.6;">
+        <div style="font-weight: 700; color: #1a2f22; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">
+          📦 Here is exactly what you got in your royal shipment:
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <tr>
+            <td style="padding: 3px 0; vertical-align: top; width: 22px;">🍛</td>
+            <td style="padding: 3px 0;"><strong>${totalItemUnits} Custom Curated Masalas:</strong> Handcrafted from our 65-year-old Lucknowi family heritage.</td>
+          </tr>
+          <tr>
+            <td style="padding: 3px 0; vertical-align: top;">🎁</td>
+            <td style="padding: 3px 0; color: #047857;"><strong>2x Chef's Mini Masala Sample Boxes:</strong> FREE assorted gift boxes included with your parcel!</td>
+          </tr>
+          <tr>
+            <td style="padding: 3px 0; vertical-align: top;">💰</td>
+            <td style="padding: 3px 0; color: #16a34a;"><strong>Instant 10% Flat Bundle Discount:</strong> Automatically deducted from your order subtotal.</td>
+          </tr>
+          <tr>
+            <td style="padding: 3px 0; vertical-align: top;">🚚</td>
+            <td style="padding: 3px 0; color: #0284c7;"><strong>Express Insured Courier:</strong> Packed in our signature protective parcel with real-time tracking.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  ` : '';
 
   return `
     <!DOCTYPE html>
@@ -145,8 +228,10 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
               ✓ Order Confirmed & Paid
             </span>
             <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Thank you for your order, ${safe.customerName}!</h2>
-            <p style="color: #64748b; font-size: 14px; margin: 0;">Your aromatic spices are freshly prepared and being packed for dispatch.</p>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">${byb ? 'Your custom Build Your Box is being carefully packed with your handpicked masalas and complimentary gifts.' : 'Your aromatic spices are freshly prepared and being packed for dispatch.'}</p>
           </div>
+
+          ${bybBannerHtml}
           
           <div style="background: #faf6f0; border: 1px solid rgba(26, 47, 34, 0.08); border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 13px;">
             <table style="width: 100%; border-collapse: collapse;">
@@ -154,6 +239,11 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
                 <td style="padding: 4px 0; color: #64748b;"><strong>Order ID:</strong></td>
                 <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #1a2f22; font-family: monospace;">${safe.displayOrderId}</td>
               </tr>
+              ${byb ? `
+              <tr>
+                <td style="padding: 4px 0; color: #64748b;"><strong>Package Type:</strong></td>
+                <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #b45309;">👑 Build Your Box (BYB Package)</td>
+              </tr>` : ''}
               <tr>
                 <td style="padding: 4px 0; color: #64748b;"><strong>Placed On:</strong></td>
                 <td style="padding: 4px 0; text-align: right; color: #1a2f22;">${orderTimeStr}</td>
@@ -166,7 +256,7 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
           </div>
 
           <h3 style="color: #1a2f22; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px 0; border-bottom: 2px solid #1a2f22; padding-bottom: 6px;">
-            Ordered Items
+            ${byb ? 'What You Got (Your Box Contents & Complimentary Gifts)' : 'Ordered Items'}
           </h3>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead>
@@ -208,7 +298,8 @@ function renderCustomerEmailHtml(order: any, items: any[]): string {
 // 2. Customer Email HTML: Order Shipped / In Transit
 function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?: string): string {
   const safe = getSafeOrder(order);
-  const itemsRows = renderItemsRows(items);
+  const byb = isBybOrder(order, items);
+  const itemsRows = renderItemsRows(items, byb);
   const trackingNumber = escapeHtml(awb || safe.trackonAwb || safe.shiprocketAwb || 'Generated');
   const courierPartnerName = escapeHtml(courier || safe.courierPartner || 'Trackon Courier');
   const trackingLink = `https://trackon.in/`;
@@ -235,7 +326,7 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
               🚚 Order Shipped & In Transit
             </span>
             <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Great news, ${safe.customerName}!</h2>
-            <p style="color: #64748b; font-size: 14px; margin: 0;">Your spice package has been packed with care and handed over to the courier partner.</p>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">${byb ? 'Your custom Build Your Box package with all handpicked masalas and complimentary gifts has been handed over to the courier partner.' : 'Your spice package has been packed with care and handed over to the courier partner.'}</p>
           </div>
           
           <!-- Shipping / Tracking Card -->
@@ -263,7 +354,7 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
           </div>
 
           <h3 style="color: #1a2f22; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px 0; border-bottom: 2px solid #1a2f22; padding-bottom: 6px;">
-            Package Contents
+            ${byb ? 'What You Got (Package Contents & Complimentary Gifts)' : 'Package Contents'}
           </h3>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead>
@@ -284,9 +375,9 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
           </h3>
           <div style="background: #f8fafc; border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.6; color: #334155; border: 1px solid #e2e8f0;">
             <strong>${safe.customerName}</strong><br/>
-            ${shipping.address || ''}${shipping.apartment ? ', ' + shipping.apartment : ''}<br/>
-            ${shipping.city || ''}, ${shipping.state || 'Uttar Pradesh'} - ${shipping.pinCode || ''}<br/>
-            <strong>Mobile:</strong> ${order.customer_phone || ''}
+            ${safe.shippingAddress}${safe.shippingApartment ? ', ' + safe.shippingApartment : ''}<br/>
+            ${safe.shippingCity}, ${safe.shippingState} - ${safe.shippingPinCode}<br/>
+            <strong>Mobile:</strong> ${safe.customerPhone || ''}
           </div>
 
           <div style="margin-top: 32px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
@@ -303,7 +394,8 @@ function renderShippedEmailHtml(order: any, items: any[], awb?: string, courier?
 // 3. Customer Email HTML: Order Delivered
 function renderDeliveredEmailHtml(order: any, items: any[]): string {
   const safe = getSafeOrder(order);
-  const itemsRows = renderItemsRows(items);
+  const byb = isBybOrder(order, items);
+  const itemsRows = renderItemsRows(items, byb);
 
   return `
     <!DOCTYPE html>
@@ -327,7 +419,7 @@ function renderDeliveredEmailHtml(order: any, items: any[]): string {
               🎉 Delivered Successfully
             </span>
             <h2 style="color: #1a2f22; margin: 12px 0 4px 0; font-size: 20px;">Your Royal Spices Have Arrived!</h2>
-            <p style="color: #64748b; font-size: 14px; margin: 0;">Order #${safe.displayOrderId} has been successfully delivered to your doorstep.</p>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">${byb ? `Your custom Build Your Box #${safe.displayOrderId} has been safely delivered to your doorstep.` : `Order #${safe.displayOrderId} has been successfully delivered to your doorstep.`}</p>
           </div>
           
           <div style="background: #faf6f0; border-radius: 10px; padding: 20px; margin: 24px 0; text-align: center; border: 1px solid rgba(26, 47, 34, 0.08);">
@@ -349,7 +441,7 @@ function renderDeliveredEmailHtml(order: any, items: any[]): string {
           </div>
 
           <h3 style="color: #1a2f22; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px 0; border-bottom: 2px solid #1a2f22; padding-bottom: 6px;">
-            Delivered Items
+            ${byb ? 'What You Received (Box Contents & Complimentary Gifts)' : 'Delivered Items'}
           </h3>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead>
@@ -380,7 +472,7 @@ function renderDeliveredEmailHtml(order: any, items: any[]): string {
 function renderCancelledEmailHtml(order: any, items: any[], reason?: string): string {
   const safe = getSafeOrder(order);
   const safeReason = escapeHtml(reason || '');
-  const itemsRows = renderItemsRows(items);
+  const itemsRows = renderItemsRows(items, false);
 
   return `
     <!DOCTYPE html>
@@ -441,20 +533,50 @@ function renderCancelledEmailHtml(order: any, items: any[], reason?: string): st
 
 // 5. Admin Alert Email HTML Renderer
 function renderAdminEmailHtml(order: any, items: any[]): string {
+  const safe = getSafeOrder(order);
+  const byb = isBybOrder(order, items);
   const itemsRows = (items || []).map((item) => `
     <tr>
       <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px;">
-        <strong>${item.product_name}</strong> (${item.product_id})
-        ${item.weight_pack ? `<div style="font-size: 11px; color: #64748b;">${item.weight_pack}</div>` : ''}
+        <strong>${escapeHtml(item.product_name)}</strong> (${escapeHtml(item.product_id)})
+        ${item.weight_pack ? `<div style="font-size: 11px; color: #64748b;">${escapeHtml(item.weight_pack)}</div>` : ''}
+        ${byb ? `<span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-top: 3px;">👑 BYB Curated Item</span>` : ''}
       </td>
       <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: 700; font-size: 14px; color: #1a2f22;">
-        ${item.quantity}
+        ${escapeHtml(item.quantity)}
       </td>
       <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 13px;">
         ₹${Number(item.total_price || item.unit_price * item.quantity || 0).toFixed(2)}
       </td>
     </tr>
   `).join('');
+
+  const bybPackingAlertHtml = byb ? `
+    <div style="background-color: #fffbeb; border: 2px dashed #d4af37; padding: 14px 16px; border-radius: 6px; margin-bottom: 20px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+        <strong style="color: #92400e; font-size: 14px;">👑 BUILD YOUR BOX (BYB) ORDER DETECTED</strong>
+        <span style="background-color: #b45309; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">MANDATORY FREE GIFT</span>
+      </div>
+      <p style="margin: 0; font-size: 13px; color: #78350f; line-height: 1.5;">
+        This customer ordered through Build Your Box (4+ masalas). <strong>ACTION REQUIRED:</strong> You MUST pack <strong>2x Free Mini Masala Sample Boxes</strong> into this shipment before dispatch!
+      </p>
+    </div>
+  ` : '';
+
+  const adminComplimentaryGiftRow = byb ? `
+    <tr style="background-color: #f0fdf4;">
+      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #166534;">
+        <strong>🎁 2x Mini Masala Sample Boxes</strong> (Assorted Sample Pack)
+        <div style="font-size: 11px; color: #15803d; font-weight: 600;">MANDATORY BYB FREE GIFT — PACK INTO SHIPMENT</div>
+      </td>
+      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: 800; font-size: 14px; color: #166534;">
+        2
+      </td>
+      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 13px; color: #166534; font-weight: 700;">
+        FREE (₹0.00)
+      </td>
+    </tr>
+  ` : '';
 
   const shipping = order.shipping_address || {};
   const orderTimeStr = formatToIST(order.created_at);
@@ -470,10 +592,12 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a2f22; background-color: #f1f5f9; margin: 0; padding: 20px 10px;">
       <div style="max-width: 620px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 24px; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         
-        <div style="background-color: #16a34a; color: white; padding: 14px 18px; border-radius: 6px; font-weight: 700; font-size: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-          <span>📦 NEW PAID ORDER: #${safe.displayOrderId}</span>
+        <div style="background-color: ${byb ? '#b45309' : '#16a34a'}; color: white; padding: 14px 18px; border-radius: 6px; font-weight: 700; font-size: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+          <span>📦 ${byb ? '👑 NEW BYB ORDER' : 'NEW PAID ORDER'}: #${safe.displayOrderId}</span>
           <span style="font-size: 14px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px;">₹${Number(order.total_amount).toFixed(2)}</span>
         </div>
+
+        ${bybPackingAlertHtml}
 
         <h3 style="margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Customer & Order Info</h3>
         <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; background: #f8fafc; border-radius: 6px; padding: 12px; border: 1px solid #e2e8f0;">
@@ -481,6 +605,11 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
             <td style="padding: 6px 12px; color: #64748b;"><strong>Order ID:</strong></td>
             <td style="padding: 6px 12px; font-weight: 700; font-family: monospace;">${safe.displayOrderId}</td>
           </tr>
+          ${byb ? `
+          <tr>
+            <td style="padding: 6px 12px; color: #64748b;"><strong>Order Type:</strong></td>
+            <td style="padding: 6px 12px; font-weight: 700; color: #b45309;">👑 Build Your Box (BYB Promo)</td>
+          </tr>` : ''}
           <tr>
             <td style="padding: 6px 12px; color: #64748b;"><strong>Received At:</strong></td>
             <td style="padding: 6px 12px;">${orderTimeStr}</td>
@@ -503,7 +632,7 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
           </tr>
         </table>
 
-        <h3 style="margin: 20px 0 8px 0; font-size: 14px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Packing List</h3>
+        <h3 style="margin: 20px 0 8px 0; font-size: 14px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Packing List (What To Pack)</h3>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; border: 1px solid #e2e8f0; border-radius: 6px;">
           <thead>
             <tr style="background: #f1f5f9; text-align: left; font-size: 12px; color: #475569;">
@@ -514,6 +643,7 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
           </thead>
           <tbody>
             ${itemsRows}
+            ${adminComplimentaryGiftRow}
           </tbody>
         </table>
 
@@ -522,7 +652,7 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
           <strong>${safe.customerName}</strong><br/>
           ${shipping.address || ''}${shipping.apartment ? ', ' + shipping.apartment : ''}<br/>
           ${shipping.city || ''}, ${shipping.state || 'Uttar Pradesh'} - <strong>${shipping.pinCode || ''}</strong><br/>
-          <strong>Phone:</strong> ${order.customer_phone || ''}
+          <strong>Phone:</strong> ${safe.customerPhone || ''}
         </div>
       </div>
     </body>
@@ -532,6 +662,7 @@ function renderAdminEmailHtml(order: any, items: any[]): string {
 
 // 6. Customer Email HTML: Post-Delivery Review Request
 function renderReviewRequestEmailHtml(order: any, items: any[], customReviewUrl?: string): string {
+  const safe = getSafeOrder(order);
   const itemsRows = (items || []).map((item) => `
     <tr>
       <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #1a2f22; font-size: 13px;">
@@ -640,6 +771,7 @@ function renderReviewRequestEmailHtml(order: any, items: any[], customReviewUrl?
 
 // 7. Customer Email HTML: Custom Admin Message
 function renderCustomMessageEmailHtml(order: any, customSubject: string, customMessage: string): string {
+  const safe = getSafeOrder(order);
   const formattedBody = (customMessage || '')
     .replace(/\n\n/g, '</p><p style="margin: 0 0 12px 0; line-height: 1.6; color: #334155; font-size: 14px;">')
     .replace(/\n/g, '<br/>');
@@ -779,14 +911,19 @@ serve(async (req) => {
     // =========================================================================
     if (emailType === 'status_update' || (newStatus && ['Shipped', 'Delivered', 'Cancelled'].includes(newStatus))) {
       const statusToProcess = newStatus || order.order_status;
+      const isByb = isBybOrder(order, items);
       let subject = `Order Update #${order.display_order_id} — Kabgeer Masale`;
       let emailHtml = '';
 
       if (statusToProcess === 'Shipped') {
-        subject = `🚚 Shipped! Your Kabgeer Order #${order.display_order_id} is On The Way`;
+        subject = isByb
+          ? `🚚 Shipped! Your Royal Build Your Box #${order.display_order_id} is On The Way`
+          : `🚚 Shipped! Your Kabgeer Order #${order.display_order_id} is On The Way`;
         emailHtml = renderShippedEmailHtml(order, items || [], awbNumber, courierName);
       } else if (statusToProcess === 'Delivered') {
-        subject = `🎉 Delivered! Your Kabgeer Masale Order #${order.display_order_id} Has Arrived`;
+        subject = isByb
+          ? `🎉 Delivered! Your Royal Build Your Box #${order.display_order_id} Has Arrived`
+          : `🎉 Delivered! Your Kabgeer Masale Order #${order.display_order_id} Has Arrived`;
         emailHtml = renderDeliveredEmailHtml(order, items || []);
       } else if (statusToProcess === 'Cancelled') {
         subject = `Order Cancelled #${order.display_order_id} — Kabgeer Masale`;
@@ -971,7 +1108,11 @@ serve(async (req) => {
     // CASE B: Standard Order Confirmation (Placed & Paid)
     // =========================================================================
     if (!order.customer_email_sent_at || forceResend) {
+      const isByb = isBybOrder(order, items);
       const customerHtml = renderCustomerEmailHtml(order, items || []);
+      const customerSubject = isByb
+        ? `👑 Order Confirmed: Your Royal Build Your Box #${order.display_order_id} (10% OFF + 2 Free Mini Boxes)`
+        : `Order Confirmed! #${order.display_order_id} — Kabgeer Masale`;
 
       if (!isSimulationMode) {
         try {
@@ -986,7 +1127,7 @@ serve(async (req) => {
               from: formattedFrom,
               to: [targetCustomerRecipient],
               reply_to: 'enquiry@kabgeermasala.com',
-              subject: `Order Confirmed! #${order.display_order_id} — Kabgeer Masale`,
+              subject: customerSubject,
               html: customerHtml
             })
           });
@@ -1021,11 +1162,15 @@ serve(async (req) => {
 
     // Admin Alert Dispatch
     if (!order.admin_email_sent_at || forceResend) {
+      const isByb = isBybOrder(order, items);
       const adminHtml = renderAdminEmailHtml(order, items || []);
       const targetAdminRecipient = isTestingDomain ? 'mailtoayusht@gmail.com' : rawAdminEmail;
       const formattedAdminFrom = isTestingDomain
         ? 'Kabgeer System <onboarding@resend.dev>'
         : (rawSenderEmail.includes('<') ? rawSenderEmail : `Kabgeer Alert <${rawSenderEmail}>`);
+      const adminSubject = isByb
+        ? `🚨 NEW BYB ORDER: #${order.display_order_id} (Pack 2 Free Mini Boxes!) - ₹${Number(order.total_amount).toFixed(2)}`
+        : `🚨 NEW PAID ORDER: #${order.display_order_id} (₹${Number(order.total_amount).toFixed(2)})`;
 
       if (!isSimulationMode) {
         try {
@@ -1039,7 +1184,7 @@ serve(async (req) => {
             body: JSON.stringify({
               from: formattedAdminFrom,
               to: [targetAdminRecipient],
-              subject: `🚨 NEW PAID ORDER: #${order.display_order_id} (₹${Number(order.total_amount).toFixed(2)})`,
+              subject: adminSubject,
               html: adminHtml
             })
           });
