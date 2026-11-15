@@ -1,5 +1,19 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-15 (Part 6.35: Production Vercel Deployment Sync — Merged Checkout Polish to Main & Master Branches)
+
+### 1. Production Branch Synchronization & Live Vercel Release
+- **Context**: The client requested making all recent checkout enhancements live on Vercel via GitHub push (`git push our final code to github which we have done changes in chekout page..make it live`).
+- **Actions Executed**:
+  * Inspected branch topologies across remotes `origin` (`https://github.com/ayush2k6/kabgeer-masale.git`) and `tanmay` (`https://github.com/tanmayhitech/kabgeer-masale-v1.git`).
+  * Fast-forwarded local `main` branch from `a4966c8` to `401f510` (18 commits including Shopify-standard checkout, 2-step mobile flow, negative-offset quantity badges, crown eradication, and A4 invoice refinements).
+  * Fast-forwarded local `master` branch from `08783c7` to `401f510` (guaranteeing parity regardless of whether Vercel production branch tracks `main` or `master`).
+  * Verified clean Vite production build in 2.53s (0 errors).
+  * Pushed updated `main` and `master` branches to `origin` (`ayush2k6/kabgeer-masale`).
+  * Pushed updated `main` and `master` branches to `tanmay` (`tanmayhitech/kabgeer-masale-v1`).
+  * Switched back to active development branch `v1-release`.
+- **Result**: Automated Vercel CI/CD triggered immediately from GitHub repository push, deploying the final checkout updates live.
+
 ## 2026-11-15 (Part 6.34: Checkout & Cart Negative Spacing Polish — Overlap Elimination & Visual Hierarchy Refinement)
 
 ### 1. Checkout Sidebar Overlap & Clipping Elimination (`src/pages/CheckoutPage.jsx` & `.css`)
