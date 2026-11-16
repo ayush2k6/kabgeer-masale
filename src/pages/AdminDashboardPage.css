@@ -3233,3 +3233,405 @@
 .btn-drawer-delete-unpaid:hover:not(:disabled) {
   background-color: #b91c1c;
 }
+
+/* ==========================================================================
+   Security Audit Modal & Action Button
+   ========================================================================== */
+
+.admin-header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.admin-security-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  background-color: #ffffff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.admin-security-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: var(--color-primary, #1a2f22);
+}
+
+.admin-sec-alert-pill {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  line-height: 1.2;
+}
+
+/* Security Modal Backdrop & Dialog */
+.security-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.security-modal-dialog {
+  background-color: #ffffff;
+  border-radius: 16px;
+  max-width: 820px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(26, 47, 34, 0.12);
+  animation: scaleUp 0.2s ease-out;
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.97); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.security-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #ffffff;
+}
+
+.security-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.security-shield-icon-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.security-modal-title h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-primary, #1a2f22);
+}
+
+.security-modal-title p {
+  margin: 2px 0 0 0;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.security-modal-close-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.security-modal-close-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Security Modal Body */
+.security-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.security-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+}
+
+.security-metric-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.security-metric-card.border-red {
+  border-color: #fecaca;
+  background-color: #fffafb;
+}
+
+.security-metric-card.border-amber {
+  border-color: #fde68a;
+  background-color: #fffdf5;
+}
+
+.security-metric-card.border-green {
+  border-color: #a7f3d0;
+  background-color: #f0fdf4;
+}
+
+.sec-metric-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sec-metric-val {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.sec-metric-val.text-red { color: #dc2626; }
+.sec-metric-val.text-amber { color: #d97706; }
+.sec-metric-val.text-green { color: #16a34a; }
+
+/* Security Table Toolbar */
+.security-log-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.4rem;
+}
+
+.security-table-summary {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.security-refresh-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.security-refresh-link:hover {
+  background-color: #eff6ff;
+}
+
+/* Security Table */
+.security-log-table-wrap {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.security-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  text-align: left;
+}
+
+.security-log-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  padding: 0.7rem 0.95rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.security-log-table td {
+  padding: 0.75rem 0.95rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.security-log-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.security-log-table tbody tr:hover {
+  background-color: #fbfcfe;
+}
+
+/* Status Pills in Security Table */
+.sec-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.sec-badge-fail {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.sec-badge-lock {
+  background-color: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.sec-badge-success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.sec-badge-neutral {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.sec-email-mono {
+  font-family: monospace;
+  font-size: 0.82rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.sec-time-cell {
+  font-size: 0.8rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.sec-agent-cell {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sec-status-reject {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.sec-status-blocked {
+  color: #d97706;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.sec-status-allow {
+  color: #16a34a;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+/* Empty State */
+.security-empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.security-empty-state h4 {
+  margin: 0.5rem 0 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.security-empty-state p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* Modal Footer */
+.security-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.security-compliance-note {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+  color: #64748b;
+}
+
+.btn-close-security {
+  padding: 0.5rem 1.15rem;
+  background-color: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-close-security:hover {
+  background-color: #1e293b;
+}
+
+@media (max-width: 768px) {
+  .security-metrics-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

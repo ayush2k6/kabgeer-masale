@@ -282,7 +282,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
             <Printer size={20} color="#1a2f22" />
             <div>
               <h3>Deliverable Order Invoice & Shipping Label</h3>
-              <p>Olympic Foods & Essentials • Brand: Kabgeer Masale</p>
+              <p>Olympic Foods & Essentials • Brand: Kabgeer</p>
             </div>
           </div>
 
@@ -391,7 +391,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                 <div className="t-row t-header">
                   <div className="t-brand-col">
                     <div className="t-company-name">OLYMPIC FOODS AND ESSENTIALS</div>
-                    <div className="t-tagline">Brand: <strong>KABGEER MASALE</strong></div>
+                    <div className="t-tagline">Brand: <strong>KABGEER</strong></div>
                     <div className="t-origin-city">Kanpur / Lucknow, U.P. - 208010 • Ph: 8090086636</div>
                     <div className="t-credentials-line">
                       <span>GSTIN: <strong>09DZXPM8025C1ZV</strong></span>
@@ -541,7 +541,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
                     <div className="a4-brand-text-col">
                       <div className="a4-entity-name">OLYMPIC FOODS AND ESSENTIALS</div>
                       <div className="a4-brand-subheading">
-                        Brand: <span className="a4-brand-highlight">KABGEER MASALE</span>
+                        Brand: <span className="a4-brand-highlight">KABGEER</span>
                       </div>
                       <div className="a4-address-text">
                         Plot No 664K, Tadbagiya, Wajidpur, Jajmau, Kanpur, U.P. - 208010
@@ -837,7 +837,7 @@ const PrintableThermalBill = ({ order, onClose, onUpdateShipping }) => {
 
                 {/* 6. Footer Royal Note */}
                 <div className="a4-footer-banner">
-                  <span>Thank you for choosing <strong>Kabgeer Masale</strong> • Crafted with love from the royal kitchens of Lucknow.</span>
+                  <span>Thank you for choosing <strong>Kabgeer</strong> • Crafted with love from the royal kitchens of Lucknow.</span>
                   <span>Website: <strong>www.kabgeermasala.com</strong> • Care: <strong>+91-80900-86636</strong></span>
                 </div>
 

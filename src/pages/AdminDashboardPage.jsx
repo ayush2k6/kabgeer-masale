@@ -33,6 +33,7 @@ import {
   Trash2,
   Tag,
   ShieldCheck,
+  ShieldAlert,
   Download
 } from 'lucide-react';
 import logo from '../assets/logo.png';
@@ -81,6 +82,11 @@ const AdminDashboardPage = () => {
   const [actionSuccessKey, setActionSuccessKey] = useState(null);
   const [printingOrder, setPrintingOrder] = useState(null);
   const [isDeletingOrder, setIsDeletingOrder] = useState(false);
+
+  // Security Audit & Failed Login Tracking
+  const [showSecurityModal, setShowSecurityModal] = useState(false);
+  const [securityLogs, setSecurityLogs] = useState([]);
+  const [loadingSecurityLogs, setLoadingSecurityLogs] = useState(false);
 
   // Helper to retrieve coupon code from order columns or address metadata
   const getOrderCoupon = (order) => {
@@ -250,9 +256,40 @@ const AdminDashboardPage = () => {
     }
   }, [user]);
 
+  // Fetch security audit logs (failed logins, lockouts, authorized sessions)
+  const fetchSecurityLogs = useCallback(async () => {
+    setLoadingSecurityLogs(true);
+    try {
+      const { data, error: secErr } = await supabase
+        .from('admin_security_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (!secErr && Array.isArray(data) && data.length > 0) {
+        setSecurityLogs(data);
+      } else {
+        const local = JSON.parse(localStorage.getItem('kbg_security_audit_logs') || '[]');
+        setSecurityLogs(local);
+      }
+    } catch (_) {
+      const local = JSON.parse(localStorage.getItem('kbg_security_audit_logs') || '[]');
+      setSecurityLogs(local);
+    } finally {
+      setLoadingSecurityLogs(false);
+    }
+  }, []);
+
+  const failedAttemptsCount = useMemo(() => {
+    return securityLogs.filter(
+      (log) => log.event_type === 'FAILED_LOGIN' || log.event_type === 'LOCKOUT_TRIGGERED'
+    ).length;
+  }, [securityLogs]);
+
   useEffect(() => {
     fetchAllOrders();
-  }, [fetchAllOrders]);
+    fetchSecurityLogs();
+  }, [fetchAllOrders, fetchSecurityLogs]);
 
   // Set default status and shipping details when an order is opened
   useEffect(() => {
@@ -826,16 +863,36 @@ const AdminDashboardPage = () => {
             </p>
           </div>
 
-          <button 
-            type="button"
-            className="admin-refresh-btn" 
-            onClick={fetchAllOrders}
-            disabled={loading}
-            title="Refresh latest customer orders"
-          >
-            <RotateCw size={14} className={loading ? 'animate-spin' : ''} />
-            <span>{loading ? 'Refreshing...' : 'Refresh Orders'}</span>
-          </button>
+          <div className="admin-header-actions-group">
+            <button
+              type="button"
+              className="admin-security-btn"
+              onClick={() => {
+                setShowSecurityModal(true);
+                fetchSecurityLogs();
+              }}
+              title="View Admin Access & Security Audit Logs"
+            >
+              <ShieldCheck size={14} className={failedAttemptsCount > 0 ? "text-amber" : "text-emerald"} />
+              <span>Security Logs</span>
+              {failedAttemptsCount > 0 && (
+                <span className="admin-sec-alert-pill" title={`${failedAttemptsCount} failed login or lockout event(s)`}>
+                  {failedAttemptsCount}
+                </span>
+              )}
+            </button>
+
+            <button 
+              type="button"
+              className="admin-refresh-btn" 
+              onClick={fetchAllOrders}
+              disabled={loading}
+              title="Refresh latest customer orders"
+            >
+              <RotateCw size={14} className={loading ? 'animate-spin' : ''} />
+              <span>{loading ? 'Refreshing...' : 'Refresh Orders'}</span>
+            </button>
+          </div>
         </div>
 
         {/* 3. Executive KPI Metric Cards */}
@@ -2367,6 +2424,172 @@ const AdminDashboardPage = () => {
             }
           }}
         />
+      )}
+
+      {/* 7. Administrator Access & Security Audit Modal */}
+      {showSecurityModal && (
+        <div className="security-modal-backdrop" onClick={() => setShowSecurityModal(false)}>
+          <div className="security-modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="security-modal-header">
+              <div className="security-modal-title">
+                <div className="security-shield-icon-badge">
+                  <ShieldCheck size={20} color="#166534" />
+                </div>
+                <div>
+                  <h3>Admin Access & Security Audit Logs</h3>
+                  <p>Real-time monitor of login attempts, brute-force defenses & administrative sessions.</p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                className="security-modal-close-btn"
+                onClick={() => setShowSecurityModal(false)}
+                title="Close Security Audit"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="security-modal-body">
+              {/* Metric Overview Strip */}
+              <div className="security-metrics-strip">
+                <div className="security-metric-card">
+                  <span className="sec-metric-label">Monitored Events</span>
+                  <strong className="sec-metric-val">{securityLogs.length}</strong>
+                </div>
+                <div className="security-metric-card border-red">
+                  <span className="sec-metric-label">Failed Logins</span>
+                  <strong className="sec-metric-val text-red">
+                    {securityLogs.filter(l => l.event_type === 'FAILED_LOGIN').length}
+                  </strong>
+                </div>
+                <div className="security-metric-card border-amber">
+                  <span className="sec-metric-label">Lockouts Triggered</span>
+                  <strong className="sec-metric-val text-amber">
+                    {securityLogs.filter(l => l.event_type === 'LOCKOUT_TRIGGERED').length}
+                  </strong>
+                </div>
+                <div className="security-metric-card border-green">
+                  <span className="sec-metric-label">Authorized Logins</span>
+                  <strong className="sec-metric-val text-green">
+                    {securityLogs.filter(l => l.event_type === 'SUCCESSFUL_LOGIN').length}
+                  </strong>
+                </div>
+              </div>
+
+              {/* Action row with refresh */}
+              <div className="security-log-toolbar">
+                <span className="security-table-summary">
+                  Showing latest {securityLogs.length} authentication events
+                </span>
+                <button
+                  type="button"
+                  className="security-refresh-link"
+                  onClick={fetchSecurityLogs}
+                  disabled={loadingSecurityLogs}
+                >
+                  <RotateCw size={12} className={loadingSecurityLogs ? 'animate-spin' : ''} />
+                  <span>{loadingSecurityLogs ? 'Refreshing...' : 'Refresh Logs'}</span>
+                </button>
+              </div>
+
+              {/* Log Table */}
+              <div className="security-log-table-wrap">
+                {securityLogs.length === 0 ? (
+                  <div className="security-empty-state">
+                    <ShieldCheck size={36} color="#10b981" />
+                    <h4>No Security Incidents Detected</h4>
+                    <p>All administrative login activity is nominal and secure.</p>
+                  </div>
+                ) : (
+                  <table className="security-log-table">
+                    <thead>
+                      <tr>
+                        <th>Event Type</th>
+                        <th>Target Email</th>
+                        <th>Time (IST)</th>
+                        <th>Device / User Agent</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {securityLogs.map((log, idx) => {
+                        const isFail = log.event_type === 'FAILED_LOGIN';
+                        const isLock = log.event_type === 'LOCKOUT_TRIGGERED';
+                        const isSuccess = log.event_type === 'SUCCESSFUL_LOGIN';
+                        
+                        let badgeClass = 'sec-badge-neutral';
+                        let badgeLabel = log.event_type;
+                        if (isFail) {
+                          badgeClass = 'sec-badge-fail';
+                          badgeLabel = 'Failed Attempt';
+                        } else if (isLock) {
+                          badgeClass = 'sec-badge-lock';
+                          badgeLabel = 'Lockout (30s)';
+                        } else if (isSuccess) {
+                          badgeClass = 'sec-badge-success';
+                          badgeLabel = 'Authorized Sign In';
+                        }
+
+                        const dateStr = log.created_at
+                          ? new Date(log.created_at).toLocaleString('en-IN', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit',
+                              hour12: true,
+                              timeZone: 'Asia/Kolkata'
+                            })
+                          : 'Recent';
+
+                        return (
+                          <tr key={log.id || idx}>
+                            <td>
+                              <span className={`sec-pill ${badgeClass}`}>
+                                {isFail && <AlertCircle size={11} />}
+                                {isLock && <AlertTriangle size={11} />}
+                                {isSuccess && <Check size={11} />}
+                                <span>{badgeLabel}</span>
+                              </span>
+                            </td>
+                            <td>
+                              <span className="sec-email-mono">{log.attempted_email || '—'}</span>
+                            </td>
+                            <td className="sec-time-cell">{dateStr}</td>
+                            <td className="sec-agent-cell" title={log.user_agent || ''}>
+                              {log.user_agent ? (log.user_agent.length > 40 ? log.user_agent.slice(0, 40) + '...' : log.user_agent) : 'Browser Client'}
+                            </td>
+                            <td>
+                              {isFail && <span className="sec-status-reject">Rejected</span>}
+                              {isLock && <span className="sec-status-blocked">Rate-Limited</span>}
+                              {isSuccess && <span className="sec-status-allow">Authorized</span>}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+
+            <div className="security-modal-footer">
+              <div className="security-compliance-note">
+                <ShieldCheck size={13} color="#166534" />
+                <span>Zero-Password Exposure Guarantee: Plaintext credentials are never intercepted, recorded, or stored.</span>
+              </div>
+              <button
+                type="button"
+                className="btn-close-security"
+                onClick={() => setShowSecurityModal(false)}
+              >
+                Close Audit
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
     </div>

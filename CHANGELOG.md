@@ -1,5 +1,44 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-16 (Part 6.40: Admin Security Audit Logging System & A4/Thermal Shipping Label Brand Standardization)
+
+### 1. Requirements & Directives
+- **Directives**:
+  1. Record failed administrative login attempts and display security activity inside the Admin Dashboard.
+  2. Standardize brand name in order parcel shipping labels (Thermal 4"x6" & A4 Commercial Invoice) strictly from `KABGEER MASALE` to `"KABGEER"` exclusively in labels.
+  3. Strict constraint: Do not execute `git push` (maintain changes locally).
+
+### 2. Implementations & Architecture
+- **Label Brand Standardization (`src/components/PrintableThermalBill.jsx`)**:
+  * Updated Thermal 4"x6" Shipping Parcel Label header: changed `Brand: KABGEER MASALE` to `Brand: KABGEER`.
+  * Updated A4 Commercial Tax Invoice header: changed `Brand: KABGEER MASALE` to `Brand: KABGEER`.
+  * Updated modal header caption: changed `Brand: Kabgeer Masale` to `Brand: Kabgeer`.
+  * Updated A4 footer signature: changed `Thank you for choosing Kabgeer Masale` to `Thank you for choosing Kabgeer`.
+  * Strict Isolation: Product catalog, storefront pages, policies, and emails preserve official full legal brand names while shipping parcel labels strictly carry `"KABGEER"`.
+- **Database Security Audit Table (`admin_security_logs` on Supabase Cloud)**:
+  * Created table `public.admin_security_logs` (`id`, `event_type`, `attempted_email`, `ip_address`, `user_agent`, `details`, `created_at`).
+  * Enabled Row-Level Security: Only verified administrators (`public.is_admin()`) can read/SELECT logs.
+  * Public insert policy: Allows anonymous logging of authentication attempts while guaranteeing zero-exposure of stored data to unprivileged callers.
+- **Login Event Logging (`src/pages/AdminLoginPage.jsx`)**:
+  * Added `recordSecurityEvent`:
+    - Dispatches `FAILED_LOGIN` events on bad credentials (without logging entered passwords).
+    - Dispatches `LOCKOUT_TRIGGERED` events when rate-limiting activates after 5 consecutive failures.
+    - Dispatches `SUCCESSFUL_LOGIN` events upon valid administrative authentication.
+    - Dual persistence: writes to Supabase Cloud database and mirrors to local browser cache (`kbg_security_audit_logs`) for offline resiliency.
+- **Admin Dashboard Security Audit UI (`src/pages/AdminDashboardPage.jsx` & `.css`)**:
+  * Added a dedicated **"Security Logs"** button in the dashboard top toolbar with an active alert count pill.
+  * Built an enterprise **Security & Access Audit Modal**:
+    - Real-time 4-card metric strip: Monitored Events, Failed Logins (red), Lockouts Triggered (amber), Authorized Logins (emerald).
+    - Event datatable featuring timestamp in IST, masked email, browser/device user agent, and security disposition (Rejected, Rate-Limited, Authorized).
+    - Zero-Password Exposure guarantee notice.
+
+### 3. Verification & Testing
+- Database table creation verified on Supabase Cloud (`cfvopnzcqbtqcupdomto`).
+- Thermal 4"x6" and A4 labels verified: brand name renders strictly as `"KABGEER"`.
+- Production build: `npm run build` compiled in 2.43s with 0 errors.
+- Test suites: `test-byb-email-confirmation.mjs` (6/6 checks PASS), `test-local-remediations.mjs` (44/44 checks PASS).
+- Git status: Committed locally to branch `v1-release`; NO git push executed per user instruction.
+
 ## 2026-11-16 (Part 6.39: Admin Sign In UX Redesign, Credential Security & Placeholder Purge)
 
 ### 1. Root Cause & Client Concerns Addressed

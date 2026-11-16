@@ -12,6 +12,7 @@ Current Branch: v1-release (Synced & Pushed across main, master & v1-release to 
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.40 | Admin Security Audit Logging & A4/Thermal Label Brand Standardization ("KABGEER") | ✅ COMPLETE & LOCALLY COMMITTED |
 | Part 6.39 | Admin Sign In UX Redesign, Credential Security & Placeholder Purge | ✅ COMPLETE & VERIFIED |
 | Part 6.38 | Admin Dashboard Data Visibility Fix (Database Role Sync & Resilient Query Fallback) | ✅ COMPLETE, DEPLOYED & VERIFIED |
 | Part 6.37 | Transactional Email Infrastructure (Processing Status Notification, Custom BYB Dispatch & Cloud Deployment) | ✅ COMPLETE, DEPLOYED & VERIFIED |
@@ -78,20 +79,19 @@ Current Branch: v1-release (Synced & Pushed across main, master & v1-release to 
 
 ## 2. Current Active Part
 
-* **Part Number**: Part 6.39
-* **Part Name**: Admin Sign In UX Redesign, Credential Security & Placeholder Purge
-* **Current Status**: ✅ 100% COMPLETE & VERIFIED
+* **Part Number**: Part 6.40
+* **Part Name**: Admin Security Audit Logging & A4/Thermal Label Brand Standardization ("KABGEER")
+* **Current Status**: ✅ 100% COMPLETE & LOCALLY COMMITTED (NO GIT PUSH)
 * **Completed Components**:
-  - `src/pages/AdminLoginPage.jsx` & `AdminLoginPage.css`:
-    * Purged hardcoded email and dots placeholders (`••••••••`).
-    * Added Kabgeer Masale brand logo, leading input icons, and interactive password visibility toggle.
-    * Implemented brute-force rate-limiting lockout (5 failed attempts = 30s lockout countdown).
-    * Enhanced security headers and TLS footnote.
-  - `src/context/AuthContext.jsx` & `AdminDashboardPage.jsx`:
-    * Centralized `ADMIN_EMAILS` whitelist check across auth routines and removed single-email fallbacks.
-    * Updated customer and admin email subject lines for instant clarity.
-  - `src/pages/OrderSuccessPage.jsx`:
-    * Aligned web confirmation screen with BYB badge, package contents title, and complimentary 2x Mini Boxes row.
+  - `src/components/PrintableThermalBill.jsx`:
+    * Standardized brand name across Thermal 4"x6" labels and A4 Commercial Invoices from `KABGEER MASALE` strictly to `"KABGEER"`.
+  - Supabase Database (`cfvopnzcqbtqcupdomto`):
+    * Created `public.admin_security_logs` with RLS allowing only authorized administrators to view access logs.
+  - `src/pages/AdminLoginPage.jsx`:
+    * Wired automated security logging for failed login attempts, lockout events, and authorized admin sessions (zero password exposure).
+  - `src/pages/AdminDashboardPage.jsx` & `AdminDashboardPage.css`:
+    * Added **Security Logs** toolbar button with active failed-attempt counter.
+    * Added full **Security & Access Audit Modal** with real-time metric cards and searchable authentication event history.
   - Production build clean in 3.25s, 0 errors.
   - Regression test suite `security-tests/test-byb-email-confirmation.mjs` (100% PASS).
   - All local remediations, XSS tests, and pricing mathematical checks (100% PASS).

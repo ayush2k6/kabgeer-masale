@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabaseClient';
 import { 
   ShieldCheck, 
   Lock, 
@@ -16,6 +17,33 @@ import './AdminLoginPage.css';
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_DURATION_SECONDS = 30;
+
+// Security Audit Event Logger
+const recordSecurityEvent = async (eventType, attemptedEmail, details = {}) => {
+  try {
+    const cleanEmail = String(attemptedEmail || '').trim().toLowerCase();
+    const eventPayload = {
+      event_type: eventType,
+      attempted_email: cleanEmail || 'unspecified',
+      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent?.slice(0, 250) : 'Browser',
+      details: details
+    };
+
+    // 1. Persist to Supabase Database
+    await supabase.from('admin_security_logs').insert(eventPayload);
+
+    // 2. Also mirror to localStorage for instantaneous client access
+    const localLogs = JSON.parse(localStorage.getItem('kbg_security_audit_logs') || '[]');
+    localLogs.unshift({
+      id: Date.now().toString(),
+      ...eventPayload,
+      created_at: new Date().toISOString()
+    });
+    localStorage.setItem('kbg_security_audit_logs', JSON.stringify(localLogs.slice(0, 50)));
+  } catch (err) {
+    console.warn('Security audit logging notice:', err);
+  }
+};
 
 const AdminLoginPage = () => {
   const { user, login, isAdmin } = useAuth();
@@ -66,16 +94,27 @@ const AdminLoginPage = () => {
 
     try {
       await login(email.trim(), password);
-      // Reset failed attempts on success
+      // Reset failed attempts on success and record authorized login
       setFailedAttempts(0);
+      await recordSecurityEvent('SUCCESSFUL_LOGIN', email.trim());
       navigate('/admin');
     } catch (err) {
       console.error('Admin login authentication error:', err);
       const nextFailures = failedAttempts + 1;
       setFailedAttempts(nextFailures);
 
+      // Record failed attempt in audit log (without recording password)
+      await recordSecurityEvent('FAILED_LOGIN', email.trim(), {
+        attempt_number: nextFailures,
+        error_type: err.name || 'AuthApiError'
+      });
+
       if (nextFailures >= MAX_FAILED_ATTEMPTS) {
         setLockoutTimer(LOCKOUT_DURATION_SECONDS);
+        await recordSecurityEvent('LOCKOUT_TRIGGERED', email.trim(), {
+          consecutive_failures: nextFailures,
+          duration_seconds: LOCKOUT_DURATION_SECONDS
+        });
         setErrorMessage(
           `Security lockout: Too many consecutive failed attempts. Please wait ${LOCKOUT_DURATION_SECONDS} seconds before retrying.`
         );
