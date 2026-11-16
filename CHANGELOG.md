@@ -1,5 +1,36 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-16 (Part 6.39: Admin Sign In UX Redesign, Credential Security & Placeholder Purge)
+
+### 1. Root Cause & Client Concerns Addressed
+- **Perceived Hardcoded Credentials & Placeholders**:
+  * In `AdminLoginPage.jsx`, the email field featured `placeholder="admin@kabgeermasala.com"`, which leaked an internal administrative email.
+  * The password field had `placeholder="••••••••"`, which created the visual appearance of a pre-filled or hardcoded password.
+  * In `AdminDashboardPage.jsx`, line 215 contained a fallback `adminEmail: user?.email || 'admin@kabgeermasala.com'`.
+  * In `AuthContext.jsx`, admin role detection had single-string email comparisons rather than referencing the centralized admin whitelist.
+- **Visual Design & Aesthetics**:
+  * The login card lacked official brand assets, rendered a plain white box without Kabgeer Masale heritage elements, and lacked input field iconography and interactive feedback.
+
+### 2. Implementations & Security Hardening
+- **Placeholder & Credential Purge (`AdminLoginPage.jsx`)**:
+  * Completely removed `placeholder="••••••••"` from the password input, replacing it with clean `placeholder="Enter password"`.
+  * Removed `placeholder="admin@kabgeermasala.com"`, replacing it with generic `placeholder="Enter authorized email"`.
+  * Purged single-string email fallbacks in `AdminDashboardPage.jsx` and centralized `ADMIN_EMAILS` whitelist validation in `AuthContext.jsx`.
+- **Security & Brute-Force Rate Limiting (`AdminLoginPage.jsx`)**:
+  * Added client-side lockout guard: After 5 consecutive failed attempts, locks out submission for 30 seconds with a real-time countdown.
+  * Added interactive password visibility toggle (`<Eye />` / `<EyeOff />`) with accessibility labels.
+  * Configured secure input attributes (`spellCheck="false"`, `autoCorrect="off"`, `autoCapitalize="none"`, `autoComplete="current-password"`).
+  * Added security trust footnote: `Restricted Operational Area • 256-Bit TLS Encryption`.
+- **Luxury Brand Redesign (`AdminLoginPage.css` & `AdminLoginPage.jsx`)**:
+  * Added the official brand logo (`logo.png`) linked to the store homepage.
+  * Replaced plain borders with modern, responsive inputs featuring leading icons (`<Mail size={16} />`, `<Lock size={16} />`).
+  * Styled luxury submit button with emerald hover lift, smooth transitions, and glowing lock icon.
+  * Added clean breadcrumb navigation to return to the public storefront.
+
+### 3. Verification & Testing
+- Production build: `npm run build` compiled cleanly in 2.40s with 0 errors.
+- Unit & regression test suites: `security-tests/test-byb-email-confirmation.mjs` (6/6 checks PASSED), `security-tests/test-local-remediations.mjs` (44/44 checks PASSED).
+
 ## 2026-11-16 (Part 6.38: Admin Dashboard Data Visibility Fix — Database Profile Role Synchronization & Resilient Query Fallback)
 
 ### 1. Root Cause Analysis

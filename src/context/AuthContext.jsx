@@ -3,6 +3,13 @@ import { supabase } from '../lib/supabaseClient';
 import PageLoader from '../components/PageLoader';
 
 
+const ADMIN_EMAILS = [
+  'admin@kabgeermasala.com',
+  'tanmayyadavbca@gmail.com',
+  'admin@kabgeerji.com',
+  'ayush@kabgeerji.com'
+];
+
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
@@ -27,9 +34,9 @@ export const AuthProvider = ({ children }) => {
       .eq('id', userId)
       .maybeSingle();
 
-    // Database role and verified official admin email
-    const isOfficialAdmin = sessionUser.email?.toLowerCase() === 'admin@kabgeermasala.com';
-    const role = (profileRow?.role === 'admin' || sessionUser.user_metadata?.role === 'admin' || isOfficialAdmin) ? 'admin' : 'customer';
+    // Database role and verified official admin whitelist check
+    const isWhitelistedAdmin = ADMIN_EMAILS.includes(sessionUser.email?.toLowerCase());
+    const role = (profileRow?.role === 'admin' || sessionUser.user_metadata?.role === 'admin' || isWhitelistedAdmin) ? 'admin' : 'customer';
 
     // Core user object for Auth, Admin verification, and Orders
     return {
@@ -192,7 +199,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ 
-      user, orders, loading, isAdmin: user?.role === 'admin' || user?.email?.toLowerCase() === 'admin@kabgeermasala.com', login, register, logout, addOrder, updateProfileDetails
+      user, orders, loading, isAdmin: user?.role === 'admin' || (user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase())), login, register, logout, addOrder, updateProfileDetails
     }}>
       {!showContent && <PageLoader isFading={isFading} />}
       {showContent && children}

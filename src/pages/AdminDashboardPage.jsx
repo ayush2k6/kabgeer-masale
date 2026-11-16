@@ -212,7 +212,7 @@ const AdminDashboardPage = () => {
 
       // 2. Try Supabase Edge Function admin-manage-orders (fail-safe service-role fallback)
       const { data: edgeData, error: edgeErr } = await supabase.functions.invoke('admin-manage-orders', {
-        body: { action: 'list', adminEmail: user?.email || 'admin@kabgeermasala.com' }
+        body: { action: 'list', adminEmail: user?.email }
       });
 
       if (!edgeErr && edgeData?.success && Array.isArray(edgeData?.orders) && edgeData.orders.length > 0) {

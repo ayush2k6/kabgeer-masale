@@ -12,6 +12,7 @@ Current Branch: v1-release (Synced & Pushed across main, master & v1-release to 
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.39 | Admin Sign In UX Redesign, Credential Security & Placeholder Purge | ✅ COMPLETE & VERIFIED |
 | Part 6.38 | Admin Dashboard Data Visibility Fix (Database Role Sync & Resilient Query Fallback) | ✅ COMPLETE, DEPLOYED & VERIFIED |
 | Part 6.37 | Transactional Email Infrastructure (Processing Status Notification, Custom BYB Dispatch & Cloud Deployment) | ✅ COMPLETE, DEPLOYED & VERIFIED |
 | Part 6.36 | Order Confirmation UI Redesign (Total Paid Amount Reflection, Sans-Serif Mix, Dedicated Financial Card & Print Engine) | ✅ COMPLETE & VERIFIED |
@@ -77,16 +78,17 @@ Current Branch: v1-release (Synced & Pushed across main, master & v1-release to 
 
 ## 2. Current Active Part
 
-* **Part Number**: Part 6.38
-* **Part Name**: Admin Dashboard Data Visibility Fix (Database Role Sync & Resilient Query Fallback)
-* **Current Status**: ✅ 100% COMPLETE, DEPLOYED & VERIFIED
+* **Part Number**: Part 6.39
+* **Part Name**: Admin Sign In UX Redesign, Credential Security & Placeholder Purge
+* **Current Status**: ✅ 100% COMPLETE & VERIFIED
 * **Completed Components**:
-  - PostgreSQL Database (`cfvopnzcqbtqcupdomto`):
-    * Synchronized `public.profiles.role = 'admin'` for `admin@kabgeermasala.com`.
-    * Hardened `public.is_admin()` helper function to verify both `profiles.role` and admin email whitelist.
-  - `src/pages/AdminDashboardPage.jsx`:
-    * Upgraded `fetchAllOrders` with automatic service-role Edge Function fallback if direct RLS query returns an empty dataset.
-    * Added BYB packing alert and free gift injection into admin fulfillment email to prevent missed sample boxes.
+  - `src/pages/AdminLoginPage.jsx` & `AdminLoginPage.css`:
+    * Purged hardcoded email and dots placeholders (`••••••••`).
+    * Added Kabgeer Masale brand logo, leading input icons, and interactive password visibility toggle.
+    * Implemented brute-force rate-limiting lockout (5 failed attempts = 30s lockout countdown).
+    * Enhanced security headers and TLS footnote.
+  - `src/context/AuthContext.jsx` & `AdminDashboardPage.jsx`:
+    * Centralized `ADMIN_EMAILS` whitelist check across auth routines and removed single-email fallbacks.
     * Updated customer and admin email subject lines for instant clarity.
   - `src/pages/OrderSuccessPage.jsx`:
     * Aligned web confirmation screen with BYB badge, package contents title, and complimentary 2x Mini Boxes row.
