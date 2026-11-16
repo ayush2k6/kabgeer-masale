@@ -4,7 +4,7 @@ import { SlidersHorizontal, X, Sparkles, Search } from 'lucide-react';
 import { PRODUCTS, CATEGORIES } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import './CataloguePage.css';
-import catalogueBannerImg from '../assets/catalogue banner.png';
+import catalogueBannerImg from '../assets/catalogue banner.webp';
 
 const CataloguePage = () => {
   const location = useLocation();
@@ -118,6 +118,8 @@ const CataloguePage = () => {
           src={catalogueBannerImg}
           alt="Explore Our Authentic Masala Catalogue"
           className="catalogue-banner-image"
+          fetchPriority="high"
+          decoding="async"
         />
       </section>
 

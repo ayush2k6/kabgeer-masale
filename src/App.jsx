@@ -9,10 +9,10 @@ import Popup from './components/Popup';
 import './index.css';
 
 import HomePage from './pages/HomePage';
-import CataloguePage from './pages/CataloguePage';
-import ProductPage from './pages/ProductPage';
-import CheckoutPage from './pages/CheckoutPage';
-import OrderSuccessPage from './pages/OrderSuccessPage';
+const CataloguePage = lazy(() => import('./pages/CataloguePage'));
+const ProductPage = lazy(() => import('./pages/ProductPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const OrderSuccessPage = lazy(() => import('./pages/OrderSuccessPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
 const BuildBundlePage = lazy(() => import('./pages/BuildBundlePage'));

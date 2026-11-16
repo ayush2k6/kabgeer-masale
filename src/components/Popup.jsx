@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import popupImage from '../assets/popup.png';
+import popupImage from '../assets/popup.webp';
 import './Popup.css';
 
 const Popup = () => {

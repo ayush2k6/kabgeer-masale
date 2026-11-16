@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { PRODUCTS, CATEGORIES } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import './BuildBundlePage.css';
-import buildBundleBanner from '../assets/build your bundle banner.png';
+import buildBundleBanner from '../assets/build your bundle banner.webp';
 
 const BuildBundlePage = () => {
   const [activeCategory, setActiveCategory] = useState('All Masalas');
@@ -57,7 +57,13 @@ const BuildBundlePage = () => {
 
       {/* Banner Image */}
       <div style={{ width: '100%', overflow: 'hidden', display: 'block' }}>
-        <img src={buildBundleBanner} alt="Build Your Bundle" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        <img 
+          src={buildBundleBanner} 
+          alt="Build Your Bundle" 
+          fetchPriority="high" 
+          decoding="async"
+          style={{ width: '100%', height: 'auto', display: 'block' }} 
+        />
       </div>
 
       {/* 1. Hero Banner Section — Royal Awadhi Curation */}

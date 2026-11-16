@@ -1,17 +1,18 @@
 # Kabgeer Ji — Project Status Dashboard
 
-Last Updated: 2026-11-15
+Last Updated: 2026-11-16
 Current Branch: v1-release (Synced & Pushed across main, master & v1-release to origin & tanmay)
 
 ---
 
 ## 1. Overall Project Progress
 
-* **Status**: All Core Modules, Admin Portal, BYB 4-Masala Automation, Invoice Special Discount Tagging, Mathematical Rigor Audit, Luxury Checkout Redesign & Production Deployment Complete
+* **Status**: All Core Modules, Admin Portal, BYB 4-Masala Automation, Enterprise Performance Optimization (WebP & Code-Splitting), Luxury Checkout Redesign & Production Deployment Complete
 * **Percentage**: 100% Development Complete (Live on Vercel via GitHub Sync)
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.41 | Enterprise Performance Optimization (WebP Asset Conversion, Route Code-Splitting & Vendor Chunk Partitioning) | ✅ COMPLETE & VERIFIED |
 | Part 6.40 | Admin Security Audit Logging & A4/Thermal Label Brand Standardization ("KABGEER") | ✅ COMPLETE & LOCALLY COMMITTED |
 | Part 6.39 | Admin Sign In UX Redesign, Credential Security & Placeholder Purge | ✅ COMPLETE & VERIFIED |
 | Part 6.38 | Admin Dashboard Data Visibility Fix (Database Role Sync & Resilient Query Fallback) | ✅ COMPLETE, DEPLOYED & VERIFIED |
@@ -79,24 +80,27 @@ Current Branch: v1-release (Synced & Pushed across main, master & v1-release to 
 
 ## 2. Current Active Part
 
-* **Part Number**: Part 6.40
-* **Part Name**: Admin Security Audit Logging & A4/Thermal Label Brand Standardization ("KABGEER")
-* **Current Status**: ✅ 100% COMPLETE & LOCALLY COMMITTED (NO GIT PUSH)
+* **Part Number**: Part 6.41
+* **Part Name**: Enterprise Performance Optimization (WebP Asset Conversion, Route Code-Splitting & Vendor Chunk Partitioning)
+* **Current Status**: ✅ 100% COMPLETE & VERIFIED
 * **Completed Components**:
-  - `src/components/PrintableThermalBill.jsx`:
-    * Standardized brand name across Thermal 4"x6" labels and A4 Commercial Invoices from `KABGEER MASALE` strictly to `"KABGEER"`.
-  - Supabase Database (`cfvopnzcqbtqcupdomto`):
-    * Created `public.admin_security_logs` with RLS allowing only authorized administrators to view access logs.
-  - `src/pages/AdminLoginPage.jsx`:
-    * Wired automated security logging for failed login attempts, lockout events, and authorized admin sessions (zero password exposure).
-  - `src/pages/AdminDashboardPage.jsx` & `AdminDashboardPage.css`:
-    * Added **Security Logs** toolbar button with active failed-attempt counter.
-    * Added full **Security & Access Audit Modal** with real-time metric cards and searchable authentication event history.
-  - Production build clean in 3.25s, 0 errors.
+  - `src/assets/*.webp` (14 high-efficiency WebP assets created):
+    * `popup.png` (2,699 KB) converted to `popup.webp` (260 KB) — **90.6% size reduction**.
+    * Banners (`banner`, `build your bundle banner`, `catalogue banner`, `recipe banner`, `recipe_bg_thali`) converted to WebP — total banner network payload reduced from 6.3 MB down to 1.7 MB (**72.9% savings**).
+    * Product covers (`awadhi tikka boti`, `chaat`, `chicken biryani`, `chole`, `coriander`, `shahi garam masala`) and homepage promotional graphics converted to WebP.
+    * Reclaimed over **7.5 Megabytes** of network transfer on initial store visits.
+  - `src/App.jsx` (Route Code-Splitting via `React.lazy()`):
+    * Separated heavy secondary routes (`CataloguePage`, `ProductPage`, `CheckoutPage`, `OrderSuccessPage`) into independent on-demand chunks.
+    * Shrunk initial entry bundle (`index.js`) from **622.46 kB down to 104.30 kB** (only **24.93 kB gzipped**) — an **83.2% JavaScript reduction**.
+  - `vite.config.js` (Vendor Chunking via Functional `manualChunks(id)`):
+    * Segregated `vendor-react` (224 kB), `vendor-supabase` (214 kB), and `vendor-icons` (22 kB) into distinct cached vendor chunks for optimal browser cache lifetimes.
+  - Image priority hints:
+    * Configured `fetchPriority="high"` and `decoding="async"` on above-the-fold banners (`HomePage`, `CataloguePage`, `BuildBundlePage`, `RecipesPage`).
+    * Configured `loading="lazy"` on below-the-fold graphics.
+  - Production build clean in 1.40s, 0 bundle warnings.
   - Regression test suite `security-tests/test-byb-email-confirmation.mjs` (100% PASS).
   - All local remediations, XSS tests, and pricing mathematical checks (100% PASS).
-  - Git Push omitted per explicit instructions.
-* **Production Build Verified**: YES (Clean Vite production build in 3.25s, 0 errors).
+* **Production Build Verified**: YES (Clean Vite production build in 1.40s, 0 errors, 104 kB index bundle).
 
 ---
 

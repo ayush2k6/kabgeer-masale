@@ -1,9 +1,9 @@
-import selectedCover0 from '../assets/awadhi tikka boti masala cover.png';
-import selectedCover1 from '../assets/chaat masala cover.png';
-import selectedCover2 from '../assets/chicken biryani masala cover.png';
-import selectedCover3 from '../assets/chole masale cover.png';
-import selectedCover4 from '../assets/coriander powder cover.png';
-import selectedCover5 from '../assets/shahi garam masala cover.png';
+import selectedCover0 from '../assets/awadhi tikka boti masala cover.webp';
+import selectedCover1 from '../assets/chaat masala cover.webp';
+import selectedCover2 from '../assets/chicken biryani masala cover.webp';
+import selectedCover3 from '../assets/chole masale cover.webp';
+import selectedCover4 from '../assets/coriander powder cover.webp';
+import selectedCover5 from '../assets/shahi garam masala cover.webp';
 
 // Product data configuration
 export const CATEGORIES = [

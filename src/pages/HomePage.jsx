@@ -7,9 +7,9 @@ import MontageProductCard from '../components/MontageProductCard';
 import { useCart } from '../context/CartContext';
 import './HomePage.css';
 
-import newBannerImg from '../assets/banner.png';
-import rawIngredientsImg from '../assets/raw-ingredients.png';
-import whyChooseUsImg from '../assets/why choose us.png';
+import newBannerImg from '../assets/banner.webp';
+import rawIngredientsImg from '../assets/raw-ingredients.webp';
+import whyChooseUsImg from '../assets/why choose us.webp';
 
 const HomePage = () => {
   const signatureSliderRef = useRef(null);
@@ -59,18 +59,24 @@ const HomePage = () => {
     <div className="home-page">
       {/* Hero Banner Section */}
       <section className="hero-section" style={{ padding: 0, margin: 0, width: '100%' }}>
-        <img src={newBannerImg} alt="Kabgeer Masale Banner" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        <img 
+          src={newBannerImg} 
+          alt="Kabgeer Masale Banner" 
+          fetchPriority="high" 
+          decoding="async"
+          style={{ width: '100%', height: 'auto', display: 'block' }} 
+        />
       </section>
-
-
-
-
-
-
 
       {/* Why Choose Us Section — Image Banner */}
       <section className="why-choose-us-image-section" style={{ padding: 0, margin: 0, width: '100%' }}>
-        <img src={whyChooseUsImg} alt="Why Choose Kabgeer Masale" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        <img 
+          src={whyChooseUsImg} 
+          alt="Why Choose Kabgeer Masale" 
+          loading="lazy" 
+          decoding="async"
+          style={{ width: '100%', height: 'auto', display: 'block' }} 
+        />
       </section>
 
       {/* Our Quick Non-Veg Masala */}
@@ -107,7 +113,7 @@ const HomePage = () => {
         <div className="container">
           <div className="middle-info-grid">
             <div className="middle-info-image">
-              <img src={rawIngredientsImg} alt="Authentic Lucknavi Spices" />
+              <img src={rawIngredientsImg} alt="Authentic Lucknavi Spices" loading="lazy" decoding="async" />
             </div>
             <div className="middle-info-text">
               <span className="info-badge">Our Promise</span>

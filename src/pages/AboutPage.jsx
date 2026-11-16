@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, Crown, ShieldCheck, Star, Award, Heart, ThumbsUp, Sparkles, MapPin, Mail, Phone, FileText } from 'lucide-react';
 import './AboutPage.css';
-import rawIngredientsImg from '../assets/raw-ingredients.png';
-import recipeBgImg from '../assets/recipe_bg_thali.png';
+import rawIngredientsImg from '../assets/raw-ingredients.webp';
+import recipeBgImg from '../assets/recipe_bg_thali.webp';
 import spicesProcessBgImg from '../assets/spices-process.png';
 
 const AboutPage = () => {

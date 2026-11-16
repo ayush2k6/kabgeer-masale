@@ -1,5 +1,35 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-16 (Part 6.41: Enterprise Performance Optimization — WebP Asset Conversion, Route Code-Splitting & Vendor Chunk Partitioning)
+
+### 1. Performance Bottlenecks Diagnosed
+- **Uncompressed Asset Weight**: The site loaded over 10MB of uncompressed 24-bit PNG files on initial visits, notably `popup.png` (2,699 KB / 2.7 MB) and 5 major banners (750KB–870KB each).
+- **Monolithic Bundle**: `HomePage`, `CataloguePage`, `ProductPage`, `CheckoutPage`, and `OrderSuccessPage` were statically bundled together into a single 622 KB JavaScript bundle (`index.js`), forcing visitors to parse all checkout and PDF generation routines before the homepage became interactive.
+- **Cache Invalidation**: React runtime, Supabase SDK, and Lucide icons lacked vendor chunk boundaries, forcing clients to re-download shared libraries on every minor application update.
+
+### 2. Implementations & Architecture
+- **Next-Gen WebP Conversion**:
+  * `popup.png` (2,699 KB) converted to `popup.webp` (254 KB) — **90.6% file size reduction**.
+  * Banners (`banner`, `build your bundle banner`, `catalogue banner`, `recipe banner`, `recipe_bg_thali`) converted to WebP — reducing total banner payload from 6,283 KB down to 1,705 KB (**72.9% savings**).
+  * Converted key product covers (`awadhi tikka boti`, `chaat`, `chicken biryani`, `chole`, `coriander`, `shahi garam masala`) and homepage promotional graphics (`why choose us`, `raw-ingredients`) to WebP.
+  * Preserved full crisp resolution while slashing initial network transfer by over 7.5 Megabytes.
+- **Route-Level Code-Splitting (`src/App.jsx`)**:
+  * Lazy-loaded `CataloguePage`, `ProductPage`, `CheckoutPage`, and `OrderSuccessPage` using `React.lazy()`.
+  * Shrunk the initial application bundle from **622.46 kB down to 104.30 kB** (only **24.9 kB gzipped**) — an **83.2% initial JavaScript reduction**.
+- **Vendor Chunk Partitioning (`vite.config.js`)**:
+  * Configured functional `manualChunks` partition:
+    - `vendor-react` (224 kB): `react`, `react-dom`, `react-router-dom`
+    - `vendor-supabase` (214 kB): `@supabase/supabase-js`
+    - `vendor-icons` (22 kB): `lucide-react`
+  * Guarantees immutable long-term browser disk caching for returning visitors.
+- **Priority Fetching & Native Lazy-Loading**:
+  * Added `fetchPriority="high"` and `decoding="async"` to LCP hero banners across `HomePage`, `CataloguePage`, `BuildBundlePage`, and `RecipesPage`.
+  * Added `loading="lazy"` and `decoding="async"` to below-the-fold images across all pages and product cards.
+
+### 3. Verification & Testing
+- Production build: `npm run build` compiled in 2.26s with **0 warnings and 0 errors**.
+- Automated test suites: `test-byb-email-confirmation.mjs` (6/6 checks PASS), `test-local-remediations.mjs` (44/44 checks PASS).
+
 ## 2026-11-16 (Part 6.40: Admin Security Audit Logging System & A4/Thermal Shipping Label Brand Standardization)
 
 ### 1. Requirements & Directives

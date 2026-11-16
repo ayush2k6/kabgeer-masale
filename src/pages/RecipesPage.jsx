@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Clock, Users, ChevronRight, X, ChefHat, Flame, HeartPulse, ShoppingBag } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
-import recipeBannerImg from '../assets/recipe banner.png';
+import recipeBannerImg from '../assets/recipe banner.webp';
 import './RecipesPage.css';
 
 const hardcodedRecipes = {
@@ -172,6 +172,8 @@ const RecipesPage = () => {
           src={recipeBannerImg}
           alt="Authentic Lucknavi Masala Recipes"
           className="recipes-banner-image"
+          fetchPriority="high"
+          decoding="async"
         />
       </section>
 
