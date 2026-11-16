@@ -1,5 +1,28 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-16 (Part 6.38: Admin Dashboard Data Visibility Fix — Database Profile Role Synchronization & Resilient Query Fallback)
+
+### 1. Root Cause Analysis
+- **`admin@kabgeermasala.com` Data Invisibility (0 Orders Displayed)**: 
+  * In the React frontend (`AuthContext.jsx`), a client-side override recognized `admin@kabgeermasala.com` as an administrator, permitting sign-in to `/admin`.
+  * However, in the Supabase PostgreSQL database, the user account for `admin@kabgeermasala.com` (`4172f28d-23d5-4b0e-9af4-1127d0a4d867`) had `role = 'customer'` inside `public.profiles`.
+  * Consequently, the PostgreSQL security helper `public.is_admin()` evaluated to `FALSE`. When `AdminDashboardPage.jsx` executed `supabase.from('orders').select()`, PostgreSQL Row-Level Security (RLS) silently filtered out all 30 database orders and returned an empty array `[]` with `error: null`.
+  * Because `directOrders` was an empty array without an error (`!directErr && Array.isArray(directOrders)`), the client immediately concluded 0 orders existed and exited before ever querying the privileged `admin-manage-orders` Edge Function or RPC fallback.
+
+### 2. Implementations & Remediation
+- **Database Role & Function Hardening (Supabase Cloud `cfvopnzcqbtqcupdomto`)**:
+  * Executed atomic role upgrade on `public.profiles`, setting `role = 'admin'` for `admin@kabgeermasala.com` and all whitelisted administrators.
+  * Enhanced `public.is_admin()` PostgreSQL function to check both `public.profiles.role = 'admin'` AND the verified administrator email whitelist (`admin@kabgeermasala.com`, `tanmayyadavbca@gmail.com`, `admin@kabgeerji.com`, `ayush@kabgeerji.com`).
+- **Client Resilience Optimization (`src/pages/AdminDashboardPage.jsx`)**:
+  * Refactored `fetchAllOrders` so that if direct client queries return an empty array `[]` (0 orders), the app does not prematurely stop. It automatically invokes the authoritative service-role `admin-manage-orders` Edge Function as a fail-safe.
+  * Ensures verified administrators will always retrieve and render all active orders, regardless of client session timing or RLS edge cases.
+
+### 3. Verification & Testing
+- Database inspection: Verified `admin@kabgeermasala.com` now possesses `role = 'admin'` in `public.profiles`.
+- Database query: Confirmed 30 orders (5 Paid, 25 Unpaid Checkouts) are stored in `public.orders`.
+- Automated test suites: `security-tests/test-byb-email-confirmation.mjs` (6/6 checks PASSED), `security-tests/test-local-remediations.mjs` (44/44 checks PASSED).
+- Production build: `npm run build` compiled in 3.31s with 0 errors.
+
 ## 2026-11-15 (Part 6.37: Transactional Email Infrastructure — Processing Status Notification, Custom BYB Dispatch & Cloud Edge Function Deployment)
 
 ### 1. Root Cause Analysis

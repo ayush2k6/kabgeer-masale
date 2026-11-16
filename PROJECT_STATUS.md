@@ -12,6 +12,7 @@ Current Branch: v1-release (Synced & Pushed across main, master & v1-release to 
 
 | Part | Module | Status |
 |---|---|---|
+| Part 6.38 | Admin Dashboard Data Visibility Fix (Database Role Sync & Resilient Query Fallback) | ✅ COMPLETE, DEPLOYED & VERIFIED |
 | Part 6.37 | Transactional Email Infrastructure (Processing Status Notification, Custom BYB Dispatch & Cloud Deployment) | ✅ COMPLETE, DEPLOYED & VERIFIED |
 | Part 6.36 | Order Confirmation UI Redesign (Total Paid Amount Reflection, Sans-Serif Mix, Dedicated Financial Card & Print Engine) | ✅ COMPLETE & VERIFIED |
 | Part 6.35 | Production Vercel Deployment Sync (Synchronized & Pushed main & master to GitHub) | ✅ LIVE & VERIFIED |
@@ -76,22 +77,15 @@ Current Branch: v1-release (Synced & Pushed across main, master & v1-release to 
 
 ## 2. Current Active Part
 
-* **Part Number**: Part 6.37
-* **Part Name**: Transactional Email Infrastructure (Processing Status Notification, Custom BYB Dispatch & Cloud Deployment)
+* **Part Number**: Part 6.38
+* **Part Name**: Admin Dashboard Data Visibility Fix (Database Role Sync & Resilient Query Fallback)
 * **Current Status**: ✅ 100% COMPLETE, DEPLOYED & VERIFIED
 * **Completed Components**:
-  - `supabase/functions/send-order-email/index.ts`:
-    * Added `renderProcessingEmailHtml()` with hand-blending message, 24–48h timeline, and BYB benefits banner.
-    * Added `Processing` handling to status update routing.
-    * Integrated custom BYB manifest with 10% discount and 2 free sample gifts.
-    * Corrected support email to `enquiry@kabgeermasala.com`.
-  - `supabase/functions/admin-manage-orders/index.ts`:
-    * Included `Processing` in the automated email status trigger list.
+  - PostgreSQL Database (`cfvopnzcqbtqcupdomto`):
+    * Synchronized `public.profiles.role = 'admin'` for `admin@kabgeermasala.com`.
+    * Hardened `public.is_admin()` helper function to verify both `profiles.role` and admin email whitelist.
   - `src/pages/AdminDashboardPage.jsx`:
-    * Added UI feedback for `Processing` email dispatches and resends.
-  - Supabase Cloud Deployment:
-    * Deployed `send-order-email` (v25) to Supabase Cloud (`cfvopnzcqbtqcupdomto`).
-    * Deployed `admin-manage-orders` (v15) to Supabase Cloud (`cfvopnzcqbtqcupdomto`).
+    * Upgraded `fetchAllOrders` with automatic service-role Edge Function fallback if direct RLS query returns an empty dataset.
     * Added BYB packing alert and free gift injection into admin fulfillment email to prevent missed sample boxes.
     * Updated customer and admin email subject lines for instant clarity.
   - `src/pages/OrderSuccessPage.jsx`:

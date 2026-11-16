@@ -205,24 +205,24 @@ const AdminDashboardPage = () => {
         .select('*, order_items(*)')
         .order('created_at', { ascending: false });
 
-      if (!directErr && Array.isArray(directOrders)) {
+      if (!directErr && Array.isArray(directOrders) && directOrders.length > 0) {
         setOrders(directOrders);
         return;
       }
 
-      // 2. Try Supabase Edge Function admin-manage-orders
+      // 2. Try Supabase Edge Function admin-manage-orders (fail-safe service-role fallback)
       const { data: edgeData, error: edgeErr } = await supabase.functions.invoke('admin-manage-orders', {
         body: { action: 'list', adminEmail: user?.email || 'admin@kabgeermasala.com' }
       });
 
-      if (!edgeErr && edgeData?.success && Array.isArray(edgeData?.orders)) {
+      if (!edgeErr && edgeData?.success && Array.isArray(edgeData?.orders) && edgeData.orders.length > 0) {
         setOrders(edgeData.orders);
         return;
       }
 
       // 3. Try Supabase RPC get_all_orders_admin
       const { data: rpcOrders, error: rpcErr } = await supabase.rpc('get_all_orders_admin');
-      if (!rpcErr && Array.isArray(rpcOrders)) {
+      if (!rpcErr && Array.isArray(rpcOrders) && rpcOrders.length > 0) {
         const { data: allItems } = await supabase.from('order_items').select('*');
         const itemsByOrderId = {};
         (allItems || []).forEach(it => {
@@ -234,8 +234,11 @@ const AdminDashboardPage = () => {
         return;
       }
 
-      if (directOrders) {
+      // 4. If all methods succeeded but store genuinely has 0 orders
+      if (directOrders && Array.isArray(directOrders)) {
         setOrders(directOrders);
+      } else if (edgeData?.orders && Array.isArray(edgeData.orders)) {
+        setOrders(edgeData.orders);
       } else {
         throw new Error(directErr?.message || edgeErr?.message || rpcErr?.message || 'Failed to fetch customer orders.');
       }
