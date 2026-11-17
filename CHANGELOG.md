@@ -1,5 +1,36 @@
 # Kabgeer Ji — Changelog
 
+## 2026-11-17 (Part 6.42: Personalized Order Success Experience, Order Token Personalization & Live WhatsApp Updates)
+
+### 1. Requirements & Directives
+- **Directives**:
+  1. Personalize the Thank You / Order Confirmation page (`/order-success`) with the customer's personal/first name.
+  2. Display personal name in the main hero title (*"Thank you for your order, [First Name]!"*), status badge, subtitle, and Order ID token badge.
+  3. Introduce a 3-step visual fulfillment progress stepper (*Order Confirmed ─── Hand-Packing in Lucknow ─── Trackon Courier Dispatch*).
+  4. Add 1-click WhatsApp Live Tracking Updates button with pre-filled order and customer details.
+  5. Synchronize and push all changes (`git push`) across `v1-release`, `main`, and `master` to both remotes (`origin` and `tanmay`).
+
+### 2. Implementations & Architecture
+- **Personalized Header & Subtitle (`src/pages/OrderSuccessPage.jsx`)**:
+  * Implemented first-name extraction logic from `customer_name` / `customerName` / `shipping_address.name` while handling multi-word names and graceful fallbacks.
+  * Updated main Serif hero title to dynamically render: `Thank you for your order, [First Name]!` (or `Thank you for your order!` if unprovided).
+  * Updated gold status pill to: `ORDER CONFIRMED FOR [FIRST NAME]` with fallback to `ORDER CONFIRMED & SECURED`.
+  * Updated subtitle to address the patron personally: `Hi [First Name], your authentic Lucknavi spices are being carefully prepared...`.
+- **Order ID Token Personalization**:
+  * Added customer uppercase name tag into the Order ID token cell: `ORDER ID • [FIRST NAME]` alongside the copyable `KBG-XXXX` code.
+- **Visual Order Fulfillment Stepper (`src/pages/OrderSuccessPage.jsx` & `OrderSuccessPage.css`)**:
+  * Rendered sleek 3-stage status tracker:
+    - Step 1: **Order Confirmed** (*Payment Verified* - Completed)
+    - Step 2: **Hand-Packing** (*Lucknow Facility* - Active pulse)
+    - Step 3: **Express Dispatch** (*Trackon Courier* - Upcoming)
+  * Fully responsive: streamlined icons and titles for mobile screens; hidden in print media styles.
+- **1-Click WhatsApp Live Updates CTA**:
+  * Added high-visibility WhatsApp button directly connecting customers to Kabgeer's official WhatsApp line (`+91 80900 86636`) with auto-encoded order ID and customer name in message text.
+
+### 3. Verification & Testing
+- Production build: `cmd.exe /c "npm run build"` compiled cleanly in 3.05s with 0 errors.
+- Test suites: `test-local-remediations.mjs` (44/44 PASS), `test-byb-email-confirmation.mjs` (6/6 PASS).
+
 ## 2026-11-16 (Part 6.41: Enterprise Performance Optimization — WebP Asset Conversion, Route Code-Splitting & Vendor Chunk Partitioning)
 
 ### 1. Performance Bottlenecks Diagnosed

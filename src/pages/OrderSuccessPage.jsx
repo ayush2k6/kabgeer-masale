@@ -13,7 +13,8 @@ import {
   Printer, 
   ReceiptText, 
   Truck, 
-  Sparkles 
+  Sparkles,
+  MessageCircle
 } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import './OrderSuccessPage.css';
@@ -171,13 +172,21 @@ const OrderSuccessPage = () => {
   const rawTotal = Number(order?.total_amount ?? order?.totalAmount ?? order?.total ?? 0);
   const totalPaid = rawTotal > 0 ? rawTotal : Math.max(0, subtotal - discount + shippingFee);
 
-  // Customer metadata resolution
-  const customerName = 
+  // Customer metadata resolution & personal name extraction
+  const rawCustomerName = (
     order?.customer_name ||
     order?.customerName ||
     order?.shipping_address?.name ||
     order?.shipping_address?.customer_name ||
-    'Valued Patron';
+    ''
+  ).trim();
+
+  // Extract personal/first name if available (e.g. "Ayush" from "Ayush Sharma")
+  const customerFirstName = (rawCustomerName && rawCustomerName.toLowerCase() !== 'valued patron')
+    ? rawCustomerName.split(/\s+/)[0]
+    : '';
+
+  const customerName = rawCustomerName || 'Valued Patron';
 
   const customerPhone = 
     order?.customer_phone ||
@@ -215,26 +224,32 @@ const OrderSuccessPage = () => {
 
           <div className="order-success-status-pill">
             <Sparkles size={13} className="text-gold" />
-            <span>ORDER CONFIRMED & SECURED</span>
+            <span>
+              {customerFirstName 
+                ? `ORDER CONFIRMED FOR ${customerFirstName.toUpperCase()}` 
+                : 'ORDER CONFIRMED & SECURED'}
+            </span>
           </div>
 
-          {/* MAIN HEADING ONLY: Uses Serif Font */}
+          {/* MAIN HEADING ONLY: Uses Serif Font with Customer Name */}
           <h1 className="order-success-title">
-            Thank you for your order!
+            Thank you for your order{customerFirstName ? `, ${customerFirstName}` : ''}!
           </h1>
 
           {/* SUBTITLE: Sans-Serif */}
           <p className="order-success-subtitle">
             {isByb
-              ? `Hi ${customerName}, your custom Build Your Box is being hand-packed with authentic Lucknavi spice blends and complimentary gifts.`
-              : `Hi ${customerName}, your authentic Lucknavi spices are being carefully prepared with fresh aroma at our heritage spice house.`}
+              ? `Hi ${customerFirstName || customerName}, your custom Build Your Box is being hand-packed with authentic Lucknavi spice blends and complimentary gifts.`
+              : `Hi ${customerFirstName || customerName}, your authentic Lucknavi spices are being carefully prepared with fresh aroma at our heritage spice house.`}
           </p>
 
           {/* Quick Metric Bar */}
           <div className="order-quick-metric-bar">
             {/* Metric 1: Order ID */}
             <div className="order-metric-cell">
-              <span className="metric-label">ORDER ID</span>
+              <span className="metric-label">
+                ORDER ID {customerFirstName ? `• ${customerFirstName.toUpperCase()}` : ''}
+              </span>
               <div className="metric-val-with-copy">
                 <span className="metric-code">{displayOrderId}</span>
                 <button 
@@ -271,6 +286,39 @@ const OrderSuccessPage = () => {
               <span className="metric-total-amount">
                 ₹{totalPaid.toFixed(2)}
               </span>
+            </div>
+          </div>
+
+          {/* Visual Order Fulfillment Stepper */}
+          <div className="order-progress-stepper">
+            <div className="stepper-step completed">
+              <div className="step-icon-wrap">
+                <Check size={14} strokeWidth={2.8} />
+              </div>
+              <div className="step-text-wrap">
+                <span className="step-title">Order Confirmed</span>
+                <span className="step-desc">Payment Verified</span>
+              </div>
+            </div>
+            <div className="stepper-divider active" />
+            <div className="stepper-step in-progress">
+              <div className="step-icon-wrap">
+                <Package size={14} />
+              </div>
+              <div className="step-text-wrap">
+                <span className="step-title">Hand-Packing</span>
+                <span className="step-desc">Lucknow Facility</span>
+              </div>
+            </div>
+            <div className="stepper-divider" />
+            <div className="stepper-step upcoming">
+              <div className="step-icon-wrap">
+                <Truck size={14} />
+              </div>
+              <div className="step-text-wrap">
+                <span className="step-title">Express Dispatch</span>
+                <span className="step-desc">Trackon Courier</span>
+              </div>
             </div>
           </div>
 
@@ -446,6 +494,15 @@ const OrderSuccessPage = () => {
 
           {/* Action CTAs */}
           <div className="order-actions-container">
+            <a 
+              href={`https://wa.me/918090086636?text=${encodeURIComponent(`Hi Kabgeer team, I just placed order #${displayOrderId}${customerFirstName ? ` under the name ${customerFirstName}` : ''}. Please share my tracking and delivery updates here!`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-order-whatsapp"
+            >
+              <MessageCircle size={18} /> Get Live Updates on WhatsApp
+            </a>
+
             <Link 
               to="/products" 
               className="btn-order-primary"
