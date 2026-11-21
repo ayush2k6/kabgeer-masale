@@ -58,6 +58,53 @@ const OrderSuccessPage = () => {
     } catch {
       // ignore
     }
+
+    // 4. Instant Visual Inspection / Preview Mode
+    if (orderParam === 'preview' || orderParam === 'demo' || searchParams.get('preview') === 'true') {
+      return {
+        display_order_id: 'KBG-849201',
+        displayOrderId: 'KBG-849201',
+        created_at: new Date().toISOString(),
+        customer_name: 'Ayush Sharma',
+        customerName: 'Ayush Sharma',
+        customer_email: 'ayush@kabgeerji.com',
+        customer_phone: '+91 80900 86636',
+        customerPhone: '+91 80900 86636',
+        total_amount: 540,
+        subtotal: 490,
+        discount: 0,
+        shipping: 50,
+        shipping_fee: 50,
+        is_bundle: false,
+        shipping_address: {
+          name: 'Ayush Sharma',
+          address: 'Plot 42, Gomti Nagar Heritage Enclave',
+          apartment: 'Near Taj Hotel',
+          city: 'Lucknow',
+          state: 'Uttar Pradesh',
+          pinCode: '226010',
+          phone: '+91 80900 86636',
+          email: 'ayush@kabgeerji.com'
+        },
+        order_items: [
+          {
+            product_name: 'Shahi Garam Masala',
+            weight_pack: '100g',
+            quantity: 2,
+            unit_price: 160,
+            total_price: 320
+          },
+          {
+            product_name: 'Awadhi Biryani Masala',
+            weight_pack: '100g',
+            quantity: 1,
+            unit_price: 170,
+            total_price: 170
+          }
+        ]
+      };
+    }
+
     return null;
   });
 

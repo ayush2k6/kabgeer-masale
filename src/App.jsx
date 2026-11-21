@@ -36,11 +36,12 @@ const AppContent = () => {
   const pathname = location.pathname.toLowerCase();
   const isAdminRoute = pathname.startsWith('/admin');
   const isCheckoutRoute = pathname === '/checkout';
+  const isOrderSuccessRoute = pathname === '/order-success';
 
   return (
     <>
       <ScrollToTop />
-      {!isAdminRoute && !isCheckoutRoute && <Popup />}
+      {!isAdminRoute && !isCheckoutRoute && !isOrderSuccessRoute && <Popup />}
       <div className={isAdminRoute ? 'admin-app-root' : 'app-container'}>
         {!isAdminRoute && <Header />}
         <main className={isAdminRoute ? 'admin-main-wrapper' : 'main-content'}>
